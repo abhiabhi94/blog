@@ -1,5 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import (ListView,
+                                    DetailView,
+                                    CreateView,
+                                    UpdateView,
+                                    DeleteView
+                                    )
 from .models import Post
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
