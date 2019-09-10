@@ -15,7 +15,8 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        <button class="btn btn-outline-info" type="submit">Submit your Post</button>
+        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.slug %}">Get back to edit</a>
+        <button class="btn btn-outline-info ml-2" type="submit">Submit your Post</button>
     </div>
 </form>
 {% endblock content %}
