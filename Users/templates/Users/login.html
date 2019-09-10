@@ -1,4 +1,6 @@
-{% extends "Blog/base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% extends "Blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
 
 <div class="content-section">
     <form method="post">
@@ -9,11 +11,14 @@
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Log In</button>
+            <small class="text-muted ml-2">
+                <a href="{% url 'password_reset' %}">Forgot Password</a>
+            </small>
         </div>
     </form>
     <div class="border-top pt-3">
         <small class="text-muted">
-            Need an account? <a class="ml-2" href="{% url 'Blog:register' %}">Register</a>
+            Need an account? <a class="ml-2" href="{% url 'register' %}">Register</a>
         </small>
     </div>
 </div>
