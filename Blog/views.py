@@ -6,6 +6,7 @@ from django.views.generic import (ListView,
                                     DeleteView
                                     )
 from .models import Post
+from Users.models import Profile
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required 
@@ -39,6 +40,17 @@ class UserPostListView(ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-date_posted')
+
+    def get_context_data(self, **kwargs):
+        context = super(UserPostListView, self).get_context_data(**kwargs)
+        context['profile'] = get_object_or_404(Profile,
+                                                user=get_object_or_404(
+                                                    User,
+                                                    username=self.kwargs.get('username')
+                                                    ))
+        return context
+
+
 
 class PostDetailView(DetailView):
     queryset = Post.objects.filter(publish=True)
@@ -89,7 +101,7 @@ def about(request):
 @login_required
 def preview(request, slug):
     post = Post.objects.get(slug=slug)
-    print(post.author)
+    # print(post.author)
     if request.user == post.author :    
         if request.method == 'POST':
             # print ('inside post request')
