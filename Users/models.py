@@ -5,8 +5,13 @@ from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.CharField(null=True, max_length=140)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    name = models.CharField(default='anonymous', max_length=100)
+    bio = models.CharField(null=True, max_length=140, blank=True)
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
+    # email = models.EmailField(null=True)
+    public = models.BooleanField(default=False)
+    website = models.URLField(null=True, blank=True)
+    location = models.CharField(null=True, max_length=200, blank=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'
