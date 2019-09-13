@@ -113,12 +113,17 @@ a.article-title:hover {
 .profile-info {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    /* text-align: center; */
 }
 
-.profile-img img {
-    width: 200px;
-    height: 200px;
+.avatar {
+    max-width: 200px;
+    max-height: 200px;
+    line-height: 200px;
+    text-align: center;
+}
+
+.avatar img {
+    max-height: 100%;
+    max-width: 100%;
+    /* vertical-align: middle; */
 }
