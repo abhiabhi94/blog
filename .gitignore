@@ -6,4 +6,4 @@
 
 # Cached Python Files #
 ########################
-*.__pycache__/*
+*/__pycache__/*
