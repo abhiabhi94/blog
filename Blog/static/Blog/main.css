@@ -105,3 +105,20 @@ a.article-title:hover {
     background-color: #E1ECF4;
     border-color: #E1ECF4;
 }
+
+.Profile {
+    background-color: aliceblue;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* text-align: center; */
+}
+
+.profile-img img {
+    width: 200px;
+    height: 200px;
+}
