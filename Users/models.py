@@ -8,8 +8,9 @@ class Profile(models.Model):
     bio = models.CharField(null=True, max_length=140, blank=True)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
     public = models.BooleanField(default=False)
-    website = models.URLField(null=True, blank=True)
+    website = models.CharField(null=True, blank=True, max_length=80)
     location = models.CharField(null=True, max_length=200, blank=True)
+    join_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'
