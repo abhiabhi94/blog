@@ -2,12 +2,12 @@
 {% block content %}
 <div class="row {{profile}} content-section mt-0">
     <div class="avatar col-xs-12 col-md-3 pr-3">
-        <img class="user-img" src="{{ profile.image.url }}" alt="{{user.name}}">
+        <img class="user-img" src="{{ profile.image.url }}" alt="{{author}}">
     </div>
     <div class="profile-info col-xs-12 col-md-9 mt-1 pr-3">
         <ul class="list-unstyled ml-5 pr-3">
             <li class="user-name mt-2 account-heading">
-                {{self.kwargs.name}}
+                {{author}}
             </li>
             <h4 class="user-bio mb-2">
                 {{ profile.bio }}
@@ -30,12 +30,12 @@
             </li>
             {% endif %}
             <li class="user-join-date mt-2">
-            <span>
+                <span>
                 <i class="fa fa-history fa-fw mr-2"></i>Joined {{ profile.join_date|date:"M Y" }}<li>
             </span>
             {% if profile.user == user %}
                 <a class="edit-icon btn btn-md mt-2 mb-1 float-right" href="{% url 'profile' %}" title="update profile info">
-                <i class="fa fa-edit"></i>
+                    <i class="fa fa-edit"></i>
                 </a>
             {% endif %}
         </ul>
