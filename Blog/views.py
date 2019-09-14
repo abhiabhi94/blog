@@ -43,11 +43,15 @@ class UserPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
+        context['author'] = get_object_or_404(User,
+                                                username=self.kwargs.get('username')
+                                                ).get_full_name()
         context['profile'] = get_object_or_404(Profile,
                                                 user=get_object_or_404(
                                                     User,
                                                     username=self.kwargs.get('username')
                                                     ))
+        # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
 
 
