@@ -1,5 +1,6 @@
 {% extends "Blog/base.html" %}
 {% block content %}
+{% ifnotequal profile.user user %}
 <div class="row {{profile}} content-section mt-0">
     <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
         <img class="user-img" src="{{ profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
@@ -42,6 +43,9 @@
     </div>
 </div>
 <h3 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h3>
+{% else %}
+<h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+{% endifnotequal %}
 {% for post in posts %}
 
 <div class="media content-section">
