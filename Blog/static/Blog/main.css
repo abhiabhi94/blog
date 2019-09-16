@@ -23,6 +23,8 @@ ul {
 
 .site-header .navbar-nav .nav-link {
     color: #cbd5db;
+    margin-left: 1.25rem!important;
+    margin-right: 1.25rem!important;
 }
 
 .site-header .navbar-nav .nav-link:hover {
