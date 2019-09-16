@@ -2,19 +2,19 @@
 {% block content %}
 <div class="row {{profile}} content-section mt-0">
     <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
-        <img class="user-img" src="{{ profile.image.url }}" alt="{{author}}">
+        <img class="user-img" src="{{ profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
     </div>
     <div class="profile-info col-12 col-lg-9 col-xs-12 col-md-9 mt-1 pr-3">
         <ul class="list-unstyled ml-5 pr-3">
             <li class="user-name mt-2 account-heading">
-                {{author}}
+                {{ author.first_name }} {{ author.last_name }}
             </li>
             <h4 class="user-bio mb-2">
                 {{ profile.bio }}
             </h4>
             {% if profile.public %}
             <li class="user-email mt-2">
-                <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ user.email }}</span>
+                <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ author.email }}</span>
             </li>
             {% endif %}
             {% if profile.location %}
