@@ -27,6 +27,7 @@ class PostListView(ListView):
     queryset = Post.objects.filter(publish=True)
     ordering = ['-date_posted']
     paginate_by = 5
+        
 
 
 class UserPostListView(ListView):
@@ -62,7 +63,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    fields = ['title', 'short_des', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -71,7 +72,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    fields = ['title', 'short_des', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
