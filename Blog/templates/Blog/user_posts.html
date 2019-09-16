@@ -52,7 +52,7 @@
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
-        <p class="article-content">{{ post.content }}</p>
+        <p class="article-short-des">{{ post.short_des }}</p>
         <p class="article-tags">{{ post.tags }}</p>
     </div>
 </div>
