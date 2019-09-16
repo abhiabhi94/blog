@@ -30,6 +30,7 @@
                 <div class="navbar-nav">
                     {% if user.is_authenticated %}
                     <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                    <a class="nav-item nav-link" href="{% url 'my-posts' user %}">My Posts</a>
                     <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
                     <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
                     {% else %}
