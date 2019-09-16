@@ -50,7 +50,8 @@ a.article-title:hover {
     text-decoration: none;
 }
 
-.article-content {
+.article-content,
+.article-short-des {
     white-space: pre-line;
 }
 
