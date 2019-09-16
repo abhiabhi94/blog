@@ -9,8 +9,10 @@ from django.template.defaultfilters import slugify
 class Post(models.Model):
     title = models.CharField(max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
+    short_des = models.TextField(default='', max_length=500, blank=True)
     content = models.TextField()
-    tags = models.CharField(max_length=80, blank=True)
+    # tags = models.ManyToManyField(Tags)
+    tags = models.CharField(max_length=80, default='', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -18,7 +20,11 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-        self.tags = self.tags.lower()
+        if self.short_des:
+            pass
+        else:
+            self.short_des = ('.').join(self.content.split('.')[:5])
+        # self.tags = self.create
         # try:
         #     if(type(eval(self.tags))!=list):
         #         pass
@@ -32,6 +38,6 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('Blog:post-preview', kwargs={'slug':self.slug})
 
-# class Tags(models.Model):
-#     tags = models.CharField(max_length=80, blank=True)
+class Tags(models.Model):
+    tags = models.CharField(max_length=80, blank=True)
 
