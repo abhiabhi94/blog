@@ -19,12 +19,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from Users import views as user_views
+from Blog.views import UserPostListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('Blog.urls')),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
+    path('<str:username>/posts', UserPostListView.as_view(), name='my-posts'),
     path('login/', auth_views.LoginView.as_view(template_name='Users/login.html'),
          name='login'
          ),
