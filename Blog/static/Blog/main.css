@@ -94,8 +94,8 @@ a.article-title:hover {
 .article-tags {
     display: inline-block;
     padding: .4em .5em;
-    margin: 2px 2px 2px 0;
-    font-size: 12px;
+    margin: 0.5rem 2px 0.5rem 0;
+    font-size: 15px;
     line-height: 1;
     white-space: nowrap;
     text-decoration: none;
@@ -129,4 +129,39 @@ a.article-title:hover {
     max-height: 100%;
     max-width: 100%;
     /* vertical-align: middle; */
+}
+
+.share-icon {
+    display: inline;
+    font-size: 1.4rem!important;
+    text-shadow: 1px 1px 1px #ccc;
+}
+
+.share-icon li {
+    display: inline;
+}
+
+.fa-facebook {
+    background: #3b5998;
+    color: #fff!important;
+}
+
+.fa-twitter {
+    background: fff!important;
+    color: #00acee;
+}
+
+.fa-linkedin {
+    background: #0077b5;
+    color: #fff !important;
+}
+
+.fa-reddit {
+    background: #fff;
+    color: #ff4500 !important;
+}
+
+.fa-whatsapp {
+    background: #43d854;
+    color: #fff !important;
 }
