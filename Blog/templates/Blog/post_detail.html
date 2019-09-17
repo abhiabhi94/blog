@@ -1,5 +1,7 @@
 {% extends "Blog/base.html" %}
+{% load static %}
 {% block content %}
+{% with domain='http://staycurious.in' %}
 
 <article class="media content-section">
     <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
@@ -18,6 +20,19 @@
         </h2>
         <p class="article-content">{{ object.content }}</p>
         <p class="article-tags">{{ object.tags }}</p>
+        <ul class="list-unstyled share-icon mt-2 mb-2 float-right">
+        {% url 'Blog:post-detail' post.slug as link %}
+        {% with domain|add:link as link %}
+            <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-facebook ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-twitter ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fab fa-linkedin ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.reddit.com/submit?url={{link}}/post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-reddit ml-2 mr-2"></i></a></li>
+            {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-pinterest ml-2 mr-2"></a></li> #}
+            <li><button class="copy" onclick="Copy({{link}})"><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
+            {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
+        {% endwith %}
+        </ul>
     </div>
 </article>
+{% endwith %}
 {% endblock content %}
