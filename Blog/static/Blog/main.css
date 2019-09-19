@@ -131,6 +131,14 @@ a.article-title:hover {
     /* vertical-align: middle; */
 }
 
+#share {
+    text-align: center;
+    position: fixed;
+    top: 35%;
+    left: 2%;
+    display: inline-block;
+}
+
 .share-icon {
     display: inline;
     font-size: 1.4rem!important;
@@ -139,6 +147,16 @@ a.article-title:hover {
 
 .share-icon li {
     display: inline;
+}
+
+#share .share-icon li {
+    display: block;
+}
+
+.copy, .bookmark {
+    border: none;
+    background: #fff;
+    font-size: 1.2rem!important;
 }
 
 .fa-facebook {
@@ -165,3 +183,4 @@ a.article-title:hover {
     background: #43d854;
     color: #fff !important;
 }
+

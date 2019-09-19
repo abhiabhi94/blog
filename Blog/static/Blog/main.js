@@ -21,7 +21,7 @@ $(document).ready(function() {
         // dummy.value = 'Link copied successfully'
         // dummy.dialog();
         alert('Link copied successfully');
-        $('body').remove(dummy);
+        $(dummy).remove();
     });
     $('.bookmark').on('click', function(event) {
         console.log('Bookmark button pressed');
