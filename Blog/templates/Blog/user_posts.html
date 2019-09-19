@@ -1,6 +1,6 @@
 {% extends "Blog/base.html" %}
 {% block content %}
-{% with domain='htttp://staycurious.in' %}
+{% with domain='https://staycurious.in' %}
 {% ifnotequal profile.user user %}
 <div class="row {{profile}} content-section mt-0">
     <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
@@ -57,7 +57,7 @@
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
-        <p class="article-short-des">{{ post.short_des }}</p>
+        <p class="article-short-des">{{ post.short_des|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
         <p class="article-tags">{{ post.tags }}</p>
     </div>
 <ul class="list-unstyled share-icon mt-2 mb-2 float-right">
@@ -68,7 +68,7 @@
         <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fab fa-linkedin ml-2 mr-2"></i></a></li>
         <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-reddit ml-2 mr-2"></i></a></li>
         {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-pinterest ml-2 mr-2"></a></li> #}
-        <li><button class="copy" onclick="Copy({{link}})"><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
+        <li><button class="copy" data-text={{link}}><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
         {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
     {% endwith %}
 </div>
