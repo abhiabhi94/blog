@@ -9,7 +9,11 @@ from django.template.defaultfilters import slugify
 class Post(models.Model):
     title = models.CharField(max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
-    short_des = models.TextField(default='', max_length=500, blank=True)
+    short_des = models.TextField(help_text=('This will be displayed on the home page.'
+                                    'If you leave it blank, the first 50 words from your article will be displayed.'
+                                    'It can not be more than 50 words'),
+                                    default='', max_length=500, blank=True
+                                )
     content = models.TextField()
     # tags = models.ManyToManyField(Tags)
     tags = models.CharField(max_length=80, default='', blank=True)
@@ -23,7 +27,8 @@ class Post(models.Model):
         if self.short_des:
             pass
         else:
-            self.short_des = ('.').join(self.content.split('.')[:5])
+            # self.short_des = ('.').join(self.content.split('.')[:5])
+            self.short_des = self.content[:300]
         # self.tags = self.create
         # try:
         #     if(type(eval(self.tags))!=list):

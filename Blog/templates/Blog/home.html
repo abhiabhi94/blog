@@ -1,6 +1,6 @@
 {% extends "Blog/base.html" %}
 {% block content %}
-{% with domain='http://staycurious.in' %}
+{% with domain='https://staycurious.in' %}
 {% for post in posts %}
 <article class="media content-section">
     <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
@@ -10,7 +10,7 @@
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
-        <p class="article-short-des">{{ post.short_des }}</p>
+        <p class="article-short-des">{{ post.short_des|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
         {% for tag in post.tags|make_list %}
             <p class="article-tags">{{ tag }}</p>
         {% endfor %}
@@ -23,8 +23,10 @@
         <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{post.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fab fa-linkedin ml-2 mr-2"></i></a></li>
         <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{post.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-reddit ml-2 mr-2"></i></a></li>
         {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{post.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-pinterest ml-2 mr-2"></a></li> #}
-        <li><button class="copy" onclick="Copy({{link}})"><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
+        {% comment %} <p class="link" style="display:none">{{link}}</p> {% endcomment %}
+        <li><button class="copy" data-text={{link}}><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
         {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
+        <li><button class="bookmark" data-post={{post.slug}}><i class="far fa-bookmark ml-2 mr-2"></i></button></li>
     {% endwith %}
     </ul>
 </article>
