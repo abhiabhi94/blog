@@ -12,6 +12,8 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 def home(request):
@@ -116,3 +118,26 @@ def preview(request, slug):
         messages.warning(request, 'Only posts written by you can be previewed')
         return redirect('Blog:home')
     return render(request, 'Blog/post_preview.html', {'post':post})
+
+@login_required
+def bookmark_post(request):
+    if request.method == 'POST' and request.is_ajax():
+        data = {'message':'', 'status':1}
+        print('POST request made')
+        slug = json.loads(request.body.decode('utf-8'))['data']
+        pk = Post.objects.get(slug=slug).id
+        b_post = Profile.objects.filter(user=request.user, bookmarked_posts=pk)
+        # print(b_post) 
+        if not b_post:
+            request.user.profile.bookmarked_posts.add(pk)
+            data['message'] = 'Post bookmarked'
+            data['status'] = 0
+            # messages.success(request, 'Post bookmarked')
+        else:
+            data['message'] = 'Post already bookmarked'
+            # messages.warning(request, 'Post already bookmarked')
+        # print (data)
+        return JsonResponse(data)
+
+    else:
+        return redirect('Blog:home')
