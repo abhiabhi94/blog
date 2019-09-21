@@ -149,6 +149,10 @@ a.article-title:hover {
     text-shadow: 1px 1px 1px #ccc;
 }
 
+.share-icon a:hover {
+    opacity: 0.55;
+}
+
 .share-icon li {
     display: inline;
 }
