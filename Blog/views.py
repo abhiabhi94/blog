@@ -134,7 +134,8 @@ def bookmark_post(request):
             data['status'] = 0
             # messages.success(request, 'Post bookmarked')
         else:
-            data['message'] = 'Post already bookmarked'
+            request.user.profile.bookmarked_posts.remove(pk)
+            data['message'] = 'Post removed from bookmarks'
             # messages.warning(request, 'Post already bookmarked')
         # print (data)
         return JsonResponse(data)
