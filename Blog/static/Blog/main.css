@@ -135,6 +135,14 @@ a.article-title:hover {
     font-size: 0.9rem;
 }
 
+#share {
+    text-align: center;
+    position: fixed;
+    top: 35%;
+    left: 2%;
+    display: inline-block;
+}
+
 .share-icon {
     display: inline;
     font-size: 1.4rem!important;
@@ -149,6 +157,16 @@ a.article-title:hover {
 .bookmark {
     background-color: #fff;
     border: none;
+}
+
+#share .share-icon li {
+    display: block;
+}
+
+.copy,
+.bookmark {
+    border: none;
+    background: #fff;
     font-size: 1.2rem!important;
 }
 
