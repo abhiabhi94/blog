@@ -24,9 +24,9 @@
         <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{post.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-reddit ml-2 mr-2"></i></a></li>
         {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{post.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fab fa-pinterest ml-2 mr-2"></a></li> #}
         {% comment %} <p class="link" style="display:none">{{link}}</p> {% endcomment %}
-        <li><button class="copy" data-text={{link}}><i class="far fa-clipboard ml-2 mr-2"></i></button></li>
+        <li><button class="btn copy" data-text={{link}}><i class="far fa-clipboard" title="Copy link"></i></button></li>
         {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
-        <li><button class="bookmark" data-post={{post.slug}}><i class="far fa-bookmark ml-2 mr-2"></i></button></li>
+        <li><button class="btn bookmark" data-post={{post.slug}}><i class="far fa-bookmark" title="Bookmark to read later"></i></button></li>
     {% endwith %}
     </ul>
 </article>
