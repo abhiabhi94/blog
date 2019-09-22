@@ -54,7 +54,6 @@ function sendAjax(link, data) {
                 createResponse(state, msg);
             } catch (TypeError) {
                 top.location.href = '/login';
-                alert('fuck you krishna');
             }
         },
     });
@@ -70,7 +69,7 @@ function createResponse(status, msg) {
     response.append(temp);
     var time = 2000;
     fixToTop(temp);
-    temp.fadeIn(time)
+    temp.fadeIn(time);
     temp.fadeOut(2 * time);
     setTimeout(function() {
         temp.remove();
@@ -78,10 +77,9 @@ function createResponse(status, msg) {
 }
 
 function fixToTop(div) {
-    var isfixed = div.css('position') == 'fixed'
+    var isfixed = div.css('position') == 'fixed';
     if (div.scrollTop() > 200 && !isfixed)
-        div.css({ 'position': 'fixed', 'top': '0px' })
+        div.css({ 'position': 'fixed', 'top': '0px' });
     if (div.scrollTop < 200 && isfixed)
-        div.css({ 'position': 'static', 'top': '0px' })
-
+        div.css({ 'position': 'static', 'top': '0px' });
 }
