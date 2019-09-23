@@ -9,6 +9,7 @@ from .views import (about,
                     PostUpdateView,
                     PostDeleteView,
                     UserPostListView,
+                    TaggedPostListView,
                     preview,
                     bookmark_post,
                     UserPostBookmark,
@@ -27,6 +28,7 @@ urlpatterns = [
     path('post/<slug:slug>/', PostDetailView.as_view(), name='post-detail'),
     path('post/<slug:slug>/update', PostUpdateView.as_view(), name='post-update'),
     path('post/<slug:slug>/delete', PostDeleteView.as_view(), name='post-delete'),
+    path('post/tag/<str:tag>', TaggedPostListView.as_view(), name='tagged'),
     path('post/bookmark', bookmark_post, name='bookmark-post'),
     ]
 

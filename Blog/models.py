@@ -24,6 +24,7 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
+        self.tags = self.tags.lower()
         if self.short_des:
             pass
         else:
@@ -42,6 +43,9 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('Blog:post-preview', kwargs={'slug':self.slug})
+
+    def get_tags_list(self):
+        return self.tags.split()
 
 class Tags(models.Model):
     tags = models.CharField(max_length=80, blank=True)
