@@ -35,7 +35,7 @@ function sendAjax(link, data) {
         type: 'POST',
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
         url: link,
-        contentType: 'application/json, text/html',
+        contentType: 'application/json',
         // dataType: 'json',
         data: JSON.stringify({ 'data': data }),
         error: function(jqXhr, textStatus, errorMessage) {
