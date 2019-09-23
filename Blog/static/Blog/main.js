@@ -24,17 +24,18 @@ $(document).ready(function() {
     $('.bookmark').on('click', function(event) {
         event.preventDefault();
         var post = $(this).data('post');
-        url = 'post/bookmark';
+        url = $(this).data('url');
         sendAjax(url, post);
     });
 });
 
 function sendAjax(link, data) {
+    // console.log(link);
     $.ajax({
         type: 'POST',
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
         url: link,
-        contentType: 'application/json',
+        contentType: 'application/json, text/html',
         // dataType: 'json',
         data: JSON.stringify({ 'data': data }),
         error: function(jqXhr, textStatus, errorMessage) {
@@ -52,8 +53,10 @@ function sendAjax(link, data) {
                     var state = 'warning';
                 var msg = data.responseJSON['message'];
                 createResponse(state, msg);
-            } catch (TypeError) {
+            } catch (e) {
                 top.location.href = '/login';
+                // console.log(data);
+                // console.log(e);
             }
         },
     });

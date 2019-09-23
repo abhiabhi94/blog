@@ -27,7 +27,7 @@
         {% comment %} <p class="link" style="display:none">{{link}}</p> {% endcomment %}
         <li><a class="btn copy" data-text={{link}} title="Copy link"><i class="fa fa-clipboard"></i></a></li>
         {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
-        <li><a class="btn bookmark" data-post={{post.slug}} title="Bookmark this post"><i class="fa fa-bookmark"></i></a></li>
+        <li><a class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Bookmark this post"><i class="fa fa-bookmark"></i></a></li>
     {% endwith %}
     </ul>
 </article>
