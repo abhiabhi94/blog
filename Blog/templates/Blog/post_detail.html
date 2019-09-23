@@ -3,35 +3,41 @@
 {% block content %}
 {% with domain='https://staycurious.in' %}
 <div id="share">
-<ul class="list-unstyled share-icon mt-2 mb-2 float-right">
-    {% url 'Blog:post-detail' post.slug as link %}
-    {% with domain|add:link as link %}
-        <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fa fa-linkedin ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-reddit ml-2 mr-2"></i></a></li>
-        {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-pinterest ml-2 mr-2"></a></li> #}
-        <li><a class="copy" data-text={{link}}><i class="fa fa-clipboard ml-2 mr-2"></i></a></li>
-        {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
-    {% endwith %}
-</ul>
+    <ul class="list-unstyled share-icon mt-2 mb-2 float-right">
+        {% url 'Blog:post-detail' post.slug as link %}
+        {% with domain|add:link as link %}
+            <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fa fa-linkedin ml-2 mr-2"></i></a></li>
+            <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-reddit ml-2 mr-2"></i></a></li>
+            {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-pinterest ml-2 mr-2"></a></li> #}
+            <li><a class="copy" data-text={{link}}><i class="fa fa-clipboard ml-2 mr-2"></i></a></li>
+            {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
+            <li><a class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Bookmark this post"><i class="fa fa-bookmark"></i></a></li>
+        {% endwith %}
+    </ul>
 </div>
 
-<article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+<article id="post-detail" class="content-section">
     <div class="media-body">
         <div class="article-metadata">
-            <a class="mr-2" href="{% url 'Blog:user-posts' object.author.username %}">{{ object.author }}</a>
-            <small class="text-muted">{{ object.date_posted|date:"j M Y" }}</small>
-            {% if object.author == user %}
-                <div>
-                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'Blog:post-update' object.slug %}">Update</a>
-                    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'Blog:post-delete' object.slug %}">Delete</a>
+            {% comment %} <div class="article-img"> {% endcomment %}
+                <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+            {% comment %} </div> {% endcomment %}
+            <div class="article-info">
+                <a class="mr-2" href="{% url 'Blog:user-posts' object.author.username %}">{{ object.author }}</a>
+                <small class="text-muted">{{ object.date_posted|date:"j M Y" }}</small>
+                {% if object.author == user %}
+                    <div style="float:right">
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'Blog:post-update' object.slug %}">Update</a>
+                        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'Blog:post-delete' object.slug %}">Delete</a>
+                    </div>
+                {% endif %}
+                <div class="article-title">
+                    <h2>{{ object.title }}</a></h2>
                 </div>
-            {% endif %}
+            </div>
         </div>
-        <h2 class="article-title">{{ object.title }}</a>
-        </h2>
         <p class="article-content">{{ object.content }}</p>
         {% for tag in object.tags %}
         <a href="{% url 'Blog:tagged' tag%}"><p class="article-tags">{{ tag }}</p></a>
