@@ -6,6 +6,7 @@ from django.views.generic import (ListView,
                                     DeleteView
                                     )
 from .models import Post
+from django.contrib.auth.models import User
 from Users.models import Profile
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -42,6 +43,7 @@ class UserPostListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
+        # print(Post.objects.filter(author=user).order_by('-date_posted'))
         return Post.objects.filter(author=user).order_by('-date_posted')
 
     def get_context_data(self, **kwargs):
@@ -49,15 +51,27 @@ class UserPostListView(ListView):
         context['author'] = get_object_or_404(User,
                                                 username=self.kwargs.get('username')
                                                 )
-        context['profile'] = get_object_or_404(Profile,
-                                                user=get_object_or_404(
-                                                    User,
-                                                    username=self.kwargs.get('username')
-                                                    ))
+        # context['profile'] = get_object_or_404(Profile,
+        #                                         user=get_object_or_404(
+        #                                             User,
+        #                                             username=self.kwargs.get('username')
+        #                                             ))
+        context['profile'] = context['author'].profile
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
 
+class UserPostBookmark(LoginRequiredMixin, ListView):
+    model=User
+    context_object_name = 'posts'
+    template_name = 'Blog/user_bookmarks.html'
+    paginated_by = 5
 
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        # print(dir(user.profile.bookmarked_posts.values_list()))
+        # print(user.profile.bookmarked_posts.all())
+        return user.profile.bookmarked_posts.all()
 
 class PostDetailView(DetailView):
     queryset = Post.objects.filter(publish=True)
