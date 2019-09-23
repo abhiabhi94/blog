@@ -27,8 +27,8 @@
         <div class="container">
             <a class="navbar-brand mr-4" href="{% url 'Blog:home' %}">Blog</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-      </button>
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="{% url 'Blog:home' %}">Home</a>
@@ -37,10 +37,20 @@
                 <!-- Navbar Right Side -->
                 <div class="navbar-nav">
                     {% if user.is_authenticated %}
-                    <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-                    <a class="nav-item nav-link" href="{% url 'my-posts' user %}">My Posts</a>
-                    <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
-                    <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
+                    <div id="dropdown" class="dropdown">
+                        {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
+                        <img src={{user.profile.image.url}} class="user-image ml-2">
+                        <i class="fa fa-caret-down"></i>
+                        <div class="dropdown-content">
+                            <p class="ml-3">Signed in as <strong>{{user.username}}</strong><p>
+                            <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
+                            <a class="nav-item nav-link" href="{% url 'my-posts' user %}">My Posts</a>
+                            <a class="nav-item nav-link" href="#">My Bookmarks</a>
+                            <a class="nav-item nav-link" href="#">My Drafts</a>
+                            <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </div>
+                    </div>
                     {% else %}
                     <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
                     <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
