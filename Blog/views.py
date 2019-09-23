@@ -61,7 +61,11 @@ class UserPostListView(ListView):
 
 class PostDetailView(DetailView):
     queryset = Post.objects.filter(publish=True)
-
+    # context_object_name = 'object'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'].tags = context['object'].tags.split()
+        return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -142,3 +146,23 @@ def bookmark_post(request):
 
     else:
         return redirect('Blog:home')
+
+
+# def tagged_post(request, tag):
+#     result = Post.objects.filter(string__contains=tag)
+#     return render(request, 'Blog/about.html', {'title':'About'})
+
+class TaggedPostListView(ListView):
+    # model = Post
+    template_name = 'Blog/tagged_post.html'   # <app>/<model>_<viewtype>.html
+    context_object_name = 'posts'
+    # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
+    def get_queryset(self):
+        return Post.objects.filter(tags__contains=self.kwargs.get('tag')).order_by('-date_posted')
+    
+    ordering = ['-date_posted']
+    paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context    

@@ -33,7 +33,9 @@
         <h2 class="article-title">{{ object.title }}</a>
         </h2>
         <p class="article-content">{{ object.content }}</p>
-        <p class="article-tags">{{ object.tags }}</p>
+        {% for tag in object.tags %}
+        <a href="{% url 'Blog:tagged' tag%}"><p class="article-tags">{{ tag }}</p></a>
+        {% endfor %}
     </div>
    
 </article>
