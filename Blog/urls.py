@@ -11,6 +11,7 @@ from .views import (about,
                     UserPostListView,
                     preview,
                     bookmark_post,
+                    UserPostBookmark,
                     )
 
 app_name = 'Blog'
@@ -18,6 +19,8 @@ app_name = 'Blog'
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),  
     path('user/<str:username>', UserPostListView.as_view(), name='user-posts'),
+    path('user/<str:username>/bookmark', UserPostBookmark.as_view(), name='user-bookmarks'),
+    path('<str:username>/posts', UserPostListView.as_view(), name='my-posts'),
     path('about', about, name='about'),
     path('post/new/', PostCreateView.as_view(), name='post-create'),
     path('post/preview/<slug:slug>', preview, name='post-preview'),
