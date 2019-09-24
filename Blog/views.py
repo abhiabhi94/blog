@@ -27,10 +27,17 @@ class PostListView(ListView):
     # model = Post
     template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    queryset = Post.objects.filter(publish=True)
-    ordering = ['-date_posted']
     paginate_by = 5
-        
+
+    def get_queryset(self):
+        return Post.objects.filter(publish=True).order_by('-date_posted')
+    
+    def get_context_data(self, **kwargs):
+        context = super(PostListView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['profile'] = self.request.user.profile
+            # context['bookmarks'] = [post.id for post in self.request.user.profile.bookmarked_posts.all()]
+        return context
 
 
 class UserPostListView(ListView):
