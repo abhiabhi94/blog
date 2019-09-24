@@ -47,6 +47,6 @@ class Post(models.Model):
     def get_tags_list(self):
         return self.tags.split()
 
-class Tags(models.Model):
-    tags = models.CharField(max_length=80, blank=True)
+# class Tags(models.Model):
+#     tags = models.CharField(max_length=80, blank=True)
 
