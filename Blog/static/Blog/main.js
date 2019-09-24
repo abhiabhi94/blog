@@ -1,4 +1,13 @@
-$(document).ready(function() {
+$(document).ready(function(event) {
+    // $('.dropdown').on('click', function(event) {
+    //         console.log('Yipee!');
+    //         $('.dropdown-content').css('display', 'block');
+    //         // $('dropdown').dropdown('toggle');
+    //     });
+    //     // return false;);
+    //     // $('.dropdown').on('mouseout', function(event) {
+    //     //     $('.dropdown-content').css('display', 'none');
+    //     // });
     $('.copy').on('click', function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
@@ -22,9 +31,23 @@ $(document).ready(function() {
         createResponse('info', 'Link Copied Successfully');
     });
     $('.bookmark').on('click', function(event) {
+        var parent = event.currentTarget;
         event.preventDefault();
+        console.log(event.currentTarget);
         var post = $(this).data('post');
         url = $(this).data('url');
+        if (parent.id === 'unbookmark') {
+            // console.log('Removing');
+            parent.children[0].style.color = 'darkgrey';
+            parent.id = 'bookmark';
+            parent.title = 'Bookmark this post';
+        } else {
+            // console.log('Bookmarking');
+            parent.children[0].style.color = 'steelblue';
+            parent.id = 'unbookmark';
+            parent.title = 'Remove bookmark';
+        }
+        // $('#unbookmark').css('color', 'white');
         sendAjax(url, post);
     });
 });
@@ -47,10 +70,11 @@ function sendAjax(link, data) {
         complete: function(data) {
             try {
                 // console.log(data.responseJSON['message']);
-                if (data.responseJSON['status'] === 0)
+                if (data.responseJSON['status'] === 0) {
                     var state = 'success';
-                else
+                } else {
                     var state = 'warning';
+                }
                 var msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
@@ -76,7 +100,7 @@ function createResponse(status, msg) {
     temp.fadeOut(2 * time);
     setTimeout(function() {
         temp.remove();
-    }, 2 * time + 1000);
+    }, 2 * time + 10);
 }
 
 function fixToTop(div) {
