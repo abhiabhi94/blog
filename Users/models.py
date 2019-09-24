@@ -17,6 +17,9 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username} Profile'
     
+    def get_bookmarked_posts(self):
+        return [post.id for post in self.bookmarked_posts.all()]
+    
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
