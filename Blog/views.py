@@ -179,7 +179,7 @@ def bookmark_post(request):
 
 class TaggedPostListView(ListView):
     # model = Post
-    template_name = 'Blog/tagged_post.html'   # <app>/<model>_<viewtype>.html
+    template_name = 'Blog/post_tagged.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
     def get_queryset(self):
