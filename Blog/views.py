@@ -71,11 +71,11 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-    #     # user = get_object_or_404(User, username=self.kwargs.get('username'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
     #     # print(dir(user.profile.bookmarked_posts.values_list()))
     #     # print(user.profile.bookmarked_posts.all())
     #     print(self.request.user.profile)
-        return self.request.user.profile.bookmarked_posts.all()
+        return user.profile.bookmarked_posts.all()
     
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
