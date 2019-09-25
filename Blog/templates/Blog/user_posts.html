@@ -46,10 +46,10 @@
     {% include "post_list.html" %}
     {% include "paginate.html" %}
 {% else %}
-<h4 class="mt-5">There are no posts here.
+<h5 class="mt-5">There are no posts here.
     {% if author == user %}
     Try writing some <a class="" href="{% url 'Blog:post-create' %}">Posts</a>
     {% endif %}
-</h4>
+</h5>
 {% endif %}
 {% endblock content %}
