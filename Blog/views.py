@@ -17,11 +17,11 @@ from django.http import JsonResponse
 import json
 
 # Create your views here.
-def home(request):
-    context = {
-        'posts':Post.objects.filter(publish=True)
-    }
-    return render(request, 'Blog/home.html',context)
+# def home(request):
+#     context = {
+#         'posts':Post.objects.filter(publish=True)
+#     }
+#     return render(request, 'Blog/home.html',context)
 
 class PostListView(ListView):
     # model = Post
@@ -58,11 +58,6 @@ class UserPostListView(ListView):
         context['author'] = get_object_or_404(User,
                                                 username=self.kwargs.get('username')
                                                 )
-        # context['profile'] = get_object_or_404(Profile,
-        #                                         user=get_object_or_404(
-        #                                             User,
-        #                                             username=self.kwargs.get('username')
-        #                                             ))
         context['profile'] = context['author'].profile
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
@@ -72,13 +67,20 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     context_object_name = 'posts'
     template_name = 'Blog/user_bookmarks.html'
     paginate_by = 5
+    # queryset = User.objects.get_bookmarked_posts
 
 
     def get_queryset(self):
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        # print(dir(user.profile.bookmarked_posts.values_list()))
-        # print(user.profile.bookmarked_posts.all())
-        return user.profile.bookmarked_posts.all()
+    #     # user = get_object_or_404(User, username=self.kwargs.get('username'))
+    #     # print(dir(user.profile.bookmarked_posts.values_list()))
+    #     # print(user.profile.bookmarked_posts.all())
+    #     print(self.request.user.profile)
+        return self.request.user.profile.bookmarked_posts.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super(ListView, self).get_context_data(**kwargs)
+        context['profile'] = self.request.user.profile
+        return context
 
 class PostDetailView(DetailView):
     queryset = Post.objects.filter(publish=True)
@@ -86,6 +88,8 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['object'].tags = context['object'].tags.split()
+        if self.request.user.is_authenticated:
+            context['profile'] = self.request.user.profile
         return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
