@@ -13,7 +13,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 import json
 
 # Create your views here.
@@ -72,10 +72,13 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
+        if user == self.request.user:
     #     # print(dir(user.profile.bookmarked_posts.values_list()))
     #     # print(user.profile.bookmarked_posts.all())
     #     print(self.request.user.profile)
-        return user.profile.bookmarked_posts.all()
+            return user.profile.bookmarked_posts.all()
+        ### Return HTTP Error: "You should be logged in as the user" ###
+        raise Http404("You should be signed in as bkjha to view this page")
     
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -183,11 +186,15 @@ class TaggedPostListView(ListView):
     context_object_name = 'posts'
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
     def get_queryset(self):
-        return Post.objects.filter(tags__contains=self.kwargs.get('tag')).order_by('-date_posted')
+        post_list = Post.objects.filter(
+            tags__contains=self.kwargs.get('tag')).order_by('-date_posted')
+        if post_list:
+            return post_list
+        raise Http404('Tag not present')
     
     ordering = ['-date_posted']
     paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        return context    
+        return context   
