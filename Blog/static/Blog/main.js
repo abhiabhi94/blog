@@ -33,7 +33,7 @@ $(document).ready(function(event) {
     $('.bookmark').on('click', function(event) {
         var parent = event.currentTarget;
         event.preventDefault();
-        console.log(event.currentTarget);
+        // console.log(event.currentTarget);
         var post = $(this).data('post');
         url = $(this).data('url');
         if (parent.id === 'unbookmark') {
