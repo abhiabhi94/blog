@@ -2,7 +2,6 @@
 {% block content %}
 {% if page_obj.paginator.count %}
 <h3 class="mb-3">Total Bookmarked Posts ({{ page_obj.paginator.count }})</h3>
-{% comment %} {% for post in posts  %}{% with post.short_des as None %}{% endwith %}{% endfor %} {% endcomment %}
 {% include "post_list.html" %}
 {% include "paginate.html" %}
 {% else %}

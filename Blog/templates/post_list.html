@@ -8,9 +8,7 @@
         </div>
         <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
         <p class="article-short-des">{{ post.short_des|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
-        {% for tag in post.get_tags_list %}
-        <a href="{% url 'Blog:tagged' tag%}"><p class="article-tags">{{ tag }}</p></a>
-        {% endfor %}
+        {% include "post_tags.html" %}
     </div>
 {% include "share.html" %}
 </div>
