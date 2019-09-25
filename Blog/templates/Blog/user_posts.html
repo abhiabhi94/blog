@@ -1,92 +1,55 @@
 {% extends "Blog/base.html" %}
 {% block content %}
-{% with domain='https://staycurious.in' %}
-{% ifnotequal profile.user user %}
-<div class="row {{profile}} content-section mt-0">
-    <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
-        <img class="user-img" src="{{ profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
-    </div>
-    <div class="profile-info col-12 col-lg-9 col-xs-12 col-md-9 mt-1 pr-3">
-        <ul class="list-unstyled ml-5 pr-3">
-            <li class="user-name mt-2 account-heading">
-                {{ author.first_name }} {{ author.last_name }}
-            </li>
-            <h4 class="user-bio mb-2">
-                {{ profile.bio }}
-            </h4>
-            {% if profile.public %}
-            <li class="user-email mt-2">
-                <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ author.email }}</span>
-            </li>
-            {% endif %}
-            {% if profile.location %}
-            <li class="user-location mt-2">
-                <span><i class="fa fa-map-marker-alt fa-fw mr-2"></i>{{ profile.location }}</span>
-            </li>
-            {% endif %}
-            {% if profile.website %}
-            <li class="user-website mt-2">
-                <span>
-                    <i class="fa fa-external-link-alt fa-fw mr-2"></i><a href="{{profile.website}}" target="_blank">{{ profile.website }}</a>
-                </span>
-            </li>
-            {% endif %}
-            <li class="user-join-date mt-2">
-                <span>
-                <i class="fa fa-history fa-fw mr-2"></i>Joined {{ profile.join_date|date:"M Y" }}<li>
-            </span>
-            {% if profile.user == user %}
-                <a class="edit-icon btn btn-md mt-2 mb-1 float-right" href="{% url 'profile' %}" title="update profile info">
-                    <i class="fa fa-edit"></i>
-                </a>
-            {% endif %}
-        </ul>
-    </div>
-</div>
-<h3 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h3>
-{% else %}
-<h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-{% endifnotequal %}
-{% for post in posts %}
-
-<div class="media content-section">
-    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-    <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}">{{ author }}</a>
-            <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
+{% if page_obj.paginator.count %}
+    <div class="row {{profile}} content-section mt-0">
+        <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
+            <img class="user-img" src="{{ author.profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
         </div>
-        <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
-        <p class="article-short-des">{{ post.short_des|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
-        <p class="article-tags">{{ post.tags }}</p>
+        <div class="profile-info col-12 col-lg-9 col-xs-12 col-md-9 mt-1 pr-3">
+            <ul class="list-unstyled ml-5 pr-3">
+                <li class="user-name mt-2 account-heading">
+                    {{ author.first_name }} {{ author.last_name }}
+                </li>
+                <h4 class="user-bio mb-2">
+                    {{ author.profile.bio }}
+                </h4>
+                {% if author.profile.public %}
+                <li class="user-email mt-2">
+                    <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ author.email }}</span>
+                </li>
+                {% endif %}
+                {% if author.profile.location %}
+                <li class="user-location mt-2">
+                    <span><i class="fa fa-map-marker fa-fw mr-2"></i>{{ author.profile.location }}</span>
+                </li>
+                {% endif %}
+                {% if author.profile.website %}
+                <li class="user-website mt-2">
+                    <span>
+                        <i class="fa fa-external-link fa-fw mr-2"></i><a href="{{author.profile.website}}" target="_blank">{{ author.profile.website }}</a>
+                    </span>
+                </li>
+                {% endif %}
+                <li class="user-join-date mt-2">
+                    <span>
+                    <i class="fa fa-history fa-fw mr-2"></i>Joined {{ author.profile.join_date|date:"M Y" }}<li>
+                </span>
+                {% if author == user %}
+                    <a class="edit-icon btn btn-md mt-2 mb-1 float-right" href="{% url 'profile' %}" title="update profile info">
+                        <i class="fa fa-edit" style="font-size:1.5rem"></i>
+                    </a>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-<ul class="list-unstyled share-icon mt-2 mb-2 float-right">
-    {% url 'Blog:post-detail' post.slug as link %}
-    {% with domain|add:link as link %}
-        <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fa fa-linkedin ml-2 mr-2"></i></a></li>
-        <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-reddit ml-2 mr-2"></i></a></li>
-        {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-pinterest ml-2 mr-2"></a></li> #}
-        <li><a class="copy" data-text={{link}} title="Copy link"><i class="fa fa-clipboard ml-2 mr-2"></i></a></li>
-        {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
-        {% if post.id in profile.get_bookmarked_posts %}
-        <li><a id="unbookmark" class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Remove from bookmark"><i class="fa fa-bookmark" style="color:steelblue"></i></a></li>
-        {% else %}
-        <li><a id="bookmark" class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Bookmark this post"><i class="fa fa-bookmark" style="color:darkgrey"></i></a></li>
-        {% endif %}
-    {% endwith %}
-</div>
-{% endfor %}
-{% if is_paginated %} 
-    {% if page_obj.has_previous %}
-    <a class="btn btn-outline-info ml-3 mb-4" href="?page=1">First</a>
-    <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a> {% endif %} {% for num in page_obj.paginator.page_range %} {% if page_obj.number == num %}
-    <a class="btn btn-info ml-3 mb-4" href="?page={{num}}">{{num}}</a> {% elif num > obj.page_obj.number|add:'-3' and num > obj.page_obj.number|add:'3' %}
-    <a class="btn btn-outline-info ml-3 mb-4" href="?page={{num}}">{{num}}</a> {% endif %} {% endfor %} {% if page_obj.has_next %}
-    <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-    <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+    {% include "post_list.html" %}
+    {% include "paginate.html" %}
+{% else %}
+<h4 class="mt-5">There are no posts here.
+    {% if author == user %}
+    Try writing some <a class="" href="{% url 'Blog:post-create' %}">Posts</a>
     {% endif %}
+</h4>
 {% endif %}
-{% endwith %}
 {% endblock content %}

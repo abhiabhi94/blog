@@ -1,25 +1,8 @@
 {% extends "Blog/base.html" %}
 {% load static %}
 {% block content %}
-{% with domain='https://staycurious.in' %}
 <div id="share">
-    <ul class="list-unstyled share-icon mt-2 mb-2 float-right">
-        {% url 'Blog:post-detail' post.slug as link %}
-        {% with domain|add:link as link %}
-            <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
-            <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>
-            <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fa fa-linkedin ml-2 mr-2"></i></a></li>
-            <li><a href="http://www.reddit.com/submit?url={{link}}post-to-reddit-via-url&titile={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-reddit ml-2 mr-2"></i></a></li>
-            {# <li><a href="http://www.pinterest.com/pin/create/link/u={{link|urlencode:''}}&description={{object.title|urlencode}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-pinterest ml-2 mr-2"></a></li> #}
-            <li><a class="copy" data-text={{link}}><i class="fa fa-clipboard ml-2 mr-2"></i></a></li>
-            {# <li><button class="copy" onclick="C opy({{link}})"><img class="ml-2 mr-2" src="{% static 'img/copy.png' %}" alt="Copy to clipboard" style="width:40px"></button></li> #}
-            {% if post.id in profile.get_bookmarked_posts %}
-            <li><a id="unbookmark" class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Remove from bookmark"><i class="fa fa-bookmark" style="color:steelblue"></i></a></li>
-            {% else %}
-            <li><a id="bookmark" class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Bookmark this post"><i class="fa fa-bookmark" style="color:darkgrey"></i></a></li>
-            {% endif %}
-        {% endwith %}
-    </ul>
+    {% include "share.html" %}
 </div>
 
 <article id="post-detail" class="content-section">
@@ -49,5 +32,4 @@
     </div>
    
 </article>
-{% endwith %}
 {% endblock content %}
