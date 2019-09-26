@@ -3,18 +3,24 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django_markup.fields import MarkupField
 # from django.contrib.messages import messages
 
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
-    short_des = models.TextField(help_text=('This will be displayed on the home page.'
+    short_des = MarkupField(help_text=('This will be displayed on the home page.'
                                     'If you leave it blank, the first 50 words from your article will be displayed.'
                                     'It can not be more than 50 words'),
-                                    default='', max_length=500, blank=True
-                                )
-    content = models.TextField()
+                            default='markdown',
+                            max_length=500,
+                            blank=True,
+                            )
+    # content = models.TextField()
+    content = MarkupField(help_text=('This field supports all markup formatting'),
+                        default='markdown',
+                        )
     # tags = models.ManyToManyField(Tags)
     tags = models.CharField(help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)

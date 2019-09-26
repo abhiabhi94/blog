@@ -7,7 +7,8 @@
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
-        <p class="article-short-des">{{ post.short_des|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
+        {{post.short_des}}
+        <p class="article-short-des">{{ post.short_des_rendered|truncatewords_html:'50' }}&nbsp<span><a href="{% url 'Blog:post-detail' post.slug %}">Read more</a></p>
         {% include "post_tags.html" %}
     </div>
 {% include "share.html" %}

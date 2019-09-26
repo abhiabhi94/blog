@@ -1,5 +1,6 @@
 {% extends "Blog/base.html" %}
 {% load static %}
+{% load markup_tags %}
 {% block content %}
 <div id="share">
     {% include "share.html" %}
@@ -21,7 +22,7 @@
                     </div>
                 {% endif %}
                 <div class="article-title">
-                    <h2>{{ object.title }}</a></h2>
+                    <h2>{{ object.title|apply_markup:object.markup }}</a></h2>
                 </div>
             </div>
         </div>
