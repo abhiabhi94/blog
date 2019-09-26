@@ -11,6 +11,7 @@ class UrlHit(models.Model):
         return str(self.url)
 
     def increase(self):
+        print("increased by 1", self.hits, self.url)
         self.hits += 1
         self.save()
 
