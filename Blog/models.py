@@ -3,23 +3,25 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-from django_markup.fields import MarkupField
+from markupfield.fields import MarkupField
 # from django.contrib.messages import messages
 
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
-    short_des = MarkupField(help_text=('This will be displayed on the home page.'
-                                    'If you leave it blank, the first 50 words from your article will be displayed.'
-                                    'It can not be more than 50 words'),
-                            default='markdown',
-                            max_length=500,
-                            blank=True,
-                            )
+    # short_des = models.CharField(help_text=('This will be displayed on the home page.'
+    #                                 'If you leave it blank, the first 50 words from your article will be displayed.'
+    #                                 'It can not be more than 50 words'),
+    #                             default='',
+    #                             max_length=500,
+    #                             blank=True,
+    #                         # default_markup_type='markdown',
+    #                         )
     # content = models.TextField()
     content = MarkupField(help_text=('This field supports all markup formatting'),
-                        default='markdown',
+                        default='',
+                        default_markup_type='markdown',
                         )
     # tags = models.ManyToManyField(Tags)
     tags = models.CharField(help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
@@ -31,11 +33,11 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         self.tags = self.tags.lower()
-        if self.short_des:
-            pass
-        else:
-            # self.short_des = ('.').join(self.content.split('.')[:5])
-            self.short_des = self.content[:300]
+        # if self.short_des:
+        #     pass
+        # else:
+        #     # self.short_des = ('.').join(self.content.split('.')[:5])
+        #     self.short_des = self._content_rendered[:300]
         # self.tags = self.create
         # try:
         #     if(type(eval(self.tags))!=list):
