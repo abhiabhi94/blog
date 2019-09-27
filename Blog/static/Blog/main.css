@@ -78,13 +78,6 @@ a.dropdown-toggle {
     font-weight: 700;
 }
 
-
-/* .dropdown:hover .dropdown-menu, */
-
-.dropdown:focus .dropdown-menu {
-    display: block;
-}
-
 .content-section {
     background: #ffffff;
     padding: 10px 20px;

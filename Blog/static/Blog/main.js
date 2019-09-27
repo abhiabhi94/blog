@@ -1,13 +1,8 @@
 $(document).ready(function(event) {
-    // $('.dropdown').on('click', function(event) {
-    //         console.log('Yipee!');
-    //         $('.dropdown-content').css('display', 'block');
-    //         // $('dropdown').dropdown('toggle');
-    //     });
-    //     // return false;);
-    //     // $('.dropdown').on('mouseout', function(event) {
-    //     //     $('.dropdown-content').css('display', 'none');
-    //     // });
+    $('.dropdown').on('click focus', function(event) {
+        $('.dropdown-menu').toggleClass('visible');
+        $('.dropdown').find('.dropdown-toggle').css('outline', 'none');
+    });
     $('.copy').on('click', function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
