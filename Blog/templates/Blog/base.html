@@ -39,10 +39,10 @@
                     {% if user.is_authenticated %}
                     <div id="dropdown" class="dropdown">
                         {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                        <img src={{user.profile.image.url}} class="user-image ml-2">
-                        <i class="fa fa-caret-down"></i>
-                        <div class="dropdown-content">
-                            <p class="ml-3">Signed in as <strong>{{user.username}}</strong><p>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src={{user.profile.image.url}} class="user-image ml-2"><span class="caret"></span></a>
+                        {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
+                        <div class="dropdown-menu">
+                            <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
                             <a class="nav-item nav-link" href="{% url 'profile' %}">Edit Profile</a>
                             <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
                             <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>
