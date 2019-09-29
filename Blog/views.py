@@ -187,7 +187,7 @@ class TaggedPostListView(ListView):
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
     def get_queryset(self):
         post_list = Post.objects.filter(
-            tags__contains=self.kwargs.get('tag')).order_by('-date_posted')
+            tags__contains=self.kwargs.get('tag'), publish=True).order_by('-date_posted')
         if post_list:
             return post_list
         raise Http404('Tag not present')

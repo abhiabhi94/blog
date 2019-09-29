@@ -62,9 +62,9 @@ class Post(models.Model):
     @property
     def hit_count(self):
         url, created = UrlHit.objects.get_or_create(url=self.get_post_detail_url())
-        print("absolute url: ", self.get_absolute_url())
-        print("in blog model url: ", url.url)
-        print("in blog model hits: ", url.hits)
+        # print("absolute url: ", self.get_absolute_url())
+        # print("in blog model url: ", url.url)
+        # print("in blog model hits: ", url.hits)
         return url.hits
 # class Tags(models.Model):
 #     tags = models.CharField(max_length=80, blank=True)

@@ -1,1 +1,6 @@
-{% include "Blog/home.html" %}
+{% extends "Blog/base.html" %}
+{% block content %}
+<h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+{% include "post_list.html" %}
+{% include "paginate.html" %}
+{% endblock content %}

@@ -14,6 +14,7 @@
             <div class="article-info">
                 <a class="mr-2" href="{% url 'Blog:user-posts' object.author.username %}">{{ object.author }}</a>
                 <small class="text-muted">{{ object.date_posted|date:"j M Y" }}</small>
+                <small class="text-muted">views: {{object.hit_count}}</small>
                 {% if object.author == user %}
                     <div style="float:right">
                         <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'Blog:post-update' object.slug %}">Update</a>
@@ -28,6 +29,5 @@
         <p class="article-content">{{ object.content }}</p>
         {% include "post_tags.html" %}
     </div>
-   <h1>{{object.hit_count}}</h1>
 </article>
 {% endblock content %}
