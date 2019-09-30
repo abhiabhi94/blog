@@ -18,18 +18,23 @@ def hit_count(function):
         url, url_created = UrlHit.objects.get_or_create(url=request.path)
 
         if url_created:
+<<<<<<< HEAD
             # print("*********inside url_create: ")
+=======
+>>>>>>> refs/remotes/origin/master
             track, created = HitCount.objects.get_or_create(url_hit=url, ip=ip, session=s_key)
             if created:
                 url.increase()
                 request.session[ip] = ip
                 request.session[request.path] = request.path
         else:
+<<<<<<< HEAD
             # print("*********inside else: ")
+=======
+>>>>>>> refs/remotes/origin/master
             if ip and request.path not in request.session:
                 track, created = HitCount.objects.get_or_create(url_hit=url, ip=ip, session=s_key)
                 if created:
-                    print(">>>>>>>>>>>>>>>inside created: ")
                     url.increase()
                     request.session[ip] = ip
                     request.session[request.path] = request.path
