@@ -125,12 +125,20 @@ function fixToTop(div) {
 }
 
 function loadSidebar() {
+    latestPosts($('#latest-posts').data('url'));
     topTags($('#top-tags').data('url'));
     allTags($('#all-tags').data('url'));
 }
 
+function latestPosts(url) {
+    $.post(url, { 'num': 5, 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
+        // console.log("top tags:", data);
+        $('#latest-posts').append(data);
+    });
+}
+
 function topTags(url) {
-    $.post(url, { 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
+    $.post(url, { 'num': 5, 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
         // console.log("top tags:", data);
         $('#top-tags').append(data);
     });

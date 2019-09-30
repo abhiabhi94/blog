@@ -200,10 +200,18 @@ class TaggedPostListView(ListView):
         context = super().get_context_data(**kwargs)
         return context   
 
-# def get_post_list(request):
-#     num = request.GET.get('num')
-#     print(Post.objects.filter(publish=True).orderby('-date_posted')[num])
-#     return None
+def get_latest_posts(request):
+    if request.method == 'POST':
+        template_name = 'post_title.html'
+        try:
+            num = int(request.POST.get('num'))
+        except ValueError:
+            raise Http404("Wrong Request Format")
+        posts = Post.objects.filter(publish=True).order_by('-date_posted')[:num]
+        print(posts)
+        return render(request, template_name, {'posts': posts})
+    
+    raise Http404('Wrong Request format')
 
 def get_tags(request):
     if request.method == 'POST':
@@ -222,13 +230,13 @@ def get_top_tags(request):
     if request.method == 'POST':
         template_name = 'tags.html'
         try:
-            top_n = int(request.GET.get('num'))
+            num = int(request.POST.get('num'))
         except ValueError:
             raise Http404("Wrong Request Format")
         tags_list = [post.get_tags_list()
                     for post in Post.objects.filter(publish=True)]
         top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common(top_n)
+            [item for outer in tags_list for item in outer]).most_common(num)
         top_tags_list = {tag: count for (tag, count) in top_tags}
         return render(request, template_name, {'tags': top_tags_list, 'html':True})
 

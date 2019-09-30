@@ -78,6 +78,12 @@ a.dropdown-toggle {
     font-weight: 700;
 }
 
+#latest-posts,
+#top-tags,
+#all-tags {
+    background-color: #f8f8ff;
+}
+
 .content-section {
     background: #ffffff;
     padding: 10px 20px;

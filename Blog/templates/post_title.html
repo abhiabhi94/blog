@@ -1,0 +1,5 @@
+<ul class="list-unstyled">
+    {% for post in posts  %}
+    <li class="mt-2"><a href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></li>
+    {% endfor %}
+</ul>
