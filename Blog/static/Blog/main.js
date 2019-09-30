@@ -125,20 +125,20 @@ function fixToTop(div) {
 }
 
 function loadSidebar() {
-    topTags($('#top-tags').data('url'))
-    allTags($('#all-tags').data('url'))
+    topTags($('#top-tags').data('url'));
+    allTags($('#all-tags').data('url'));
 }
 
 function topTags(url) {
     $.get(url, function(data) {
-        console.log("get request:", data)
-        $('#top-tags').append(data)
+        // console.log("top tags:", data);
+        $('#top-tags').append(data);
     });
 }
 
 function allTags(url) {
     $.get(url, function(data) {
-        console.log("get request:", data)
-        $('#all-tags').append(data)
+        // console.log("all tags:", data);
+        $('#all-tags').append(data);
     });
 }

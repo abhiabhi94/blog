@@ -21,7 +21,7 @@ urlpatterns = [
     path('post/<slug:slug>/delete', views.PostDeleteView.as_view(), name='post-delete'),
     path('post/tag/<str:tag>', views.TaggedPostListView.as_view(), name='tagged'),
     path('post/bookmark', views.bookmark_post, name='bookmark-post'),
-    path('post/tag', views.get_tags, name='all-tags'),
-    path('post/top-tags', views.get_top_tags, name='top-tags'),
+    path('post/tag/', views.get_tags, name='all-tags'), 
+    path('post/top-tags/', views.get_top_tags, name='top-tags'),
     ]
 

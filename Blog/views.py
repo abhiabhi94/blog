@@ -206,17 +206,17 @@ class TaggedPostListView(ListView):
 #     return None
 
 def get_tags(request):
-        template_name = 'tags.html'
-        tags_list = [post.get_tags_list()
-                    for post in Post.objects.filter(publish=True)]
-        tags_list = list({item for outer in tags_list for item in outer})
-        # top_tags_list =  {tag:count for (tag, count) in top_tags}
+    template_name = 'tags.html'
+    tags_list = [post.get_tags_list()
+                for post in Post.objects.filter(publish=True)]
+    tags_list = list({item for outer in tags_list for item in outer})
+    # top_tags_list =  {tag:count for (tag, count) in top_tags}
 
-        # print(top_tags_list)
-        if request.method == 'GET':
-            return render(request, template_name, {'tags': tags_list})
-        elif request.method == 'POST':
-            return JsonResponse(tags_list)
+    # print(top_tags_list)
+    if request.method == 'GET':
+        return render(request, template_name, {'tags': tags_list})
+    elif request.method == 'POST':
+        return JsonResponse(tags_list)
 
 def get_top_tags(request):
     template_name = 'tags.html'
