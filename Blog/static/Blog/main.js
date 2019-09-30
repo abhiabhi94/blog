@@ -1,4 +1,5 @@
 $(document).ready(function(event) {
+    loadSidebar();
     $('.dropdown').on('click focus', function(event) {
         $('.dropdown-menu').toggleClass('visible');
         $('.dropdown').find('.dropdown-toggle').css('outline', 'none');
@@ -43,17 +44,33 @@ $(document).ready(function(event) {
             parent.title = 'Remove bookmark';
         }
         // $('#unbookmark').css('color', 'white');
-        sendAjax(url, post);
+        sendAjax(url, { data: post });
     });
 });
-
-function sendAjax(link, data) {
-    // console.log(link);
+// send an object specifying parameter required for AJAX request
+function sendAjax(link, args) {
+    // var responseType = 'application/'
+    if (typeof args.type === "undefined") {
+        var type = 'POST'
+    } else {
+        type = args.type
+    }
+    if (typeof args.data === "undefined") {
+        var data = ''
+    } else {
+        var data = args.data;
+    }
+    if (typeof args.responseType === "undefined") {
+        var responseType = 'json'
+    } else {
+        var responseType = args.responseType;
+    }
+    console.log(type, data, responseType)
     $.ajax({
-        type: 'POST',
+        type: type,
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
         url: link,
-        contentType: 'application/json',
+        contentType: 'application/' + responseType,
         // dataType: 'json',
         data: JSON.stringify({ 'data': data }),
         error: function(jqXhr, textStatus, errorMessage) {
@@ -61,6 +78,7 @@ function sendAjax(link, data) {
         },
         success: function(data, status, xhr) {
             // console.log('status:' + status + ', data:' + data);
+            // return data;
         },
         complete: function(data) {
             try {
@@ -73,9 +91,9 @@ function sendAjax(link, data) {
                 var msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
-                top.location.href = '/login';
-                // console.log(data);
-                // console.log(e);
+                // top.location.href = '/login';
+                console.log(data);
+                console.log(e);
             }
         },
     });
@@ -104,4 +122,23 @@ function fixToTop(div) {
         div.css({ 'position': 'fixed', 'top': '0px' });
     if (div.scrollTop < 200 && isfixed)
         div.css({ 'position': 'static', 'top': '0px' });
+}
+
+function loadSidebar() {
+    topTags($('#top-tags').data('url'))
+    allTags($('#all-tags').data('url'))
+}
+
+function topTags(url) {
+    $.get(url, function(data) {
+        console.log("get request:", data)
+        $('#top-tags').append(data)
+    });
+}
+
+function allTags(url) {
+    $.get(url, function(data) {
+        console.log("get request:", data)
+        $('#all-tags').append(data)
+    });
 }
