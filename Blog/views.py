@@ -203,12 +203,12 @@ class TaggedPostListView(ListView):
 def get_latest_posts(request):
     if request.method == 'POST':
         template_name = 'post_title.html'
+        # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
-            num = int(request.POST.get('num'))
-        except ValueError:
+            num = int(json.loads(request.POST.get('data'))['num'])
+        except Exception as e:
             raise Http404("Wrong Request Format")
         posts = Post.objects.filter(publish=True).order_by('-date_posted')[:num]
-        print(posts)
         return render(request, template_name, {'posts': posts})
     
     raise Http404('Wrong Request format')
@@ -230,8 +230,8 @@ def get_top_tags(request):
     if request.method == 'POST':
         template_name = 'tags.html'
         try:
-            num = int(request.POST.get('num'))
-        except ValueError:
+            num = int(json.loads(request.POST.get('data'))['num'])
+        except Exception as e:
             raise Http404("Wrong Request Format")
         tags_list = [post.get_tags_list()
                     for post in Post.objects.filter(publish=True)]
