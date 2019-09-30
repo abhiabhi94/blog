@@ -26,7 +26,7 @@
             </div>
         </div>
         <p class="article-content">{{ object.content }}</p>
-        {% include "post_tags.html" %}
+        {% include "tags.html" with tags=object.get_tags_list %}
     </div>
    <h1>{{object.hit_count}}</h1>
 </article>

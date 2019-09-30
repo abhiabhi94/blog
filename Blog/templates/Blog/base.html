@@ -16,6 +16,18 @@
     {% comment %} <script src="https://kit.fontawesome.com/e8c126582c.js"></script> {% endcomment %}
     <script src="{% static 'Blog/main.js' %}"></script>
     <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
+    {% comment %} <script type="text/javascript">
+        $.get('{% url "Blog:top-tags" %}?num=5', function(data){
+            console.log("get request:", data)
+            $('#top-tags').append(data)
+        })
+    </script>
+    <script type="text/javascript">
+        $.get('{% url "Blog:all-tags" %}', function(data){
+            console.log("get request:", data)
+            $('#all-tags').append(data)
+        })
+    </script> {% endcomment %}
     {% if title %}
     <title>Blog - {{title}}</title>
     {% else %}
@@ -77,15 +89,16 @@
                 {% block content %}
                 {% endblock %}
             </div>
-            <div class="col-md-4">
-                <div class="content-section">
+                <div class="col-md-4 content-section">
                     <h3>Our Sidebar</h3>
                     <p class='text-muted'>You can put any information here you'd like.
                         <ul class="list-group">
                             <li class="list-group-item list-group-item-light">Latest Posts</li>
-                            <li class="list-group-item list-group-item-light">Announcements</li>
-                            <li class="list-group-item list-group-item-light">Calendars</li>
-                            <li class="list-group-item list-group-item-light">etc</li>
+                            {% comment %} <li class="list-group-item list-group-item-light">Calendars</li> {% endcomment %}
+                            <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:top-tags" %}?num=5'>Top Tags<br></li>
+                            {% comment %} <h5>Top Tags</h5> {% endcomment %}
+                            <li id="all-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>All Tags<br></li>
+                            {% comment %} <h5>All Tags</h5> {% endcomment %}
                         </ul>
                     </p>
                 </div>
