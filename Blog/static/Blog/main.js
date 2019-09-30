@@ -125,28 +125,19 @@ function fixToTop(div) {
 }
 
 function loadSidebar() {
-    latestPosts($('#latest-posts').data('url'));
-    topTags($('#top-tags').data('url'));
-    allTags($('#all-tags').data('url'));
+    var latestPosts = { id: '#latest-posts', num: 5 };
+    latestPosts.url = $(latestPosts.id).data('url');
+    sendPost(latestPosts.url, latestPosts.id, { 'num': latestPosts.num });
+    var topTagsEle = { id: '#top-tags', num: 5 };
+    topTagsEle.url = $(topTagsEle.id).data('url');
+    sendPost(topTagsEle.url, topTagsEle.id, { 'num': topTagsEle.num });
+    var allTagsEle = { id: '#all-tags' };
+    allTagsEle.url = $(allTagsEle.id).data('url');
+    sendPost(allTagsEle.url, allTagsEle.id);
 }
 
-function latestPosts(url) {
-    $.post(url, { 'num': 5, 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
-        // console.log("top tags:", data);
-        $('#latest-posts').append(data);
-    });
-}
-
-function topTags(url) {
-    $.post(url, { 'num': 5, 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
-        // console.log("top tags:", data);
-        $('#top-tags').append(data);
-    });
-}
-
-function allTags(url) {
-    $.post(url, { 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
-        // console.log("all tags:", data);
-        $('#all-tags').append(data);
-    });
+function sendPost(url, responseEle, data) {
+    $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+        $(responseEle).append(response);
+    })
 }
