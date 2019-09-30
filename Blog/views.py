@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
+from collections import Counter
 import json
 
 # Create your views here.
@@ -187,7 +188,7 @@ class TaggedPostListView(ListView):
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
     def get_queryset(self):
         post_list = Post.objects.filter(
-            tags__contains=self.kwargs.get('tag')).order_by('-date_posted')
+            tags__contains=self.kwargs.get('tag'), publish=True).order_by('-date_posted')
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -198,3 +199,38 @@ class TaggedPostListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context   
+
+# def get_post_list(request):
+#     num = request.GET.get('num')
+#     print(Post.objects.filter(publish=True).orderby('-date_posted')[num])
+#     return None
+
+def get_tags(request):
+        template_name = 'tags.html'
+        tags_list = [post.get_tags_list()
+                    for post in Post.objects.filter(publish=True)]
+        tags_list = list({item for outer in tags_list for item in outer})
+        # top_tags_list =  {tag:count for (tag, count) in top_tags}
+
+        # print(top_tags_list)
+        if request.method == 'GET':
+            return render(request, template_name, {'tags': tags_list})
+        elif request.method == 'POST':
+            return JsonResponse(tags_list)
+
+def get_top_tags(request):
+    template_name = 'tags.html'
+    if request.method == 'GET':
+        try:
+            top_n = int(request.GET.get('num'))
+        except ValueError:
+            raise Http404("Wrong Request Format")
+        tags_list = [post.get_tags_list()
+                    for post in Post.objects.filter(publish=True)]
+        top_tags = Counter(
+            [item for outer in tags_list for item in outer]).most_common(top_n)
+        top_tags_list = {tag: count for (tag, count) in top_tags}
+        if request.is_ajax():
+            return render(request, template_name, {'tags': top_tags_list})
+        else:
+            return render(request, template_name, {'tags': top_tags_list, 'html':True})
