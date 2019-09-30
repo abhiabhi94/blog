@@ -206,21 +206,21 @@ class TaggedPostListView(ListView):
 #     return None
 
 def get_tags(request):
-    template_name = 'tags.html'
-    tags_list = [post.get_tags_list()
-                for post in Post.objects.filter(publish=True)]
-    tags_list = list({item for outer in tags_list for item in outer})
-    # top_tags_list =  {tag:count for (tag, count) in top_tags}
+    if request.method == 'POST':
+        template_name = 'tags.html'
+        tags_list = [post.get_tags_list()
+                    for post in Post.objects.filter(publish=True)]
+        tags_list = list({item for outer in tags_list for item in outer})
+        # top_tags_list =  {tag:count for (tag, count) in top_tags}
 
-    # print(top_tags_list)
-    if request.method == 'GET':
+        # print(top_tags_list)
         return render(request, template_name, {'tags': tags_list})
-    elif request.method == 'POST':
-        return JsonResponse(tags_list)
+        
+    raise Http404("Wrong Request Format")
 
 def get_top_tags(request):
-    template_name = 'tags.html'
-    if request.method == 'GET':
+    if request.method == 'POST':
+        template_name = 'tags.html'
         try:
             top_n = int(request.GET.get('num'))
         except ValueError:
@@ -230,7 +230,7 @@ def get_top_tags(request):
         top_tags = Counter(
             [item for outer in tags_list for item in outer]).most_common(top_n)
         top_tags_list = {tag: count for (tag, count) in top_tags}
-        if request.is_ajax():
-            return render(request, template_name, {'tags': top_tags_list})
-        else:
-            return render(request, template_name, {'tags': top_tags_list, 'html':True})
+        return render(request, template_name, {'tags': top_tags_list, 'html':True})
+
+    raise Http404("Wrong Request Format")
+        

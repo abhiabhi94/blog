@@ -130,14 +130,14 @@ function loadSidebar() {
 }
 
 function topTags(url) {
-    $.get(url, function(data) {
+    $.post(url, { 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
         // console.log("top tags:", data);
         $('#top-tags').append(data);
     });
 }
 
 function allTags(url) {
-    $.get(url, function(data) {
+    $.post(url, { 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(data) {
         // console.log("all tags:", data);
         $('#all-tags').append(data);
     });
