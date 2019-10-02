@@ -5,10 +5,11 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from markupfield.fields import MarkupField
 from Track.models import UrlHit
+from meta.models import ModelMeta
 # from django.contrib.messages import messages
 
 # Create your models here.
-class Post(models.Model):
+class Post(models.Model, ModelMeta):
     title = models.CharField(help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
     # short_des = models.CharField(help_text=('This will be displayed on the home page.'
@@ -30,6 +31,12 @@ class Post(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     publish = models.BooleanField(default=False)
+    _metadata = {
+        'description': 'title',
+        'keywords':'get_tags_list',
+        'title': 'title',
+    }
+
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

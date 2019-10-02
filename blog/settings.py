@@ -31,17 +31,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'Blog.apps.BlogConfig',
-    'Track.apps.TrackConfig',
-    'Users.apps.UsersConfig',
-    'crispy_forms',
-    'markupfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Blog.apps.BlogConfig',
+    'Track.apps.TrackConfig',
+    'Users.apps.UsersConfig',
+    'crispy_forms',
+    'markupfield',
+    'meta',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+
+META_USE_TITLE_TAG = True

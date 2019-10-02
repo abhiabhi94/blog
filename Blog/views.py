@@ -93,6 +93,7 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context['object'].tags = context['object'].tags.split()
+        context['meta'] = self.get_object().as_meta(self.request)
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
         return context
