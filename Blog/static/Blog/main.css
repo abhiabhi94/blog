@@ -250,7 +250,8 @@ a.article-title:hover {
     display: block;
 }
 
-.copy, .bookmark {
+.copy,
+.bookmark {
     border: none;
     background: #fff;
     /* font-size: 1.2rem!important; */
@@ -259,8 +260,6 @@ a.article-title:hover {
 .fa {
     padding: 0.2rem;
 }
-
-
 
 .fa-facebook {
     background: #3b5998;
@@ -289,22 +288,28 @@ a.article-title:hover {
     color: #fff !important;
 }
 
-.fa-bookmark{
-    font-size: 24px;   
+.fa-bookmark {
+    font-size: 24px;
 }
+
+
 /* for small screen devices */
-@media(max-width:600px){
+
+@media(max-width:600px) {
     #share {
         position: initial;
         top: auto;
-        left: auto; 
+        left: auto;
         display: initial;
     }
     .share-icon {
         float: none !important;
         display: inline-flex;
     }
+    .fa-bookmark {
+        margin-top: -1rem;
+    }
     #article-share-container {
-    flex-direction: column-reverse;
+        flex-direction: column-reverse;
     }
 }

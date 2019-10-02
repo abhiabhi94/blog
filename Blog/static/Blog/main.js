@@ -65,7 +65,7 @@ function sendAjax(link, args) {
     } else {
         var responseType = args.responseType;
     }
-    console.log(type, data, responseType)
+    // console.log(type, data, responseType, link)
     $.ajax({
         type: type,
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
@@ -91,9 +91,9 @@ function sendAjax(link, args) {
                 var msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
-                // top.location.href = '/login';
-                console.log(data);
-                console.log(e);
+                top.location.href = '/login';
+                // console.log(data);
+                // console.log(e);
             }
         },
     });

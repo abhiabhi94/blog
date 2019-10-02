@@ -157,7 +157,7 @@ def preview(request, slug):
 def bookmark_post(request):
     if request.method == 'POST' and request.is_ajax():
         data = {'message':'', 'status':1}
-        print('POST request made')
+        # print('POST request for bookmark made')
         slug = json.loads(request.body.decode('utf-8'))['data']
         pk = Post.objects.get(slug=slug).id
         b_post = Profile.objects.filter(user=request.user, bookmarked_posts=pk)
