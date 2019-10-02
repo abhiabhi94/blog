@@ -15,14 +15,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
 from collections import Counter
+from meta.views import Meta
 import json
 
-# Create your views here.
-# def home(request):
-#     context = {
-#         'posts':Post.objects.filter(publish=True)
-#     }
-#     return render(request, 'Blog/home.html',context)
+global meta_home
+meta_home = Meta(title = 'StayCurious Blog | Nurturing curiosity in every mind.',
+                description = 'Articles that encourage coding, robotics through STEM education',
+                keywords = ['robotics, coding, STEM, STEAM, education, blog, tinker, kids, StayCurious, curiousity'])
 
 class PostListView(ListView):
     # model = Post
@@ -35,10 +34,9 @@ class PostListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
-        context['meta_title'] = 'My Blog title'
+        context['meta'] = meta_home
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
-            # context['bookmarks'] = [post.id for post in self.request.user.profile.bookmarked_posts.all()]
         return context
 
 
@@ -60,6 +58,9 @@ class UserPostListView(ListView):
         context['author'] = get_object_or_404(User,
                                                 username=self.kwargs.get('username')
                                                 )
+        context['meta'] = Meta(title=f'Posts by {context["author"].get_full_name()}',
+                               description=f'Posts authored by {context["author"].get_full_name()}',
+                               keywords=meta_home.keywords)
         context['profile'] = context['author'].profile
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
@@ -80,7 +81,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     #     print(self.request.user.profile)
             return user.profile.bookmarked_posts.all()
         ### Return HTTP Error: "You should be logged in as the user" ###
-        raise Http404("You should be signed in as bkjha to view this page")
+        raise Http404("You should be signed in as %s to view this page"%(user))
     
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
@@ -200,6 +201,10 @@ class TaggedPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        tag = self.kwargs.get('tag')
+        context['meta'] = Meta(title=f'Posts tagged with {tag}',
+                               description=f'Read posts with the tag {tag} from StayCurious',
+                               keywords=meta_home.keywords + [tag])
         return context   
 
 def get_latest_posts(request):
