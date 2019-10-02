@@ -1,5 +1,6 @@
 {% with domain='https://staycurious.in' %}
-<ul class="list-unstyled share-icon mt-2 mb-2 float-right">
+<ul class="list-unstyled share-icon mt-2 mb-2">
+    <p class="text mt-0 mb-0">Share</p>
     {% url 'Blog:post-detail' post.slug as link %}
     {% with domain|add:link as link %}
         <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>

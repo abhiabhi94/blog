@@ -89,7 +89,7 @@ a.dropdown-toggle {
     padding: 10px 20px;
     border: 1px solid #dddddd;
     border-radius: 3px;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
 }
 
 .article-title {
@@ -101,8 +101,11 @@ a.article-title:hover {
     text-decoration: none;
 }
 
-.article-content,
-.article-short-des {
+.article-short-des p {
+    display: inline;
+}
+
+.article-content {
     white-space: pre-line;
 }
 

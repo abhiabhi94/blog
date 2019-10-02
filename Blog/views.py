@@ -46,14 +46,14 @@ class UserPostListView(ListView):
     # model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    queryset = Post.objects.filter(publish=True)
+    # queryset = Post.objects.filter(publish=True)
     # ordering = ['-date_posted']
     paginate_by = 5
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         # print(Post.objects.filter(author=user).order_by('-date_posted'))
-        return Post.objects.filter(author=user).order_by('-date_posted')
+        return Post.objects.filter(author=user, publish=True).order_by('-date_posted')
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
