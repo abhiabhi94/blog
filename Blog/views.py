@@ -35,6 +35,7 @@ class PostListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
+        context['meta_title'] = 'My Blog title'
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
             # context['bookmarks'] = [post.id for post in self.request.user.profile.bookmarked_posts.all()]
