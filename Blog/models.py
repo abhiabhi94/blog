@@ -1,3 +1,5 @@
+import re
+from django.utils.html import strip_tags
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -32,9 +34,9 @@ class Post(models.Model, ModelMeta):
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     publish = models.BooleanField(default=False)
     _metadata = {
-        'description': 'title',
-        'keywords':'get_tags_list',
         'title': 'title',
+        'description': 'get_short_des',
+        'keywords':'get_tags_list',
     }
 
 
@@ -59,6 +61,14 @@ class Post(models.Model, ModelMeta):
 
     def get_absolute_url(self):
         return reverse('Blog:post-preview', kwargs={'slug':self.slug})
+
+    def get_short_des(self):
+        # Remove html tags and continuous whitespaces
+        text_only = re.sub('[ \t]+', ' ', strip_tags(self._content_rendered))
+        # Remove new lines with a full stop(.)
+        text_only = text_only.replace('\n', '.')
+        # Strip single spaces in the beginning of each line
+        return text_only.replace('\n ', '\n').strip()[:120]
 
     def get_tags_list(self):
         return self.tags.split()
