@@ -1,10 +1,13 @@
 {% extends "Blog/base.html" %}
 {% load static %}
 {% block content %}
+<div id="article-share-container">
 <div id="share">
     {% include "share.html" %}
 </div>
 
+
+<div>
 <article id="post-detail" class="content-section">
     <div class="media-body">
         <div class="article-metadata">
@@ -30,4 +33,6 @@
         {% include "tags.html" with tags=object.get_tags_list %}
     </div>
 </article>
+</div>
+</div>
 {% endblock content %}

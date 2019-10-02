@@ -208,6 +208,11 @@ a.article-title:hover {
     opacity: 0.9;
 }
 
+#article-share-container {
+    display: flex;
+    flex-direction: column;
+}
+
 #share {
     text-align: center;
     position: fixed;
@@ -245,21 +250,28 @@ a.article-title:hover {
     display: block;
 }
 
-.copy,
-.bookmark {
+.copy, .bookmark {
     border: none;
     background: #fff;
-    font-size: 1.2rem!important;
+    /* font-size: 1.2rem!important; */
 }
+
+.fa {
+    padding: 0.2rem;
+}
+
+
 
 .fa-facebook {
     background: #3b5998;
     color: #fff!important;
+    padding-right: 0.3rem;
+    padding-left: 0.3rem;
 }
 
 .fa-twitter {
-    background: fff!important;
-    color: #00acee;
+    background: #00acee;
+    color: white;
 }
 
 .fa-linkedin {
@@ -275,4 +287,24 @@ a.article-title:hover {
 .fa-whatsapp {
     background: #43d854;
     color: #fff !important;
+}
+
+.fa-bookmark{
+    font-size: 24px;   
+}
+/* for small screen devices */
+@media(max-width:600px){
+    #share {
+        position: initial;
+        top: auto;
+        left: auto; 
+        display: initial;
+    }
+    .share-icon {
+        float: none !important;
+        display: inline-flex;
+    }
+    #article-share-container {
+    flex-direction: column-reverse;
+    }
 }
