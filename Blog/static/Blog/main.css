@@ -208,6 +208,12 @@ a.article-title:hover {
     opacity: 0.9;
 }
 
+#post-options {
+    position: absolute;
+    left: 75%;
+    top: 5%;
+}
+
 #article-share-container {
     display: flex;
     flex-direction: column;
@@ -223,7 +229,7 @@ a.article-title:hover {
 
 .share-icon {
     display: inline;
-    font-size: 1.4rem!important;
+    font-size: 16px!important;
     text-shadow: 1px 1px 1px #ccc;
 }
 
@@ -246,8 +252,15 @@ a.article-title:hover {
     border: none;
 }
 
+#bookmark,
+#unbookmark {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
 #share .share-icon li {
     display: block;
+    margin: 0.5rem auto;
 }
 
 .copy,
@@ -289,13 +302,16 @@ a.article-title:hover {
 }
 
 .fa-bookmark {
-    font-size: 24px;
+    /* font-size: 24px; */
 }
 
 
 /* for small screen devices */
 
 @media(max-width:600px) {
+    #post-options {
+        left: 55%;
+    }
     #share {
         position: initial;
         top: auto;
@@ -306,9 +322,12 @@ a.article-title:hover {
         float: none !important;
         display: inline-flex;
     }
-    .fa-bookmark {
-        margin-top: -1rem;
+    #share .share-icon li {
+        margin: 0;
     }
+    /* .fa-bookmark {
+        margin-top: -1rem;
+    } */
     #article-share-container {
         flex-direction: column-reverse;
     }
