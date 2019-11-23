@@ -220,7 +220,7 @@ def get_latest_posts(request):
     
     raise Http404('Wrong Request format')
 
-def get_tags(request):
+def get_tags(request): # used in right sidebar
     if request.method == 'POST':
         template_name = 'tags.html'
         tags_list = [post.get_tags_list()
@@ -233,7 +233,7 @@ def get_tags(request):
         
     raise Http404("Wrong Request Format")
 
-def get_top_tags(request):
+def get_top_tags(request): #used in right side bar above all tags.
     if request.method == 'POST':
         template_name = 'tags.html'
         try:
@@ -249,3 +249,25 @@ def get_top_tags(request):
 
     raise Http404("Wrong Request Format")
         
+class CategoryPostListView(ListView):
+    # model = Post
+    template_name = 'Blog/post_categorized.html'   # <app>/<model>_<viewtype>.html
+    context_object_name = 'categories'
+    # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
+    def get_queryset(self):
+        post_list = Post.objects.filter(
+            tags__contains=self.kwargs.get('category'), publish=True).order_by('-date_posted')
+        if post_list:
+            return post_list
+        raise Http404('Category not present')
+    
+    ordering = ['-date_posted']
+    paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.kwargs.get('category')
+        context['meta'] = Meta(title=f'Posts tagged with {category}',
+                               description=f'Read posts with the category {category} from HackAdda',
+                               keywords=meta_home.keywords + [category])
+        return context

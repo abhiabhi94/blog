@@ -24,5 +24,6 @@ urlpatterns = [
     path('post/tag/', views.get_tags, name='all-tags'), 
     path('post/top-tags/', views.get_top_tags, name='top-tags'),
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
+    path('post/category/<str:category>', views.CategoryPostListView.as_view(), name='category')
     ]
 

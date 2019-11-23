@@ -8,9 +8,27 @@ from django.template.defaultfilters import slugify
 from markupfield.fields import MarkupField
 from Track.models import UrlHit
 from meta.models import ModelMeta
+from PIL import Image
+
 # from django.contrib.messages import messages
 
 # Create your models here.
+class Category(models.Model, ModelMeta):
+    category_name = models.CharField(help_text=("Name of the category. ex-Science, Technology"), max_length=50, unique=True)
+    category_info = models.TextField(help_text=("Description of the category."), max_length=5000, unique=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
+    # author of this category. 
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL) 
+    _metadata = {
+        'Category': 'category_name',
+        'Info': 'category_info'
+    }
+    def __str__(self): # helps in showing name in foreign key field instead of category object
+        return self.category_name
+
+
+    
 class Post(models.Model, ModelMeta):
     title = models.CharField(help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
@@ -32,7 +50,9 @@ class Post(models.Model, ModelMeta):
     date_posted = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     publish = models.BooleanField(default=False)
+    thumbnail = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -55,6 +75,11 @@ class Post(models.Model, ModelMeta):
         # except:
         #     self.tags = self.tags.lower().split()
         super(*args, **kwargs).save()
+        img = Image.open(self.thumbnail.path)
+        if(img.height > 350 or img.width > 350):
+            output_size = (350, 350)
+            img.thumbnail(output_size)
+            img.save(self.thumbnail.path)        
 
     def __str__(self):
         return self.title
@@ -85,4 +110,5 @@ class Post(models.Model, ModelMeta):
         return url.hits
 # class Tags(models.Model):
 #     tags = models.CharField(max_length=80, blank=True)
+
 
