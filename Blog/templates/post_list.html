@@ -1,22 +1,26 @@
-{% for post in posts %}
-<div class="media content-section">
-    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-    <div>
-        <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a>
-                <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
-                <small class="text-muted ml-4">views:{{post.hit_count}}</small>
-            </div>
-            <h4><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h4>
-            {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
-            <div class="article-short-des" style="display:inline">
-                {{ post.content|truncatewords_html:'50' }}&nbsp
-                <a style="display:inline-block" href="{% url 'Blog:post-detail' post.slug %}">Read more</a>
-            </div><br>
-            {% include "tags.html" with tags=post.get_tags_list %}
+<div class="row article-list">
+    {% for post in posts %}
+    <div class="media content-section">
+        <div class="article-thumbnail col-md-3">
+            <img src="https://picsum.photos/500/" alt="{{post.title}}" title="{{post.title}}">
         </div>
-{% comment %} {% include "share.html" %} {% endcomment %}
+        <div id="details" class="col-md-9">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a>
+                    <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
+                    <small class="text-muted ml-4">views:{{post.hit_count}}</small>
+                </div>
+                <h4><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h4>
+                {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
+                <div class="article-short-des" style="display:inline">
+                    {{ post.content|truncatewords_html:'50' }}&nbsp
+                    <a style="display:inline-block" href="{% url 'Blog:post-detail' post.slug %}">Read more</a>
+                </div><br>
+                {% include "tags.html" with tags=post.get_tags_list %}
+            </div>
+        </div>
+    {% comment %} {% include "share.html" %} {% endcomment %}
     </div>
+    {% endfor %}
 </div>
-{% endfor %}

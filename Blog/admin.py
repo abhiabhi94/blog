@@ -20,10 +20,6 @@ class TagListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        # return (
-        #     ('80s', _('in the eighties')),
-        #     ('90s', _('in the nineties')),
-        # )
         tags_list = [post.get_tags_list()
                      for post in Post.objects.filter(publish=True)]
         all_tags = tuple({(item, item) for outer in tags_list for item in outer})
@@ -35,11 +31,7 @@ class TagListFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        # Compare the requested value (either '80s' or '90s')
-        # to decide how to filter the queryset.
-        # if self.value() == '80s':
-        #     return queryset.filter()
-        print (self.value())
+        # print (self.value())
         if self.value():
             post_list = Post.objects.filter(
                 tags__contains=self.value()).order_by('-date_posted')

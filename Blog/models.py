@@ -11,8 +11,11 @@ from meta.models import ModelMeta
 # from django.contrib.messages import messages
 
 # Create your models here.
+
+
 class Post(models.Model, ModelMeta):
-    title = models.CharField(help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
+    title = models.CharField(
+        help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
     # short_des = models.CharField(help_text=('This will be displayed on the home page.'
     #                                 'If you leave it blank, the first 50 words from your article will be displayed.'
@@ -24,21 +27,22 @@ class Post(models.Model, ModelMeta):
     #                         )
     # content = models.TextField()
     content = MarkupField(help_text=('This field supports all markup formatting'),
-                        default='',
-                        default_markup_type='markdown',
-                        )
+                          default='',
+                          default_markup_type='markdown',
+                          )
     # tags = models.ManyToManyField(Tags)
-    tags = models.CharField(help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
+    tags = models.CharField(
+        help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    # test_col = models.BooleanField(default=True)
     publish = models.BooleanField(default=False)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
-        'keywords':'get_tags_list',
+        'keywords': 'get_tags_list',
     }
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -60,7 +64,7 @@ class Post(models.Model, ModelMeta):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('Blog:post-preview', kwargs={'slug':self.slug})
+        return reverse('Blog:post-preview', kwargs={'slug': self.slug})
 
     def get_short_des(self):
         # Remove html tags and continuous whitespaces
@@ -74,15 +78,15 @@ class Post(models.Model, ModelMeta):
         return self.tags.split()
 
     def get_post_detail_url(self):
-        return reverse('Blog:post-detail', kwargs={'slug':self.slug})
-    
+        return reverse('Blog:post-detail', kwargs={'slug': self.slug})
+
     @property
     def hit_count(self):
-        url, created = UrlHit.objects.get_or_create(url=self.get_post_detail_url())
+        url, created = UrlHit.objects.get_or_create(
+            url=self.get_post_detail_url())
         # print("absolute url: ", self.get_absolute_url())
         # print("in blog model url: ", url.url)
         # print("in blog model hits: ", url.hits)
         return url.hits
 # class Tags(models.Model):
 #     tags = models.CharField(max_length=80, blank=True)
-

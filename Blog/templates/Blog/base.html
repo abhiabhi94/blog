@@ -75,9 +75,9 @@
 </header>
 
 <body>
-    <main role="main" class="container">
+    <main role="main" id="main">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-9">
                 {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{message.tags}}">
@@ -90,7 +90,7 @@
                 {% block content %}
                 {% endblock %}
             </div>
-                <div id="sidebar" class="col-md-4 content-section">
+                <div id="sidebar" class="col-md-3 content-section">
                     {% comment %} <h3>Our Sidebar</h3> {% endcomment %}
                     {% comment %} <p class='text-muted'>You can put any information here you'd like. {% endcomment %}
                         <ul class="list-group">

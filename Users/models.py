@@ -4,10 +4,12 @@ from PIL import Image
 from Blog.models import Post
 # Create your models here.
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(null=True, max_length=140, blank=True)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
+    image = models.ImageField(default='default.jpg',
+                              upload_to='profile_pics', blank=True)
     public = models.BooleanField(default=False)
     website = models.CharField(null=True, blank=True, max_length=80)
     location = models.CharField(null=True, max_length=200, blank=True)
@@ -16,10 +18,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.username} Profile'
-    
+
     def get_bookmarked_posts(self):
         return [post.id for post in self.bookmarked_posts.all()]
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
