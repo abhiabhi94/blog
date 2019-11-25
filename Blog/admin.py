@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Category
 from datetime import date
 
 from django.utils.translation import gettext_lazy as _
@@ -39,11 +39,35 @@ class TagListFilter(admin.SimpleListFilter):
         else:
             return queryset.filter()
 
-class RatingAdmin(admin.ModelAdmin):
+class CategoryListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = _('category')
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'category'
+
+    def lookups(self, request, model_admin):
+        category_list = [category[0] for category in Category.objects.values_list('category_name')]
+        all_categories = tuple({(item, item) for item in category_list})
+        return all_categories
+
+    def queryset(self, request, queryset):
+        print (self.value())
+        if self.value():
+            print(">>>>>>", Post.objects.all())
+            post_list = Post.objects.filter(
+                category__category_name=self.value()).order_by('-date_posted')
+            return post_list
+        else:
+            return queryset.filter()
+
+class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('last_updated', '_content_rendered')
     tags_list = [post.get_tags_list()
                     for post in Post.objects.filter(publish=True)]
     all_tags = list({item for outer in tags_list for item in outer})
-    list_filter = ['publish', TagListFilter,]
+    list_filter = ['publish', TagListFilter, CategoryListFilter]
 
-admin.site.register(Post, RatingAdmin)
+admin.site.register(Post, PostAdmin)
+admin.site.register(Category)
