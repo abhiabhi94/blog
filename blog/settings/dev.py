@@ -10,7 +10,7 @@ try:
     ALLOWED_HOSTS = [IP_PUBLIC]
 
     print(
-        f'You may connect using: {IP_PUBLIC}, {IP_PRIVATE}, "localhost" on port {8181}')
+        f'You may connect using: {IP_PUBLIC}, {IP_PRIVATE}, localhost')
 
 except URLError:
     print('Not connected to internet, the developement server will not be accessible from outside')
