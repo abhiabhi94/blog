@@ -29,7 +29,8 @@ class Category(models.Model, ModelMeta):
         'Info': 'category_info'
     }
 
-    def __str__(self):  # helps in showing name in foreign key field instead of category object
+    def __str__(self):
+        '''helps in showing name in foreign key field instead of category object'''
         return self.category_name
 
 
