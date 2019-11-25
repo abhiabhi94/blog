@@ -3,6 +3,8 @@ from subprocess import getoutput
 import urllib.request
 from urllib.error import URLError
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 IP_PRIVATE = getoutput('hostname -I').strip()
 try:
     IP_PUBLIC = urllib.request.urlopen(
@@ -17,7 +19,6 @@ except URLError:
 
 finally:
     ALLOWED_HOSTS.append(IP_PRIVATE)
-    ALLOWED_HOSTS.append('localhost')
 
 
 DEBUG = True
