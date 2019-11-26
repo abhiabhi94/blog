@@ -126,13 +126,15 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     fields = ['title', 'content', 'tags']
-    success_url = '/blog'
+    success_url = '/blog'  # redirected path
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        messages.success(self.request, 'Post has been deleted successfully!!!')
         return super().form_valid(form)
 
     def test_func(self):
+        '''ensuring the author itself is deleting the post.'''
         post = self.get_object()
         if self.request.user == post.author:
             return True
@@ -142,8 +144,8 @@ def about(request):
     return render(request, 'Blog/about.html', {'title':'About'})
 
 @login_required
-def preview(request, slug):
-    post = Post.objects.get(slug=slug)
+def preview(request, year, month, day, slug):
+    post = Post.objects.get(date_posted__year=year, date_posted__month=month, date_posted__day=day,slug=slug)
     # print(post.author)
     if request.user == post.author :    
         if request.method == 'POST':

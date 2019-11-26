@@ -1,7 +1,8 @@
 {% with domain='https://staycurious.in' %}
 <ul class="list-unstyled share-icon mt-2 mb-2">
     <p class="text mt-0 mb-0">Share</p>
-    {% url 'Blog:post-detail' post.slug as link %}
+    {% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug as link%}
+    {% comment %} {% url 'Blog:post-detail' post.slug as link %} {% endcomment %}
     {% with domain|add:link as link %}
         <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
         <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>

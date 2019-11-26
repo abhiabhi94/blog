@@ -11,11 +11,11 @@
                     <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
                     <small class="text-muted ml-4">views:{{post.hit_count}}</small>
                 </div>
-                <h4><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title }}</a></h4>
+                <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title }}</a></h4>
                 {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
                 <div class="article-short-des" style="display:inline">
                     {{ post.content|truncatewords_html:'50' }}&nbsp
-                    <a style="display:inline-block" href="{% url 'Blog:post-detail' post.slug %}">Read more</a>
+                    <a style="display:inline-block" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Read more</a>
                 </div><br>
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>

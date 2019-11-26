@@ -15,7 +15,7 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.slug %}">Get back to edit</a>
+        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Get back to edit</a>
         <button class="btn btn-outline-info ml-2" type="submit">Submit for review</button>
     </div>
 </form>

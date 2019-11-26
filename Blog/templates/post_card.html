@@ -7,7 +7,7 @@
             <img src="https://picsum.photos/500/" alt="{{post.title}}" title="{{post.title}}">
         </div>
         <div class="col article-container">
-            <h5><a class="article-title" href="{% url 'Blog:post-detail' post.slug %}">{{ post.title|truncatewords:'50' }}</a></h5> 
+            <h5><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title|truncatewords:'50' }}</a></h5> 
             <div class="article-metadata">
                 <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a></small>
                 <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
