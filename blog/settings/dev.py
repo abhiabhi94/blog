@@ -9,7 +9,7 @@ IP_PRIVATE = getoutput('hostname -I').strip()
 try:
     IP_PUBLIC = urllib.request.urlopen(
         'https://ident.me').read().decode('utf8')
-    ALLOWED_HOSTS = [IP_PUBLIC]
+    ALLOWED_HOSTS.append(IP_PUBLIC)
 
     print(
         f'You may connect using: {IP_PUBLIC}, {IP_PRIVATE}, localhost')
@@ -22,6 +22,8 @@ finally:
 
 
 DEBUG = True
+
+print(ALLOWED_HOSTS)
 
 '''
 Change this in future for migration to mysql database
