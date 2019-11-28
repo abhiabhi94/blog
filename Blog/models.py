@@ -94,11 +94,11 @@ class Post(models.Model, ModelMeta):
 
     def get_absolute_url(self):
         return reverse('Blog:post-preview', kwargs={
-            'year': self.date_posted.year, 
-            'month': self.date_posted.month, 
-            'day':self.date_posted.day, 
+            'year': self.date_posted.year,
+            'month': self.date_posted.month,
+            'day': self.date_posted.day,
             'slug': self.slug
-            })
+        })
 
     def get_short_des(self):
         # Remove html tags and continuous whitespaces
@@ -113,11 +113,11 @@ class Post(models.Model, ModelMeta):
 
     def get_post_detail_url(self):
         return reverse('Blog:post-detail', kwargs={
-            'year': self.date_posted.year, 
-            'month': self.date_posted.month, 
-            'day':self.date_posted.day, 
+            'year': self.date_posted.year,
+            'month': self.date_posted.month,
+            'day': self.date_posted.day,
             'slug': self.slug
-            })
+        })
 
     @property
     def hit_count(self):

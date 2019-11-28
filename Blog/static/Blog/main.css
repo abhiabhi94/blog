@@ -377,6 +377,13 @@ a.article-title:hover {
     flex-direction: column;
 }
 
+.heading {
+    /* position: relative;
+    height: 2.5rem;
+    width: 10rem;
+    border-bottom: 1px solid #e3e3e3; */
+}
+
 @media(max-width:600px) {
     #post-options {
         left: 55%;
