@@ -384,6 +384,30 @@ a.article-title:hover {
     border-bottom: 1px solid #e3e3e3; */
 }
 
+.featured-articles {
+    height: 400px;
+}
+
+.featured-articles>.latest {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.featured-articles>.aside {
+    display: flex;
+    flex-direction: row;
+    height: 50%;
+}
+
+.featured-articles>.latest>.article-card>.article-thumbnail {
+    height: 80%;
+}
+
+.featured-articles>.aside>.article-card>.article-thumbnail {
+    height: 40%;
+}
+
 @media(max-width:600px) {
     #post-options {
         left: 55%;

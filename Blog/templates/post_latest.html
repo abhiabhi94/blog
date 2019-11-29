@@ -1,0 +1,13 @@
+<div class="heading">
+    <legend class="latest">Latest Posts</legend>
+</div>
+
+<div class="row latest-articles">
+
+    {% for post in posts %}
+    <div class="{{label}} article-card col-md-4 col-sm-12">
+        {% include "post_card.html" %}
+    </div>
+    {% endfor %}
+
+</div>

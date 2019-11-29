@@ -1,7 +1,8 @@
 {% extends "Blog/base.html" %}
 {% block content %}
 {% comment %} {% include "post_list.html" %} {% endcomment %}
-{% include "post_card.html" %}
+{% include "post_featured.html"%}
+{% include "post_latest.html" %}
 {% include 'post_list.html'%}
 {% include "paginate.html" %}
 {% endblock content %}
