@@ -1,31 +1,32 @@
 {% load define %}
+{% define 0 as flag %}
 <div >
     <legend class="heading">Featured</legend>
 </div>
 <div class="row featured-articles">
     {% for post in posts %}
         {% if forloop.counter < 4 %}
-                {% if forloop.counter == 1 %}
-                    {% define 8 as col %}
-                    {% define 5 as font %}
-                    {% define "latest" as label %}
-                    <div id="{{label}}">
-                {% elif 1 < forloop.counter and forloop.counter < 4 %}
-                    {% define 4 as col %}
-                    {% define 6 as font %}
-                    {% define "aside" as label %}
-                {% endif %}
-        {% comment %} {% if forloop.counter > 1 %}
-            
-        {% endif %} {% endcomment %}
-        <div class="{{label}} col-sm-12">
-            <div class="col {{label}}-featured article-card">
-                {% include "post_card.html" with font=font %}
+            {% if forloop.counter == 1 %}
+                {% define 8 as col %}
+                {% define 5 as font %}
+                {% define "latest" as label %}
+            {% elif 1 < forloop.counter and forloop.counter < 4 %}
+                {% define 4 as col %}
+                {% define 6 as font %}
+                {% define "aside" as label %}
+            {% endif %}
+            {% comment %} {% if forloop.counter > 1 and flag == 0 %}
+                <div class="{{label}}">
+            {% endif %} {% endcomment %}
+            <div class="{{label}}-featured">
+                <div class="col article-card">
+                    {% include "post_card.html" with font=font %}
+                </div>
             </div>
-        </div>
-        {% if forloop.counter == 1 %}
-            </div>
-        {% endif %}
+            {% comment %} {% if forloop.counter > 1 and flag == 0 %}
+                </div>
+                {% define 1 as flag %}
+            {% endif %} {% endcomment %}
         {% endif %}
     {% endfor %}
 

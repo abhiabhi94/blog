@@ -336,6 +336,7 @@ a.article-title:hover {
     transition: 0.3s;
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
+    height: 100%;
 }
 
 .article-card>.article-thumbnail {
@@ -386,25 +387,29 @@ a.article-title:hover {
 
 .featured-articles {
     height: 400px;
-}
-
-.featured-articles>.latest {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.featured-articles>.aside {
     display: flex;
     flex-direction: row;
-    height: 50%;
 }
 
-.featured-articles>.latest>.article-card>.article-thumbnail {
+.featured-articles>.latest-featured {
+    flex: 6 1 0;
+    /* height: 100%; */
+}
+
+.aside {
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-articles>.aside-featured {
+    flex: 1;
+}
+
+.featured-articles>.latest-featured>.article-card>.article-thumbnail {
     height: 80%;
 }
 
-.featured-articles>.aside>.article-card>.article-thumbnail {
+.featured-articles>.aside-featured>.article-card>.article-thumbnail {
     height: 40%;
 }
 
