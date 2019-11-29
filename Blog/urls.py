@@ -7,7 +7,7 @@ from Track.views import hit_count
 
 
 app_name = 'Blog'
-ymd_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slug>[-\w]+)'
+ymds_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slug>[-\w]+)'
 urlpatterns = [
     path('', views.PostListView.as_view(), name='home'),  
     path('user/<str:username>', views.UserPostListView.as_view(), name='user-posts'),
@@ -19,10 +19,10 @@ urlpatterns = [
     # path('post/<slug:slug>', hit_count(views.PostDetailView.as_view()), name='post-detail'),
     # path('post/<slug:slug>/update', views.PostUpdateView.as_view(), name='post-update'),
     # path('post/<slug:slug>/delete', views.PostDeleteView.as_view(), name='post-delete'),
-    re_path(r'post/preview/'+ymd_re+'$', views.preview, name='post-preview'),
-    re_path(r'post/'+ymd_re+'$', hit_count(views.PostDetailView.as_view()), name='post-detail'),
-    re_path(r'post/'+ymd_re+'/update$', views.PostUpdateView.as_view(), name='post-update'),
-    re_path(r'post/'+ymd_re+'/delete$', views.PostDeleteView.as_view(), name='post-delete'),
+    re_path(r'post/preview/'+ymds_re+'$', views.preview, name='post-preview'),
+    re_path(r'post/'+ymds_re+'$', hit_count(views.PostDetailView.as_view()), name='post-detail'),
+    re_path(r'post/'+ymds_re+'/update$', views.PostUpdateView.as_view(), name='post-update'),
+    re_path(r'post/'+ymds_re+'/delete$', views.PostDeleteView.as_view(), name='post-delete'),
     path('post/tag/<str:tag>', views.TaggedPostListView.as_view(), name='tagged'),
     path('post/tag/<str:tag>', views.TaggedPostListView.as_view(), name='tagged'),
     path('post/bookmark/', views.bookmark_post, name='bookmark-post'),

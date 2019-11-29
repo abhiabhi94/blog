@@ -110,8 +110,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'tags']
-
+    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
@@ -145,7 +144,7 @@ def about(request):
 
 @login_required
 def preview(request, year, month, day, slug):
-    post = Post.objects.get(date_posted__year=year, date_posted__month=month, date_posted__day=day,slug=slug)
+    post = Post.objects.get(date_posted__year=year, date_posted__month=month, date_posted__day=day, slug=slug)
     # print(post.author)
     if request.user == post.author :    
         if request.method == 'POST':
@@ -258,7 +257,7 @@ class CategoryPostListView(ListView):
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
     def get_queryset(self):
         post_list = Post.objects.filter(
-            tags__contains=self.kwargs.get('category'), publish=True).order_by('-date_posted')
+            category__category_name=self.kwargs.get('category'), publish=True).order_by('-date_posted')
         if post_list:
             return post_list
         raise Http404('Category not present')
