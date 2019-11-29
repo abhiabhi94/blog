@@ -152,12 +152,7 @@ def about(request):
 
 @login_required
 def preview(request, year, month, day, slug):
-<<<<<<< HEAD
     post = Post.objects.get(date_posted__year=year, date_posted__month=month, date_posted__day=day, slug=slug)
-=======
-    post = Post.objects.get(
-        date_posted__year=year, date_posted__month=month, date_posted__day=day, slug=slug)
->>>>>>> refs/remotes/origin/master
     # print(post.author)
     if request.user == post.author:
         if request.method == 'POST':

@@ -9,16 +9,23 @@
                     {% define 8 as col %}
                     {% define 5 as font %}
                     {% define "latest" as label %}
+                    <div id="{{label}}">
                 {% elif 1 < forloop.counter and forloop.counter < 4 %}
                     {% define 4 as col %}
                     {% define 6 as font %}
                     {% define "aside" as label %}
                 {% endif %}
-        <div class="{{label}} col-md-{{col}} col-sm-12">
+        {% comment %} {% if forloop.counter > 1 %}
+            
+        {% endif %} {% endcomment %}
+        <div class="{{label}} col-sm-12">
             <div class="col {{label}}-featured article-card">
                 {% include "post_card.html" with font=font %}
             </div>
         </div>
+        {% if forloop.counter == 1 %}
+            </div>
+        {% endif %}
         {% endif %}
     {% endfor %}
 
