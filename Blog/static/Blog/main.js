@@ -1,5 +1,6 @@
 $(document).ready(function(event) {
     loadSidebar();
+    addClassToAsideFeatured();
     $('.dropdown').on('click focus', function(event) {
         $('.dropdown-menu').toggleClass('visible');
         $('.dropdown').find('.dropdown-toggle').css('outline', 'none');
@@ -8,12 +9,12 @@ $(document).ready(function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
         if ($(this).data) {
-            var text = $(this).data('text');
+            let text = $(this).data('text');
         } else {
-            var text = window.location.href;
+            let text = window.location.href;
         }
         // console.log('link:', text);
-        var dummy = document.createElement('input');
+        let dummy = document.createElement('input');
         $('body').append(dummy);
         dummy.value = text;
         dummy.select();
@@ -27,10 +28,10 @@ $(document).ready(function(event) {
         createResponse('info', 'Link Copied Successfully');
     });
     $('.bookmark').on('click', function(event) {
-        var parent = event.currentTarget;
+        let parent = event.currentTarget;
         event.preventDefault();
         // console.log(event.currentTarget);
-        var post = $(this).data('post');
+        let post = $(this).data('post');
         url = $(this).data('url');
         if (parent.id === 'unbookmark') {
             // console.log('Removing');
@@ -49,21 +50,21 @@ $(document).ready(function(event) {
 });
 // send an object specifying parameter required for AJAX request
 function sendAjax(link, args) {
-    // var responseType = 'application/'
+    // let responseType = 'application/'
     if (typeof args.type === "undefined") {
-        var type = 'POST'
+        let type = 'POST'
     } else {
         type = args.type
     }
     if (typeof args.data === "undefined") {
-        var data = ''
+        let data = ''
     } else {
-        var data = args.data;
+        let data = args.data;
     }
     if (typeof args.responseType === "undefined") {
-        var responseType = 'json'
+        let responseType = 'json'
     } else {
-        var responseType = args.responseType;
+        let responseType = args.responseType;
     }
     // console.log(type, data, responseType, link)
     $.ajax({
@@ -84,11 +85,11 @@ function sendAjax(link, args) {
             try {
                 // console.log(data.responseJSON['message']);
                 if (data.responseJSON['status'] === 0) {
-                    var state = 'success';
+                    let state = 'success';
                 } else {
-                    var state = 'warning';
+                    let state = 'warning';
                 }
-                var msg = data.responseJSON['message'];
+                let msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
                 top.location.href = '/login';
@@ -101,13 +102,13 @@ function sendAjax(link, args) {
 
 function createResponse(status, msg) {
     let cls = 'alert alert-' + status;
-    var response = $('#response');
-    var temp = $('<div/>')
+    let response = $('#response');
+    let temp = $('<div/>')
         .addClass(cls)
         .html('<div>' + msg + '</div>');
     // console.log(temp);
     response.append(temp);
-    var time = 2000;
+    let time = 2000;
     fixToTop(temp);
     temp.fadeIn(time);
     temp.fadeOut(2 * time);
@@ -117,7 +118,7 @@ function createResponse(status, msg) {
 }
 
 function fixToTop(div) {
-    var isfixed = div.css('position') == 'fixed';
+    let isfixed = div.css('position') == 'fixed';
     if (div.scrollTop() > 200 && !isfixed)
         div.css({ 'position': 'fixed', 'top': '0px' });
     if (div.scrollTop < 200 && isfixed)
@@ -125,13 +126,13 @@ function fixToTop(div) {
 }
 
 function loadSidebar() {
-    var latestPosts = { id: '#latest-posts', num: 5 };
+    let latestPosts = { id: '#latest-posts', num: 5 };
     latestPosts.url = $(latestPosts.id).data('url');
     sendPost(latestPosts.url, latestPosts.id, { 'num': latestPosts.num });
-    var topTagsEle = { id: '#top-tags', num: 5 };
+    let topTagsEle = { id: '#top-tags', num: 5 };
     topTagsEle.url = $(topTagsEle.id).data('url');
     sendPost(topTagsEle.url, topTagsEle.id, { 'num': topTagsEle.num });
-    var allTagsEle = { id: '#all-tags' };
+    let allTagsEle = { id: '#all-tags' };
     allTagsEle.url = $(allTagsEle.id).data('url');
     sendPost(allTagsEle.url, allTagsEle.id);
 }
@@ -140,4 +141,10 @@ function sendPost(url, responseEle, data) {
     $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
         $(responseEle).append(response);
     })
+}
+
+function addClassToAsideFeatured() {
+    let div = document.createElement('div');
+    div.className = 'aside';
+    $('.aside-featured').wrapAll(div);
 }
