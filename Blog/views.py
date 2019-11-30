@@ -123,7 +123,11 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
 
     def form_valid(self, form):
-        print("------->", 'form_valid')
+        # print("------->", 'form_valid')
+        '''
+        Checks whether the user logged in is the one updating the post.
+        It then reverses the published state so that admin's approval is required before publishing the updated post.
+        '''
         post = self.get_object()
         if self.request.user == post.author:
             messages.success(
@@ -137,9 +141,8 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def test_func(self):
-        print("*************", 'test_func')
+        # print("*************", 'test_func')
         post = self.get_object()
-        print("user:>>>", self.request.user, "author:>>>", post.author)
         if self.request.user == post.author:
             return True
         return False
