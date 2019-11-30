@@ -111,7 +111,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -121,37 +121,48 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+
     def form_valid(self, form):
         print("------->", 'form_valid')
+        post = self.get_object()
+        if self.request.user == post.author:
+            messages.success(
+                self.request, 'Your post has been submitted for approval')
+        else:
+            messages.warning(
+                self.request, 'Only posts written by you can be updated')
+            return redirect('Blog:home')
         form.instance.author = self.request.user
+        form.instance.publish = False
         return super().form_valid(form)
 
     def test_func(self):
         print("*************", 'test_func')
         post = self.get_object()
+        print("user:>>>", self.request.user, "author:>>>", post.author)
         if self.request.user == post.author:
             return True
         return False
 
-    def post(self, *args, **kwargs):
-        post = self.get_object()
-        post.publish = False
-        if self.request.user == post.author:
-            # print ('inside post request')
-            messages.success(
-                self.request, 'Your post has been submitted for approval')
-            return redirect('Blog:home')
-        else:
-            messages.warning(self.request, 'Only posts written by you can be previewed')
-            return redirect('Blog:home')        
+    # def post(self, *args, **kwargs):
+    #     post = self.get_object()
+    #     if self.request.user == post.author:
+    #         print('inside post request')
+    #         messages.success(
+    #             self.request, 'Your post has been submitted for approval')
+    #         return redirect('Blog:home')
+    #     else:
+    #         messages.warning(
+    #             self.request, 'Only posts written by you can be updated')
+    #         return redirect('Blog:home')
+
 
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    fields = fields = ['title', 'content', 'thumbnail', 'tags', 'category']
     success_url = '/blog'  # redirected path
     success_url = reverse_lazy('Blog:home')
     success_message = "Post %(title)s was removed successfully"
-
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -164,11 +175,11 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
         if self.request.user == post.author:
             return True
         return False
-        
+
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         messages.success(self.request, self.success_message % obj.__dict__)
-        return super().delete(request, *args, **kwargs)        
+        return super().delete(request, *args, **kwargs)
 
 
 def about(request):
@@ -315,21 +326,22 @@ class CategoryPostListView(ListView):
                                keywords=meta_home.keywords + [category])
         return context
 
+
 def get_timewise_list(request, *args, **kwargs):
 
     template_name = 'Blog/time_list.html'
     paginate_by = 5
 
     if request.method == 'GET':
-        dummy = datetime.now() # to use formatting on template layer.
-        kwargs = {k:int(v) if v is not None else v for k,v in kwargs.items()}
+        dummy = datetime.now()  # to use formatting on template layer.
+        kwargs = {k: int(v) if v is not None else v for k, v in kwargs.items()}
         dummy.replace(year=kwargs['year'])
-        flag_day, flag_month = [1,1]
+        flag_day, flag_month = [1, 1]
         if kwargs['day'] is None:
             if kwargs['month'] is None:
-                flag_day, flag_month = [0,0] # day, month    
+                flag_day, flag_month = [0, 0]  # day, month
             else:
-                flag_day, flag_month = [0,1] # day, month
+                flag_day, flag_month = [0, 1]  # day, month
                 dummy.replace(month=kwargs['month'])
         else:
             dummy = datetime(**kwargs)
@@ -341,19 +353,21 @@ def get_timewise_list(request, *args, **kwargs):
         if flag_month:
             args_dict['date_posted__month'] = kwargs['month']
 
-        posts = Post.objects.filter(publish=True, **args_dict).order_by('-date_posted')        
-        
+        posts = Post.objects.filter(
+            publish=True, **args_dict).order_by('-date_posted')
+
         kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         return render(request, template_name, kwargs)
 
-    raise Http404("Wrong Request Format")    
+    raise Http404("Wrong Request Format")
+
 
 def paginate_util(request, objects, paginate_by, kwargs):
-    paginator = Paginator(objects, paginate_by) # Show 25 contacts per page
+    paginator = Paginator(objects, paginate_by)  # Show 25 contacts per page
     page = request.GET.get('page')
-    objects = paginator.get_page(page)        
-    if paginator.num_pages>1: # no point in paginating if there is only one page.
+    objects = paginator.get_page(page)
+    if paginator.num_pages > 1:  # no point in paginating if there is only one page.
         kwargs['is_paginated'] = True
     kwargs['page_obj'] = objects
-    return objects    
+    return objects
