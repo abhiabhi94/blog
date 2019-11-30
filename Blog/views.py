@@ -13,8 +13,10 @@ from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
+from django.urls import reverse_lazy
 from collections import Counter
 from meta.views import Meta
 import json
@@ -130,10 +132,13 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     fields = ['title', 'content', 'tags']
     success_url = '/blog'  # redirected path
+    success_url = reverse_lazy('Blog:home')
+    success_message = "Post %(title)s was removed successfully"
+
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -146,6 +151,11 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == post.author:
             return True
         return False
+        
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, self.success_message % obj.__dict__)
+        return super().delete(request, *args, **kwargs)        
 
 
 def about(request):
@@ -305,32 +315,32 @@ def get_timewise_list(request, *args, **kwargs):
         if kwargs['day'] is None:
             if kwargs['month'] is None:
                 flag_day, flag_month = [0,0] # day, month    
-                posts = Post.objects.filter(publish=True, date_posted__year=kwargs['year']).order_by('-date_posted')      
             else:
                 flag_day, flag_month = [0,1] # day, month
                 dummy.replace(month=kwargs['month'])
-                posts = Post.objects.filter(publish=True, date_posted__year=kwargs['year'], 
-                                    date_posted__month=kwargs['month']).order_by('-date_posted')
         else:
             dummy = datetime(**kwargs)
-            posts = Post.objects.filter(publish=True, 
-                        date_posted__year=kwargs['year'], 
-                        date_posted__month=kwargs['month'],
-                        date_posted__day=kwargs['day']).order_by('-date_posted')
-        kwargs['date'] = dummy
-        kwargs['flag_day'] = flag_day
-        kwargs['flag_month'] = flag_month
-        paginator = Paginator(posts, paginate_by) # Show 25 contacts per page
-        print("page: >>>>>>>>>>>>>", request.GET.get('page'))
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)        
-        kwargs['posts'] = posts
-        # if len(posts)>=paginate_by: 
-        #     print("hiasflkajs")
-        kwargs['is_paginated'] = True
-        print("kwargs: ", kwargs)
-        kwargs['page_obj'] = posts
+
+        args_dict = {}
+        args_dict['date_posted__year'] = kwargs['year']
+        if flag_day:
+            args_dict['date_posted__day'] = kwargs['day']
+        if flag_month:
+            args_dict['date_posted__month'] = kwargs['month']
+
+        posts = Post.objects.filter(publish=True, **args_dict).order_by('-date_posted')        
+        
+        kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
+        kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         return render(request, template_name, kwargs)
 
     raise Http404("Wrong Request Format")    
 
+def paginate_util(request, objects, paginate_by, kwargs):
+    paginator = Paginator(objects, paginate_by) # Show 25 contacts per page
+    page = request.GET.get('page')
+    objects = paginator.get_page(page)        
+    if paginator.num_pages>1: # no point in paginating if there is only one page.
+        kwargs['is_paginated'] = True
+    kwargs['page_obj'] = objects
+    return objects    
