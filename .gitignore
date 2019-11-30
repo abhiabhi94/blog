@@ -7,3 +7,5 @@
 # Cached Python Files #
 ########################
 **/__pycache__/**
+
+db.sqlite3
