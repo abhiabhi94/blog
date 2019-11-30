@@ -122,15 +122,28 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
     def form_valid(self, form):
+        print("------->", 'form_valid')
         form.instance.author = self.request.user
         return super().form_valid(form)
 
     def test_func(self):
+        print("*************", 'test_func')
         post = self.get_object()
         if self.request.user == post.author:
             return True
         return False
 
+    def post(self, *args, **kwargs):
+        post = self.get_object()
+        post.publish = False
+        if self.request.user == post.author:
+            # print ('inside post request')
+            messages.success(
+                self.request, 'Your post has been submitted for approval')
+            return redirect('Blog:home')
+        else:
+            messages.warning(self.request, 'Only posts written by you can be previewed')
+            return redirect('Blog:home')        
 
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -166,15 +179,15 @@ def about(request):
 def preview(request, year, month, day, slug):
     post = Post.objects.get(slug=slug)
     # print(post.author)
-    if request.user == post.author:
-        if request.method == 'POST':
-            # print ('inside post request')
-            messages.success(
-                request, 'Your post has been submitted for approval')
-            return redirect('Blog:home')
-    else:
-        messages.warning(request, 'Only posts written by you can be previewed')
-        return redirect('Blog:home')
+    # if request.user == post.author:
+    #     if request.method == 'POST':
+    #         # print ('inside post request')
+    #         messages.success(
+    #             request, 'Your post has been submitted for approval')
+    #         return redirect('Blog:home')
+    # else:
+    #     messages.warning(request, 'Only posts written by you can be previewed')
+    #     return redirect('Blog:home')
     return render(request, 'Blog/post_preview.html', {'post': post})
 
 
