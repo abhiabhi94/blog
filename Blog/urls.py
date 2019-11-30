@@ -8,6 +8,7 @@ from Track.views import hit_count
 
 app_name = 'Blog'
 ymds_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slug>[-\w]+)'
+ymd_re = r'(?P<year>[0-9]{4})/?(?P<month>[0-9]{1,2})?/?(?P<day>[0-9]{1,2})?'
 urlpatterns = [
     path('', views.PostListView.as_view(), name='home'),  
     path('user/<str:username>', views.UserPostListView.as_view(), name='user-posts'),
@@ -29,6 +30,7 @@ urlpatterns = [
     path('post/tag/', views.get_tags, name='all-tags'), 
     path('post/top-tags/', views.get_top_tags, name='top-tags'),
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
-    path('post/category/<str:category>', views.CategoryPostListView.as_view(), name='category')
+    path('post/category/<str:category>', views.CategoryPostListView.as_view(), name='category'),
+    re_path(r'post/'+ymd_re, views.get_timewise_list, name='timewise-list')
     ]
 

@@ -6,6 +6,7 @@ from django.views.generic import (ListView,
                                   DeleteView
                                   )
 from .models import Post
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from Users.models import Profile
 from django.contrib import messages
@@ -17,6 +18,7 @@ from django.http import JsonResponse, Http404
 from collections import Counter
 from meta.views import Meta
 import json
+from datetime import datetime
 
 global meta_home
 meta_home = Meta(title='StayCurious Blog | Nurturing curiosity in every mind.',
@@ -152,7 +154,7 @@ def about(request):
 
 @login_required
 def preview(request, year, month, day, slug):
-    post = Post.objects.get(date_posted__year=year, date_posted__month=month, date_posted__day=day, slug=slug)
+    post = Post.objects.get(slug=slug)
     # print(post.author)
     if request.user == post.author:
         if request.method == 'POST':
@@ -289,3 +291,46 @@ class CategoryPostListView(ListView):
                                description=f'Read posts with the category {category} from HackAdda',
                                keywords=meta_home.keywords + [category])
         return context
+
+def get_timewise_list(request, *args, **kwargs):
+
+    template_name = 'Blog/time_list.html'
+    paginate_by = 5
+
+    if request.method == 'GET':
+        dummy = datetime.now() # to use formatting on template layer.
+        kwargs = {k:int(v) if v is not None else v for k,v in kwargs.items()}
+        dummy.replace(year=kwargs['year'])
+        flag_day, flag_month = [1,1]
+        if kwargs['day'] is None:
+            if kwargs['month'] is None:
+                flag_day, flag_month = [0,0] # day, month    
+                posts = Post.objects.filter(publish=True, date_posted__year=kwargs['year']).order_by('-date_posted')      
+            else:
+                flag_day, flag_month = [0,1] # day, month
+                dummy.replace(month=kwargs['month'])
+                posts = Post.objects.filter(publish=True, date_posted__year=kwargs['year'], 
+                                    date_posted__month=kwargs['month']).order_by('-date_posted')
+        else:
+            dummy = datetime(**kwargs)
+            posts = Post.objects.filter(publish=True, 
+                        date_posted__year=kwargs['year'], 
+                        date_posted__month=kwargs['month'],
+                        date_posted__day=kwargs['day']).order_by('-date_posted')
+        kwargs['date'] = dummy
+        kwargs['flag_day'] = flag_day
+        kwargs['flag_month'] = flag_month
+        paginator = Paginator(posts, paginate_by) # Show 25 contacts per page
+        print("page: >>>>>>>>>>>>>", request.GET.get('page'))
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)        
+        kwargs['posts'] = posts
+        # if len(posts)>=paginate_by: 
+        #     print("hiasflkajs")
+        kwargs['is_paginated'] = True
+        print("kwargs: ", kwargs)
+        kwargs['page_obj'] = posts
+        return render(request, template_name, kwargs)
+
+    raise Http404("Wrong Request Format")    
+

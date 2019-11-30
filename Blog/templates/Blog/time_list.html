@@ -1,0 +1,18 @@
+{% extends "generic_list.html" %}
+{% block topcontent %}
+    <div>
+    {% if posts|length%}
+        {% if flag_day %}
+        <h1>Articles Posted on date {{date|date:"D d M Y"}} </h1>
+        {% elif flag_month %}
+        <h1>Articles Posted in {{date|date:"M Y"}} </h1>
+        {% else%}
+        <h1>Articles Posted in {{date|date:"Y"}} </h1>
+        {% endif %}
+    {% else %}
+        <h1>404</h1> 
+    {% endif %}  
+        {% comment %} {% include "paginate_function.html" %} {% endcomment %}
+    </div>
+{% endblock topcontent %}
+
