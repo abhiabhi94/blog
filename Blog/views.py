@@ -37,11 +37,15 @@ class PostListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(publish=True).order_by('-date_posted')
 
+    def get_featured_article(self, top_n=3):
+        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')
+
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
         context['meta'] = meta_home
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
+            context['featured_articles'] = self.get_featured_article()
         return context
 
 

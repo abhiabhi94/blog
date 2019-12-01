@@ -15,6 +15,10 @@ class Profile(models.Model):
     location = models.CharField(null=True, max_length=200, blank=True)
     join_date = models.DateTimeField(auto_now_add=True)
     bookmarked_posts = models.ManyToManyField(Post)
+    facebook = models.URLField(max_length=200, null=True, blank=True, default='')
+    twitter = models.URLField(max_length=200, null=True, blank=True, default='')
+    instagram = models.URLField(max_length=200, null=True, blank=True, default='')
+    linkedin = models.URLField(max_length=200, null=True, blank=True, default='')
 
     def __str__(self):
         return f'{self.user.username} Profile'
