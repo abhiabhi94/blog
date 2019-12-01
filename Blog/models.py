@@ -60,6 +60,7 @@ class Post(models.Model, ModelMeta):
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
     publish = models.BooleanField(default=False)
+    featured = models.BooleanField(default=False)
     thumbnail = models.ImageField(
         default='default.jpg', upload_to='profile_pics', blank=True)
     _metadata = {
