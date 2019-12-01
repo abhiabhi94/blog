@@ -141,6 +141,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def test_func(self):
+        '''ensuring the author themselves is updating the post'''
         # print("*************", 'test_func')
         post = self.get_object()
         if self.request.user == post.author:
