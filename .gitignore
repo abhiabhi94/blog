@@ -8,4 +8,5 @@
 ########################
 **/__pycache__/**
 
+# database
 db.sqlite3
