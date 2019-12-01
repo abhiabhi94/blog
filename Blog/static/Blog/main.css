@@ -1,7 +1,12 @@
 body {
-    background: #fafafa;
+    background: #f7f7f7;
     color: #333333;
     margin-top: 5rem;
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    color: #3c3d47;
 }
 
 h1,
@@ -22,6 +27,8 @@ ul {
 }
 
 .site-header .navbar-nav .nav-link {
+    font-family: 'Hebbo', sans-serif;
+    font-weight: 900;
     color: #cbd5db;
     margin-left: 1.25rem!important;
     margin-right: 1.25rem!important;
@@ -97,6 +104,8 @@ a.dropdown-toggle {
 }
 
 .article-title {
+    font-family: Dejavu sans;
+    font-weight: 600;
     color: #444444;
 }
 
@@ -379,10 +388,8 @@ a.article-title:hover {
 }
 
 .heading {
-    /* position: relative;
-    height: 2.5rem;
-    width: 10rem;
-    border-bottom: 1px solid #e3e3e3; */
+    font-family: 'Rubik', sans-serif;
+    color: #272121;
 }
 
 .featured-articles {
@@ -429,105 +436,107 @@ a.article-title:hover {
 
 .resp-sharing-button__link,
 .resp-sharing-button__icon {
-  display: inline-block
+    display: inline-block
 }
 
 .resp-sharing-button__link {
-  text-decoration: none;
-  color: #fff;
-  margin: 0.5em
+    text-decoration: none;
+    color: #fff;
+    margin: 0.5em
 }
 
 .resp-sharing-button {
-  border-radius: 5px;
-  transition: 25ms ease-out;
-  padding: 0.5em 0.75em;
-  font-family: Helvetica Neue,Helvetica,Arial,sans-serif
+    border-radius: 5px;
+    transition: 25ms ease-out;
+    padding: 0.5em 0.75em;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif
 }
 
 .resp-sharing-button__icon svg {
-  width: 1em;
-  height: 1em;
-  margin-right: 0.4em;
-  vertical-align: top
+    width: 1em;
+    height: 1em;
+    margin-right: 0.4em;
+    vertical-align: top
 }
 
 .resp-sharing-button--small svg {
-  margin: 0;
-  vertical-align: middle
+    margin: 0;
+    vertical-align: middle
 }
+
 
 /* Non solid icons get a stroke */
+
 .resp-sharing-button__icon {
-  stroke: #fff;
-  fill: none
+    stroke: #fff;
+    fill: none
 }
 
+
 /* Solid icons get a fill */
+
 .resp-sharing-button__icon--solid,
 .resp-sharing-button__icon--solidcircle {
-  fill: #fff;
-  stroke: none
+    fill: #fff;
+    stroke: none
 }
 
 .resp-sharing-button--twitter {
-  background-color: #55acee
+    background-color: #55acee
 }
 
 .resp-sharing-button--twitter:hover {
-  background-color: #2795e9
+    background-color: #2795e9
 }
 
 .resp-sharing-button--facebook {
-  background-color: #3b5998
+    background-color: #3b5998
 }
 
 .resp-sharing-button--facebook:hover {
-  background-color: #2d4373
+    background-color: #2d4373
 }
 
 .resp-sharing-button--linkedin {
-  background-color: #0077b5
+    background-color: #0077b5
 }
 
 .resp-sharing-button--linkedin:hover {
-  background-color: #046293
+    background-color: #046293
 }
 
-
 .resp-sharing-button--facebook {
-  background-color: #3b5998;
-  border-color: #3b5998;
+    background-color: #3b5998;
+    border-color: #3b5998;
 }
 
 .resp-sharing-button--facebook:hover,
 .resp-sharing-button--facebook:active {
-  background-color: #2d4373;
-  border-color: #2d4373;
+    background-color: #2d4373;
+    border-color: #2d4373;
 }
 
 .resp-sharing-button--twitter {
-  background-color: #55acee;
-  border-color: #55acee;
+    background-color: #55acee;
+    border-color: #55acee;
 }
 
 .resp-sharing-button--twitter:hover,
 .resp-sharing-button--twitter:active {
-  background-color: #2795e9;
-  border-color: #2795e9;
+    background-color: #2795e9;
+    border-color: #2795e9;
 }
 
 .resp-sharing-button--linkedin {
-  background-color: #0077b5;
-  border-color: #0077b5;
+    background-color: #0077b5;
+    border-color: #0077b5;
 }
 
 .resp-sharing-button--linkedin:hover,
 .resp-sharing-button--linkedin:active {
-  background-color: #046293;
-  border-color: #046293;
+    background-color: #046293;
+    border-color: #046293;
 }
-
 
 @media(max-width:600px) {
     #post-options {
