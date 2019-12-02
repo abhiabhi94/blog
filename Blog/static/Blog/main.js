@@ -1,6 +1,7 @@
 $(document).ready(function(event) {
     loadSidebar();
     addClassToAsideFeatured();
+    changeFontOfNums();
     $('.dropdown').on('click focus', function(event) {
         $('.dropdown-menu').toggleClass('visible');
         $('.dropdown').find('.dropdown-toggle').css('outline', 'none');
@@ -48,7 +49,15 @@ $(document).ready(function(event) {
         sendAjax(url, { data: post });
     });
 });
-// send an object specifying parameter required for AJAX request
+/**
+ * Sends an AJAX request and fixes the response to the top and is faded after sometime.
+ * @param {string} link - Link where the AJAX request is to be sent 
+ * @param {object} args - The args object may contain the atttributes {type, data, responseType}
+ * If not passed their default value will be :
+ * type:POST
+ * data:''
+ * responseType:json  
+ */
 function sendAjax(link, args) {
     // let responseType = 'application/'
     if (typeof args.type === "undefined") {
@@ -99,7 +108,11 @@ function sendAjax(link, args) {
         },
     });
 }
-
+/**
+ * Create a temporary div, append it to the div'#response', fix it to the top and fade it out.
+ * @param {string} status - a string based upon the response received for AJAX request.('success'|'warning')
+ * @param {string} msg - a string depicting the message to be displayed in the response. 
+ */
 function createResponse(status, msg) {
     let cls = 'alert alert-' + status;
     let response = $('#response');
@@ -116,7 +129,10 @@ function createResponse(status, msg) {
         temp.remove();
     }, 2 * time + 10);
 }
-
+/**
+ * Fixes an element to the top of the viewport.
+ * @param {element} div - element that is to be fixed at the top of the viewport. 
+ */
 function fixToTop(div) {
     let isfixed = div.css('position') == 'fixed';
     if (div.scrollTop() > 200 && !isfixed)
@@ -125,6 +141,13 @@ function fixToTop(div) {
         div.css({ 'position': 'static', 'top': '0px' });
 }
 
+/**
+ * Loads the side through different post requests.
+ * On homepage trending posts will be added later.
+ * top tags.
+ * all tags.
+ * On pages other than homepage, latest and featured posts will be added.
+ */
 function loadSidebar() {
     let latestPosts = { id: '#latest-posts', num: 5 };
     latestPosts.url = $(latestPosts.id).data('url');
@@ -142,9 +165,19 @@ function sendPost(url, responseEle, data) {
         $(responseEle).append(response);
     })
 }
-
+/**
+ * Used for styling the featured articles aside of the latest one.
+ * Add a div alongwith a class aside to the other two featured articles(apart from the latest).
+ * The styling is done in CSS to place them alongside the latest one in small scale devices.
+ */
 function addClassToAsideFeatured() {
     let div = document.createElement('div');
     div.className = 'aside';
     $('.aside-featured').wrapAll(div);
+}
+/** changes font of numbers to cooper hewitt on Krishna's request. */
+function changeFontOfNums() {
+    $('head').append('<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/cooper-hewitt" type="text/css"/>');
+    $('body').text().match(/(\d+)/g).forEach(e => e.replace('<span>' + e + '</span>'))
+
 }

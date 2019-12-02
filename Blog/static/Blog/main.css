@@ -538,6 +538,12 @@ a.article-title:hover {
     border-color: #046293;
 }
 
+.num {
+    font-family: 'CooperHewittBold';
+    font-weight: normal;
+    font-style: normal;
+}
+
 @media(max-width:600px) {
     #post-options {
         left: 55%;
