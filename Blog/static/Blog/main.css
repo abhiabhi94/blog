@@ -22,7 +22,7 @@ ul {
     margin: 0;
 }
 
-.bg-steel {
+.navbar-color {
     background-color: #5f788a;
 }
 
@@ -317,10 +317,10 @@ a.article-title:hover {
     background: #43d854;
     color: #fff !important;
 }
-
+/* 
 .fa-bookmark {
-    /* font-size: 24px; */
-}
+    font-size: 24px;
+} */
 
 .articles {
     display: flex;

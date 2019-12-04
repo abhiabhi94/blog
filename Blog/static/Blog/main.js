@@ -178,6 +178,8 @@ function addClassToAsideFeatured() {
 /** changes font of numbers to cooper hewitt on Krishna's request. */
 function changeFontOfNums() {
     $('head').append('<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/cooper-hewitt" type="text/css"/>');
-    $('body').text().match(/(\d+)/g).forEach(e => e.replace('<span>' + e + '</span>'))
-
+    $('body').text(function(index, text){
+        text.replace(/\d+/g, function(e){ return ('<span class="num">' + e + '</span>'); }
+    )});
+    // $('body').html(newText);
 }
