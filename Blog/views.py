@@ -264,17 +264,24 @@ class TaggedPostListView(ListView):
         return context
 
 
-def get_latest_posts(request):
+def get_latest_posts(request, **kwargs):
     if request.method == 'POST':
         template_name = 'post_title.html'
         # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
             num = int(json.loads(request.POST.get('data'))['num'])
         except Exception as e:
-            raise Http404("Wrong Request Format")
+            raise Http404('Wrong Request Format for post request')
         posts = Post.objects.filter(
             publish=True).order_by('-date_posted')[:num]
         return render(request, template_name, {'posts': posts})
+
+    elif request.method == 'GET':
+        template_name = 'post_list_generic.html'
+        paginate_by = 5
+        posts = Post.objects.filter(publish=True).order_by('-date_posted')
+        kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
+        return render(request, template_name, kwargs)
 
     raise Http404('Wrong Request format')
 
@@ -337,20 +344,20 @@ class CategoryPostListView(ListView):
 
 def get_timewise_list(request, *args, **kwargs):
 
-    template_name = 'Blog/time_list.html'
+    template_name = 'Blog/post_list_time.html'
     paginate_by = 5
 
     if request.method == 'GET':
         dummy = datetime.now()  # to use formatting on template layer.
         kwargs = {k: int(v) if v is not None else v for k, v in kwargs.items()}
-        dummy.replace(year=kwargs['year'])
+        dummy = dummy.replace(year=kwargs['year'])
         flag_day, flag_month = [1, 1]
         if kwargs['day'] is None:
             if kwargs['month'] is None:
                 flag_day, flag_month = [0, 0]  # day, month
             else:
                 flag_day, flag_month = [0, 1]  # day, month
-                dummy.replace(month=kwargs['month'])
+                dummy = dummy.replace(month=kwargs['month'])
         else:
             dummy = datetime(**kwargs)
 
@@ -366,13 +373,15 @@ def get_timewise_list(request, *args, **kwargs):
 
         kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
+        print(kwargs['date'])
         return render(request, template_name, kwargs)
 
     raise Http404("Wrong Request Format")
 
 
 def paginate_util(request, objects, paginate_by, kwargs):
-    paginator = Paginator(objects, paginate_by)  # Show 25 contacts per page
+    # Show {paginate_by} objects per page
+    paginator = Paginator(objects, paginate_by)
     page = request.GET.get('page')
     objects = paginator.get_page(page)
     if paginator.num_pages > 1:  # no point in paginating if there is only one page.

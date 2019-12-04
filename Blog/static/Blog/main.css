@@ -343,7 +343,7 @@ a.article-title:hover {
     justify-content: space-between;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
-    margin-top: 1.5rem;
+    margin-top: 5px;
     margin-bottom: 1.5rem;
     /* height: 100%; */
 }
@@ -390,6 +390,9 @@ a.article-title:hover {
 .heading {
     font-family: 'Rubik', sans-serif;
     color: #272121;
+    margin-top: 2rem!important;
+    display: flex;
+    flex-direction: row;
 }
 
 .featured-articles {
@@ -428,10 +431,6 @@ a.article-title:hover {
 
 .featured-articles>.aside-featured>.article-card>.article-thumbnail {
     height: 40%;
-}
-
-.heading {
-    margin: 1rem!important;
 }
 
 .resp-sharing-button__link,

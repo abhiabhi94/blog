@@ -1,4 +1,7 @@
 $(document).ready(function(event) {
+    if (window.matchMedia('(max-width: 600px)').matches) {
+        onMobile();
+    }
     loadSidebar();
     addClassToAsideFeatured();
     changeFontOfNums();
@@ -178,6 +181,12 @@ function addClassToAsideFeatured() {
 /** changes font of numbers to cooper hewitt on Krishna's request. */
 function changeFontOfNums() {
     $('head').append('<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/cooper-hewitt" type="text/css"/>');
-    $('body').text().match(/(\d+)/g).forEach(e => e.replace('<span>' + e + '</span>'))
+    $('body').text().match(/(\d+)/g).forEach(e => e.replace('<span>' + e + '</span>'));
 
+}
+/**
+ * This function is used to make changes to the layout for small screen devices
+ */
+function onMobile() {
+    const viewMore = $('.viewMore');
 }
