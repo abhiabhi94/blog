@@ -1,0 +1,15 @@
+{% comment %} <div class="heading">
+    <legend class="latest">Latest Posts</legend>
+    <a href="{% url 'Blog:latest-posts' %}" class="btn btn-primary" role="button">View More</a>
+</div> {% endcomment %}
+{% include 'heading.html' with heading='Latest Posts' view_more_url='Blog:latest-posts' %}
+
+<div class="row latest-articles">
+
+    {% for post in posts %}
+    <div class="{{label}} article-card col-md-4 col-sm-12">
+        {% include "post_card_home.html" %}
+    </div>
+    {% endfor %}
+
+</div>
