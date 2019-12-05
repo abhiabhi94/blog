@@ -2,7 +2,8 @@
     <legend class="latest">Latest Posts</legend>
     <a href="{% url 'Blog:latest-posts' %}" class="btn btn-primary" role="button">View More</a>
 </div> {% endcomment %}
-{% include 'heading.html' with heading='Latest Posts' view_more_url='Blog:latest-posts' %}
+{% url 'Blog:latest-posts' as link %}
+{% include 'heading.html' with heading='Latest Posts' view_more_url=link %}
 
 <div class="row latest-articles">
 

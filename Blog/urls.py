@@ -10,7 +10,8 @@ app_name = 'Blog'
 ymds_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slug>[-\w]+)'
 ymd_re = r'(?P<year>[0-9]{4})/?(?P<month>[0-9]{1,2})?/?(?P<day>[0-9]{1,2})?'
 urlpatterns = [
-    path('', views.PostListView.as_view(), name='home'),
+    # path('', views.PostListView.as_view(), name='home'),
+    path('', views.HomeView.as_view(), name='home'),
     path('user/<str:username>', views.UserPostListView.as_view(), name='user-posts'),
     path('user/<str:username>/bookmarks',
          views.UserPostBookmark.as_view(), name='user-bookmarks'),
@@ -33,6 +34,8 @@ urlpatterns = [
     path('post/bookmark/', views.bookmark_post, name='bookmark-post'),
     path('post/tag/', views.get_tags, name='all-tags'),
     path('post/top-tags/', views.get_top_tags, name='top-tags'),
+    path('post/featured-posts/',
+         views.FeaturedPostListView.as_view(), name='featured-posts'),
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
     path('post/category/<str:category>',
          views.CategoryPostListView.as_view(), name='category'),

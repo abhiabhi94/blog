@@ -1,8 +1,7 @@
 {% load define %}
 {% define 0 as flag %}
-<div >
-    <legend class="heading">Featured</legend>
-</div>
+{% url "Blog:featured-posts" as link %}
+{% include "heading.html" with heading="Featured" view_more_url=link %}
 <div class="row featured-articles">
     {% for post in posts %}
         {% if forloop.counter < 4 %}

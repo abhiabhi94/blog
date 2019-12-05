@@ -22,10 +22,117 @@ from meta.views import Meta
 import json
 from datetime import datetime
 
+
+'''
+Use the name posts for backend purposes.
+Use the name articles for frontend purposes.
+'''
+
 global meta_home
 meta_home = Meta(title='StayCurious Blog | Nurturing curiosity in every mind.',
                  description='Articles that encourage coding, robotics through STEM education',
                  keywords=['robotics, coding, STEM, STEAM, education, blog, tinker, kids, StayCurious, curiousity'])
+
+
+class HomeView(ListView):
+    '''Return featured, latest, and categories wise articles for the front-page'''
+
+    template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
+    # context_object_name = 'posts'
+    # paginate_by = 5
+    # posts_unique = {}
+
+    def __init__(self):
+        self.NO_FEATURED_POSTS = 3
+        self.NO_LATEST_POSTS = 5
+        self.NO_CATEGORY_POSTS = 2
+        super().__init__()
+
+    def get_queryset(self):
+        return Post.objects.filter(publish=True).order_by('-date_posted')
+
+    def remove_duplicates(self, current, unique, top_n):
+        '''
+        Returns unique posts in current after removing duplicate objects from it.
+        Set difference is calculated here as a part of list comphrehension in order to maintain order.
+        '''
+        unique = set(unique)
+        print('unique>>>', unique, '\n')
+        current_unique = [i for i in current if i not in unique][:top_n]
+        print('current-unique', current_unique, '\n')
+        unique = unique.union(set(current_unique))
+        print('unique after union>>>', unique, '\n')
+        return current_unique, unique
+
+    def get_featured_posts(self):
+        '''Returns top_n featured posts
+        where top_n is self.NO_FEATURED_POSTS
+        '''
+        top_n = self.NO_FEATURED_POSTS
+
+        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')[:top_n]
+
+    def get_latest_posts(self):
+        '''
+        Returns top_n latest_posts
+        +self.NO_LATEST_POSTS latest posts for 
+        +self.NO_FEATURED_POSTS is for checking duplicacy with featured articles
+        '''
+        top_n = self.NO_LATEST_POSTS+self.NO_FEATURED_POSTS
+
+        return Post.objects.filter(publish=True).order_by('-date_posted')[:top_n]
+
+    def get_category_posts(self, category, index):
+        '''
+        Returns top_n posts under a certain category
+        for top_n = +self.NO_FEATURED_POSTS is for featured articles
+                    +self.NO_LATEST_POSTS is for latest articles
+                    +self.NO_CATEGORY_POSTS * index is for extra articles in case of duplicacy with the above categories.
+        '''
+
+        top_n = self.NO_FEATURED_POSTS + self.NO_LATEST_POSTS + \
+            self.NO_CATEGORY_POSTS * (index)
+        return Post.objects.filter(publish=True, category__name=category).order_by('-date_posted')[:top_n]
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['meta'] = meta_home
+        context['featured_posts'] = list(self.get_featured_posts())
+        posts_unique = context['featured_posts']
+
+        latest_posts = list(self.get_latest_posts())
+        context['latest_posts'], posts_unique = self.remove_duplicates(
+            latest_posts, posts_unique, self.NO_LATEST_POSTS)
+
+        categories = ['science', 'technology']
+        # context['categories'] = categories
+
+        # conte
+        category_result = {}
+        for index, category in enumerate(categories):
+            category_posts = list(self.get_category_posts(category, index))
+            category_posts_unique, posts_unique = self.remove_duplicates(
+                category_posts, posts_unique, self.NO_CATEGORY_POSTS)
+            # context['category_posts'].append(
+            #     context['category_' + category + '_posts'])
+            category_result[category] = category_posts_unique
+        context['category'] = category_result
+        if self.request.user.is_authenticated:
+            context['profile'] = self.request.user.profile
+        print("Featured>>>", context['featured_posts'])
+        print("Latest>>>", context['latest_posts'])
+        print("Categories>>>", context['category'])
+
+        return context
+
+
+class FeaturedPostListView(ListView):
+    template_name = 'post_list_generic.html'
+    context_object_name = 'posts'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')
 
 
 class PostListView(ListView):
@@ -37,15 +144,11 @@ class PostListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(publish=True).order_by('-date_posted')
 
-    def get_featured_article(self, top_n=3):
-        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')
-
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
         context['meta'] = meta_home
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
-            context['featured_articles'] = self.get_featured_article()
         return context
 
 
@@ -319,13 +422,13 @@ def get_top_tags(request):  # used in right side bar above all tags.
 
 class CategoryPostListView(ListView):
     # model = Post
-    template_name = 'Blog/post_categorized.html'   # <app>/<model>_<viewtype>.html
-    context_object_name = 'categories'
+    template_name = 'Blog/post_list_category.html'   # <app>/<model>_<viewtype>.html
+    context_object_name = 'posts'
     # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
 
     def get_queryset(self):
         post_list = Post.objects.filter(
-            category__category_name=self.kwargs.get('category'), publish=True).order_by('-date_posted')
+            category__name=self.kwargs.get('category'), publish=True).order_by('-date_posted')
         if post_list:
             return post_list
         raise Http404('Category not present')

@@ -12,26 +12,28 @@ from PIL import Image
 
 # from django.contrib.messages import messages
 
-# Create your models here.
-
 
 class Category(models.Model, ModelMeta):
-    category_name = models.CharField(help_text=(
+    name = models.CharField(help_text=(
         "Name of the category. ex-Science, Technology"), max_length=50, unique=True)
-    category_info = models.TextField(help_text=(
+    info = models.TextField(help_text=(
         "Description of the category."), max_length=5000, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     # author of this category.
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     _metadata = {
-        'Category': 'category_name',
-        'Info': 'category_info'
+        'Category': 'name',
+        'Info': 'info'
     }
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.lower()
+        super(*args, **kwargs).save()
 
     def __str__(self):
         '''helps in showing name in foreign key field instead of category object'''
-        return self.category_name
+        return self.name
 
 
 class Post(models.Model, ModelMeta):
@@ -51,7 +53,6 @@ class Post(models.Model, ModelMeta):
                           default='',
                           default_markup_type='markdown',
                           )
-    # tags = models.ManyToManyField(Tags)
     tags = models.CharField(
         help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
@@ -60,6 +61,8 @@ class Post(models.Model, ModelMeta):
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
     publish = models.BooleanField(default=False)
+    date_published = models.DateTimeField(
+        null=True, blank=True)
     featured = models.BooleanField(default=False)
     thumbnail = models.ImageField(
         default='default.jpg', upload_to='profile_pics', blank=True)
@@ -72,6 +75,12 @@ class Post(models.Model, ModelMeta):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         self.tags = self.tags.lower()
+
+        if self.publish and self.date_published is None:
+            self.date_published = timezone.now()
+
+        # if not self.publish:
+        #     self.date_published = timezone.now()
         # if self.short_des:
         #     pass
         # else:
