@@ -28,6 +28,16 @@ Use the name posts for backend purposes.
 Use the name articles for frontend purposes.
 '''
 
+
+def published_posts(order='-date_posted'):
+    '''
+    TODO: support multiple filters.
+    returns a list of published posts. 
+    if no order is given, the posts are ordered by their post date.
+    '''
+    return Post.objects.filter(publish=True).order_by(order)
+
+
 global meta_home
 meta_home = Meta(title='StayCurious Blog | Nurturing curiosity in every mind.',
                  description='Articles that encourage coding, robotics through STEM education',
@@ -49,7 +59,7 @@ class HomeView(ListView):
         super().__init__()
 
     def get_queryset(self):
-        return Post.objects.filter(publish=True).order_by('-date_posted')
+        return published_posts()
 
     def remove_duplicates(self, current, unique, top_n):
         '''
@@ -61,6 +71,8 @@ class HomeView(ListView):
         current_unique = [i for i in current if i not in unique][:top_n]
         print('current-unique', current_unique, '\n')
         unique = unique.union(set(current_unique))
+        # # Finds union of both lists (current_unique)
+        # union = current_unique + [i for i in unique if i in current_unique]
         print('unique after union>>>', unique, '\n')
         return current_unique, unique
 
@@ -70,7 +82,7 @@ class HomeView(ListView):
         '''
         top_n = self.NO_FEATURED_POSTS
 
-        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')[:top_n]
+        return published_posts().filter(featured=True)[:top_n]
 
     def get_latest_posts(self):
         '''
@@ -78,13 +90,13 @@ class HomeView(ListView):
         +self.NO_LATEST_POSTS latest posts for 
         +self.NO_FEATURED_POSTS is for checking duplicacy with featured articles
         '''
-        top_n = self.NO_LATEST_POSTS+self.NO_FEATURED_POSTS
+        top_n = self.NO_LATEST_POSTS + self.NO_FEATURED_POSTS
 
-        return Post.objects.filter(publish=True).order_by('-date_posted')[:top_n]
+        return published_posts()[:top_n]
 
     def get_category_posts(self, category, index):
         '''
-        Returns top_n posts under a certain category
+        Returns top_n posts under a certain category.
         for top_n = +self.NO_FEATURED_POSTS is for featured articles
                     +self.NO_LATEST_POSTS is for latest articles
                     +self.NO_CATEGORY_POSTS * index is for extra articles in case of duplicacy with the above categories.
@@ -92,7 +104,7 @@ class HomeView(ListView):
 
         top_n = self.NO_FEATURED_POSTS + self.NO_LATEST_POSTS + \
             self.NO_CATEGORY_POSTS * (index)
-        return Post.objects.filter(publish=True, category__name=category).order_by('-date_posted')[:top_n]
+        return published_posts().filter(category__name=category)[:top_n]
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
@@ -107,7 +119,6 @@ class HomeView(ListView):
         categories = ['science', 'technology']
         # context['categories'] = categories
 
-        # conte
         category_result = {}
         for index, category in enumerate(categories):
             category_posts = list(self.get_category_posts(category, index))
@@ -127,12 +138,15 @@ class HomeView(ListView):
 
 
 class FeaturedPostListView(ListView):
+    '''
+    Returns a list view of featured posts
+    '''
     template_name = 'post_list_generic.html'
     context_object_name = 'posts'
     paginate_by = 5
 
     def get_queryset(self):
-        return Post.objects.filter(publish=True, featured=True).order_by('-date_posted')
+        return published_posts().filter(featured=True)
 
 
 class PostListView(ListView):
@@ -142,7 +156,7 @@ class PostListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Post.objects.filter(publish=True).order_by('-date_posted')
+        return published_posts()
 
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
@@ -156,14 +170,11 @@ class UserPostListView(ListView):
     # model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    # queryset = Post.objects.filter(publish=True)
-    # ordering = ['-date_posted']
     paginate_by = 5
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        # print(Post.objects.filter(author=user).order_by('-date_posted'))
-        return Post.objects.filter(author=user, publish=True).order_by('-date_posted')
+        return published_posts().filter(author=user)
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
@@ -204,7 +215,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 
 
 class PostDetailView(DetailView):
-    queryset = Post.objects.filter(publish=True)
+    queryset = published_posts()
     # context_object_name = 'object'
 
     def get_context_data(self, **kwargs):
@@ -338,19 +349,13 @@ def bookmark_post(request):
         return redirect('Blog:home')
 
 
-# def tagged_post(request, tag):
-#     result = Post.objects.filter(string__contains=tag)
-#     return render(request, 'Blog/about.html', {'title':'About'})
-
 class TaggedPostListView(ListView):
     # model = Post
     template_name = 'Blog/post_tagged.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
 
     def get_queryset(self):
-        post_list = Post.objects.filter(
-            tags__contains=self.kwargs.get('tag'), publish=True).order_by('-date_posted')
+        post_list = published_posts().filter(tags__contains=self.kwargs.get('tag'))
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -375,14 +380,13 @@ def get_latest_posts(request, **kwargs):
             num = int(json.loads(request.POST.get('data'))['num'])
         except Exception as e:
             raise Http404('Wrong Request Format for post request')
-        posts = Post.objects.filter(
-            publish=True).order_by('-date_posted')[:num]
+        posts = published_posts()[:num]
         return render(request, template_name, {'posts': posts})
 
     elif request.method == 'GET':
         template_name = 'post_list_generic.html'
         paginate_by = 5
-        posts = Post.objects.filter(publish=True).order_by('-date_posted')
+        posts = published_posts()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         return render(request, template_name, kwargs)
 
@@ -393,7 +397,7 @@ def get_tags(request):  # used in right sidebar
     if request.method == 'POST':
         template_name = 'tags.html'
         tags_list = [post.get_tags_list()
-                     for post in Post.objects.filter(publish=True)]
+                     for post in published_posts()]
         tags_list = list({item for outer in tags_list for item in outer})
         # top_tags_list =  {tag:count for (tag, count) in top_tags}
 
@@ -411,7 +415,7 @@ def get_top_tags(request):  # used in right side bar above all tags.
         except Exception as e:
             raise Http404("Wrong Request Format")
         tags_list = [post.get_tags_list()
-                     for post in Post.objects.filter(publish=True)]
+                     for post in published_posts()]
         top_tags = Counter(
             [item for outer in tags_list for item in outer]).most_common(num)
         top_tags_list = {tag: count for (tag, count) in top_tags}
@@ -424,11 +428,9 @@ class CategoryPostListView(ListView):
     # model = Post
     template_name = 'Blog/post_list_category.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    # queryset = Post.objects.filter(tags__contains=self.kwargs.get('tag'))
 
     def get_queryset(self):
-        post_list = Post.objects.filter(
-            category__name=self.kwargs.get('category'), publish=True).order_by('-date_posted')
+        post_list = published_posts().filter(category__name=self.kwargs.get('category'))
         if post_list:
             return post_list
         raise Http404('Category not present')
@@ -457,9 +459,11 @@ def get_timewise_list(request, *args, **kwargs):
         flag_day, flag_month = [1, 1]
         if kwargs['day'] is None:
             if kwargs['month'] is None:
-                flag_day, flag_month = [0, 0]  # day, month
+                # both day and month are dummy values
+                flag_day, flag_month = [0, 0]
             else:
-                flag_day, flag_month = [0, 1]  # day, month
+                # month isn't dummy, day is dummy.
+                flag_day, flag_month = [0, 1]
                 dummy = dummy.replace(month=kwargs['month'])
         else:
             dummy = datetime(**kwargs)
@@ -471,12 +475,10 @@ def get_timewise_list(request, *args, **kwargs):
         if flag_month:
             args_dict['date_posted__month'] = kwargs['month']
 
-        posts = Post.objects.filter(
-            publish=True, **args_dict).order_by('-date_posted')
+        posts = published_posts().filter(**args_dict)
 
         kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
-        print(kwargs['date'])
         return render(request, template_name, kwargs)
 
     raise Http404("Wrong Request Format")
