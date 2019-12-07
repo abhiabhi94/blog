@@ -317,6 +317,8 @@ a.article-title:hover {
     background: #43d854;
     color: #fff !important;
 }
+
+
 /* 
 .fa-bookmark {
     font-size: 24px;
@@ -397,6 +399,7 @@ a.article-title:hover {
 
 .featured-articles {
     height: 38rem;
+    padding: 5px 10px;
     display: flex;
     flex-direction: row;
 }
@@ -431,6 +434,11 @@ a.article-title:hover {
 
 .featured-articles>.aside-featured>.article-card>.article-thumbnail {
     height: 40%;
+}
+
+.view-more {
+    display: block;
+    margin: auto;
 }
 
 .resp-sharing-button__link,
@@ -577,14 +585,29 @@ a.article-title:hover {
     #details {
         padding: 5px 5px;
     }
+    .article-card {
+        margin-bottom: 10px!important;
+    }
     .featured-articles {
-        flex-direction: column;
-        height: 60rem;
+        /* flex-direction: column;
+        height: 90rem; */
+        display: block;
+        height: auto;
     }
-    .featured-articles>.latest-featured {
+    /* .featured-articles>.latest-featured {
         flex: 1;
-    }
+    } */
     .featured-articles>.latest-featured>.article-card>.article-thumbnail {
         height: 200px;
+    }
+    .aside {
+        display: block;
+    }
+    .featured-articles>.aside>.aside-featured {
+        height: auto;
+    }
+    .view-more {
+        /* display: block; */
+        margin: 5px auto;
     }
 }

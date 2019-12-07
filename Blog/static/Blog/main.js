@@ -181,6 +181,6 @@ function addClassToAsideFeatured() {
  * This function is used to make changes to the layout for small screen devices
  */
 function onMobile() {
-    const viewbutton = $('.view-more')
-    viewbutton.parent().next().append(viewbutton)
+    const viewbutton = $('.view-more');
+    viewbutton.each(function() { $(this).parent().next().after($(this)) });
 }
