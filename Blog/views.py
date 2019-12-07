@@ -66,18 +66,24 @@ class HomeView(ListView):
         Returns unique posts in current after removing duplicate objects from it.
         Set difference is calculated here as a part of list comphrehension in order to maintain order.
         '''
-        unique = set(unique)
-        print('unique>>>', unique, '\n')
+        # print('values>>>', len(current))
+        # print('unique>>>', unique, len(unique), '\n')
+
+        # Find values from current list that aren't inside unique
         current_unique = [i for i in current if i not in unique][:top_n]
-        print('current-unique', current_unique, '\n')
-        unique = unique.union(set(current_unique))
-        # # Finds union of both lists (current_unique)
-        # union = current_unique + [i for i in unique if i in current_unique]
-        print('unique after union>>>', unique, '\n')
+        # print('current-unique', current_unique, len(current_unique), '\n')
+
+        '''
+        Add current_unique and unique
+        No need to use sets: both are unique and non-intersecting(current unique is just calculated above)) 
+        '''
+        unique = current_unique + unique
+        # print('unique after union>>>', unique, len(unique), '\n')
         return current_unique, unique
 
     def get_featured_posts(self):
-        '''Returns top_n featured posts
+        '''
+        Returns top_n featured posts
         where top_n is self.NO_FEATURED_POSTS
         '''
         top_n = self.NO_FEATURED_POSTS
@@ -99,23 +105,29 @@ class HomeView(ListView):
         Returns top_n posts under a certain category.
         for top_n = +self.NO_FEATURED_POSTS is for featured articles
                     +self.NO_LATEST_POSTS is for latest articles
-                    +self.NO_CATEGORY_POSTS * index is for extra articles in case of duplicacy with the above categories.
+                    +self.NO_CATEGORY_POSTS * (index+1) is for extra articles in case of duplicacy with the above categories.
+                    1 is added to index since it starts from 0.
         '''
 
         top_n = self.NO_FEATURED_POSTS + self.NO_LATEST_POSTS + \
-            self.NO_CATEGORY_POSTS * (index)
+            self.NO_CATEGORY_POSTS * (index + 1)
         return published_posts().filter(category__name=category)[:top_n]
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['meta'] = meta_home
-        context['featured_posts'] = list(self.get_featured_posts())
-        posts_unique = context['featured_posts']
+        posts_unique = context['featured_posts'] = list(
+            self.get_featured_posts())
+        # posts_unique = context['featured_posts']
 
         latest_posts = list(self.get_latest_posts())
         context['latest_posts'], posts_unique = self.remove_duplicates(
             latest_posts, posts_unique, self.NO_LATEST_POSTS)
 
+        '''
+        Categories to displayed on the homepage
+        format: all small-case
+        '''
         categories = ['science', 'technology']
         # context['categories'] = categories
 
@@ -130,9 +142,9 @@ class HomeView(ListView):
         context['category'] = category_result
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
-        print("Featured>>>", context['featured_posts'])
-        print("Latest>>>", context['latest_posts'])
-        print("Categories>>>", context['category'])
+        # print("Featured>>>", context['featured_posts'])
+        # print("Latest>>>", context['latest_posts'])
+        # print("Categories>>>", context['category'])
 
         return context
 
