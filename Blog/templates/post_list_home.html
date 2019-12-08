@@ -9,7 +9,7 @@
                 <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title }}</a></h4>
                 {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
                 <div class="article-short-des" style="display:inline">
-                    {{ post.content|truncatewords_html:'50' }}&nbsp
+                    {{ post.content|truncatechars:'50' }}&nbsp
                     <a style="display:inline-block" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Read more</a>
                 </div>
                 <div class="tags">
