@@ -236,6 +236,10 @@ a.article-title:hover {
     flex-direction: column;
 }
 
+.article-detail {
+    margin-left: 4rem;
+}
+
 #share {
     text-align: center;
     position: fixed;
@@ -573,6 +577,9 @@ a.article-title:hover {
     } */
     #article-share-container {
         flex-direction: column-reverse;
+    }
+    .article-detail {
+        margin-left: 0;
     }
     .article-list>.article-thumbnail>img {
         width: 100%;
