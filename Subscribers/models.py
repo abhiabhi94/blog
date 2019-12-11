@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Subscriber(models.Model):
-    email = models.EmailField(unique=True, max_length=254)
+    email = models.EmailField(unique=True, max_length=254, editable=False)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

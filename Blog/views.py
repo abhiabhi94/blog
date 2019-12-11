@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.views.generic import (ListView,
                                   DetailView,
@@ -5,7 +6,6 @@ from django.views.generic import (ListView,
                                   UpdateView,
                                   DeleteView
                                   )
-from .models import Post
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from Users.models import Profile
@@ -19,9 +19,11 @@ from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from collections import Counter
 from meta.views import Meta
-import json
 from datetime import datetime
-
+from validate_email import validate_email
+from django.db import IntegrityError
+from .models import Post
+from Subscribers.models import Subscriber
 
 '''
 Use the name posts for backend purposes.
@@ -36,6 +38,11 @@ def published_posts(order='-date_posted'):
     if no order is given, the posts are ordered by their post date.
     '''
     return Post.objects.filter(publish=True).order_by(order)
+
+
+def email_verification(email):
+    '''Verify whether an email is legit or not'''
+    return validate_email(email_address=email, check_regex=True, check_mx=True)
 
 
 global meta_home
@@ -128,8 +135,10 @@ class HomeView(ListView):
         Categories to displayed on the homepage
         format: all small-case
         '''
-        categories = ['science', 'technology']
-        # context['categories'] = categories
+        categories = [
+            'science',
+            'technology',
+        ]
 
         category_result = {}
         for index, category in enumerate(categories):
@@ -147,6 +156,33 @@ class HomeView(ListView):
         # print("Categories>>>", context['category'])
 
         return context
+
+
+def subscribe(request):
+    '''
+    adds emails to the model Subscribers after verifying legit emails only on POST requests.
+    Returns Jsonresponse with properties response and status.
+    '''
+    data = {'msg': '', 'email': '', 'status': -1}
+    if request.method == 'POST':
+        email = request.POST['email']
+        data['email'] = email
+        if email_verification(email):
+            try:
+                Subscriber.objects.create(email=email)
+                data['msg'] = ' is now registered successfully with us'
+                data['status'] = 0
+            except IntegrityError:
+                data['msg'] = ' is already registered with us'
+            except:
+                data['status'] = 1
+                data['msg'] = 'There seems to be an issue on our side. Please retry.'
+            return JsonResponse(data)
+
+        data['msg'] = ' is not a valid email'
+        return JsonResponse(data)
+
+    return Http404('Wrong request format')
 
 
 class FeaturedPostListView(ListView):

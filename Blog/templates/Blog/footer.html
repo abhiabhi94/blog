@@ -1,0 +1,39 @@
+<footer class="footer">
+    <div class="col1">
+        <div class="subscription">
+            <h5 id="noText">Stay updated with our latest articles and other stuff</h5>
+            <div id="sub-response">
+            </div>
+            <form class="subForm" action="{% url 'Blog:subscription' %}" method="post">
+                {% csrf_token %}
+                <input id="email" class="p-1" type="email" name="email" placeholder="Enter Email.." required>
+                <button type="submit" class="btn btn-sm subscribe" value="submit">Subscribe</button>
+            </form>
+        </div>
+        <div class="copyright">
+            <h6>©2019 HackAdda All rights reserved</h6>
+        </div>
+    </div>
+    <div class="col2">
+        <div class="contact">
+            <a href="mailto:hackadda.com@gmail.com"><i class="fa fa-envelope"></i>
+                <h6 class="phone">hackadda.com@gmail.com</h6>
+            </a>
+        </div>
+    </div>
+    <div class="col3">
+        <div class="social-icons">
+            {% with "facebook twitter instagram medium" as socials %}
+            {% for social in socials.split %}
+                {% with "https://"|add:social|add:".com/"|add:"hackadda" as social_link %}
+                {% comment %} {{social_link}} {% endcomment %}
+                {% include "./social_icons.html" with link=social_link  iclass=social %}
+                {% endwith %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+        <div class="made-with-love">
+            <h6>Made with ❤️ from <a href="http://wikipedia.com/tetarpur" target="_blank" alt="Tetarpur">Tetarpur</a></h6>
+        </div>
+    </div>
+</footer>

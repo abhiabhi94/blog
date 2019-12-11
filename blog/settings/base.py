@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'Blog.apps.BlogConfig',
     'Track.apps.TrackConfig',
     'Users.apps.UsersConfig',
+    'Subscribers.apps.SubscribersConfig',
     'crispy_forms',
     'markupfield',
     'meta',

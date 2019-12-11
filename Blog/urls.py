@@ -12,6 +12,7 @@ ymd_re = r'(?P<year>[0-9]{4})/?(?P<month>[0-9]{1,2})?/?(?P<day>[0-9]{1,2})?'
 urlpatterns = [
     # path('', views.PostListView.as_view(), name='home'),
     path('', views.HomeView.as_view(), name='home'),
+    path('subscribe/', views.subscribe, name='subscription'),
     path('user/<str:username>', views.UserPostListView.as_view(), name='user-posts'),
     path('user/<str:username>/bookmarks',
          views.UserPostBookmark.as_view(), name='user-bookmarks'),
@@ -39,5 +40,5 @@ urlpatterns = [
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
     path('post/category/<str:category>',
          views.CategoryPostListView.as_view(), name='category'),
-    re_path(r'post/'+ymd_re, views.get_timewise_list, name='timewise-list')
+    re_path(r'post/'+ymd_re+'$', views.get_timewise_list, name='timewise-list')
 ]

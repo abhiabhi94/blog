@@ -1,7 +1,10 @@
+'use strict';
+
 $(document).ready(function(event) {
     if (window.matchMedia('(max-width: 600px)').matches) {
         onMobile();
     }
+    $('.subForm').submit(subscribe);
     loadSidebar();
     addClassToAsideFeatured();
     $('.dropdown').on('click focus', function(event) {
@@ -12,12 +15,12 @@ $(document).ready(function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
         if ($(this).data) {
-            let text = $(this).data('text');
+            const text = $(this).data('text');
         } else {
-            let text = window.location.href;
+            const text = window.location.href;
         }
         // console.log('link:', text);
-        let dummy = document.createElement('input');
+        const dummy = document.createElement('input');
         $('body').append(dummy);
         dummy.value = text;
         dummy.select();
@@ -31,10 +34,10 @@ $(document).ready(function(event) {
         createResponse('info', 'Link Copied Successfully');
     });
     $('.bookmark').on('click', function(event) {
-        let parent = event.currentTarget;
+        const parent = event.currentTarget;
         event.preventDefault();
         // console.log(event.currentTarget);
-        let post = $(this).data('post');
+        const post = $(this).data('post');
         url = $(this).data('url');
         if (parent.id === 'unbookmark') {
             // console.log('Removing');
@@ -61,21 +64,21 @@ $(document).ready(function(event) {
  * responseType:json  
  */
 function sendAjax(link, args) {
-    // let responseType = 'application/'
+    // const responseType = 'application/'
     if (typeof args.type === "undefined") {
-        let type = 'POST'
+        const type = 'POST';
     } else {
-        type = args.type
+        const type = args.type;
     }
     if (typeof args.data === "undefined") {
-        let data = ''
+        const data = '';
     } else {
-        let data = args.data;
+        const data = args.data;
     }
     if (typeof args.responseType === "undefined") {
-        let responseType = 'json'
+        const responseType = 'json';
     } else {
-        let responseType = args.responseType;
+        const responseType = args.responseType;
     }
     // console.log(type, data, responseType, link)
     $.ajax({
@@ -95,12 +98,13 @@ function sendAjax(link, args) {
         complete: function(data) {
             try {
                 // console.log(data.responseJSON['message']);
-                if (data.responseJSON['status'] === 0) {
-                    let state = 'success';
-                } else {
-                    let state = 'warning';
-                }
-                let msg = data.responseJSON['message'];
+                // if (data.responseJSON['status'] === 0) {
+                //     const state = 'success';
+                // } else {
+                //     const state = 'warning';
+                // }
+                const state = data.responseJSON['status'];
+                const msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
                 top.location.href = '/login';
@@ -111,19 +115,30 @@ function sendAjax(link, args) {
     });
 }
 /**
- * Create a temporary div, append it to the div'#response', fix it to the top and fade it out.
- * @param {string} status - a string based upon the response received for AJAX request.('success'|'warning')
+ * Create a temporary div, append it to the div'#response', fix it to the top and fade it.
+ * @param {int} status - an integer based upon the response received for AJAX request.
+ * (-1->'error'|0->'success'| 1->'warning')
  * @param {string} msg - a string depicting the message to be displayed in the response. 
+ * @param {int} time - time after which the response fades away
  */
-function createResponse(status, msg) {
-    let cls = 'alert alert-' + status;
-    let response = $('#response');
-    let temp = $('<div/>')
+function createResponse(status, msg, time = 2000) {
+    switch (status) {
+        case -1:
+            status = "danger";
+            break;
+        case 0:
+            status = "success";
+            break;
+        case 1:
+            status = "warning";
+    }
+    const cls = 'alert alert-' + status;
+    const response = $('#response');
+    const temp = $('<div/>')
         .addClass(cls)
         .html('<div>' + msg + '</div>');
     // console.log(temp);
     response.append(temp);
-    let time = 2000;
     fixToTop(temp);
     temp.fadeIn(time);
     temp.fadeOut(2 * time);
@@ -136,7 +151,7 @@ function createResponse(status, msg) {
  * @param {element} div - element that is to be fixed at the top of the viewport. 
  */
 function fixToTop(div) {
-    let isfixed = div.css('position') == 'fixed';
+    const isfixed = div.css('position') == 'fixed';
     if (div.scrollTop() > 200 && !isfixed)
         div.css({ 'position': 'fixed', 'top': '0px' });
     if (div.scrollTop < 200 && isfixed)
@@ -151,13 +166,13 @@ function fixToTop(div) {
  * On pages other than homepage, latest and featured posts will be added.
  */
 function loadSidebar() {
-    let latestPosts = { id: '#latest-posts', num: 5 };
+    const latestPosts = { id: '#latest-posts', num: 5 };
     latestPosts.url = $(latestPosts.id).data('url');
     sendPost(latestPosts.url, latestPosts.id, { 'num': latestPosts.num });
-    let topTagsEle = { id: '#top-tags', num: 5 };
+    const topTagsEle = { id: '#top-tags', num: 5 };
     topTagsEle.url = $(topTagsEle.id).data('url');
     sendPost(topTagsEle.url, topTagsEle.id, { 'num': topTagsEle.num });
-    let allTagsEle = { id: '#all-tags' };
+    const allTagsEle = { id: '#all-tags' };
     allTagsEle.url = $(allTagsEle.id).data('url');
     sendPost(allTagsEle.url, allTagsEle.id);
 }
@@ -173,7 +188,7 @@ function sendPost(url, responseEle, data) {
  * The styling is done in CSS to place them alongside the latest one in small scale devices.
  */
 function addClassToAsideFeatured() {
-    let div = document.createElement('div');
+    const div = document.createElement('div');
     div.className = 'aside';
     $('.aside-featured').wrapAll(div);
 }
@@ -183,4 +198,34 @@ function addClassToAsideFeatured() {
 function onMobile() {
     const viewbutton = $('.view-more');
     viewbutton.each(function() { $(this).parent().next().after($(this)) });
+}
+
+/**
+ * 
+ * @param {event} event - The event that takes care 
+ */
+function subscribe(event) {
+    const responseDiv = $('#sub-response');
+    const email = $('#email').val();
+    responseDiv.html('Registering ' + email + ' with HackAdda!');
+    const url = $(this)[0].action;
+    const data = $(this).serialize;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        // error: function(jqXhr, textStatus, errorMessage) {
+        // console.log('Error Message:' + errorMessage);
+        // },
+        complete: function(data) {
+            data = data.responseJSON;
+            createResponse(data['status'], data['email'] + data['msg']);
+            responseDiv.html('');
+            if (data['status'] !== -1) {
+                email.val('');
+            }
+        }
+    });
+    event.preventDefault();
 }
