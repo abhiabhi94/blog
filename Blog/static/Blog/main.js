@@ -38,7 +38,7 @@ $(document).ready(function(event) {
         event.preventDefault();
         // console.log(event.currentTarget);
         const post = $(this).data('post');
-        url = $(this).data('url');
+        const url = $(this).data('url');
         if (parent.id === 'unbookmark') {
             // console.log('Removing');
             parent.children[0].style.color = 'darkgrey';
@@ -64,23 +64,24 @@ $(document).ready(function(event) {
  * responseType:json  
  */
 function sendAjax(link, args) {
-    // const responseType = 'application/'
+    // const responseType = 'application/
+    let type, data, responseType;
     if (typeof args.type === "undefined") {
-        const type = 'POST';
+        type = 'POST';
     } else {
-        const type = args.type;
+        type = args.type;
     }
     if (typeof args.data === "undefined") {
-        const data = '';
+        data = '';
     } else {
-        const data = args.data;
+        data = args.data;
     }
     if (typeof args.responseType === "undefined") {
-        const responseType = 'json';
+        responseType = 'json';
     } else {
-        const responseType = args.responseType;
+        responseType = args.responseType;
     }
-    // console.log(type, data, responseType, link)
+    console.log(type, data, responseType, link);
     $.ajax({
         type: type,
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
@@ -180,7 +181,7 @@ function loadSidebar() {
 function sendPost(url, responseEle, data) {
     $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
         $(responseEle).append(response);
-    })
+    });
 }
 /**
  * Used for styling the featured articles aside of the latest one.
