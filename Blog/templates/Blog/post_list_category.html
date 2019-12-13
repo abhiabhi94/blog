@@ -1,1 +1,4 @@
-{% include "post_list_generic.html" %}
+{% extends "post_list_generic.html" %}
+{% block topcontent %}
+    <legend class="heading"> Posts under the category {{category|title}} </legend>
+{% endblock topcontent %}

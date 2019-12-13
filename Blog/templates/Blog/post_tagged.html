@@ -1,4 +1,5 @@
 {% extends "post_list_generic.html" %}
-{% block topbar %}
-    <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-{% endblock topbar %}
+{% block topcontent %}
+    <legend class="heading">Posts tagged with {{tag|title}}</legend>
+    {% comment %} <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3> {% endcomment %}
+{% endblock topcontent %}

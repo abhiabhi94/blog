@@ -1,0 +1,10 @@
+{% extends "Blog/base.html" %}
+{% block content %}
+<div class="tag">
+    {% for tag, count in tags.items %}
+        <div class="article-tags cloud">
+            <a class="{{tag}}" title="{{count.0}}" href="{% url 'Blog:tagged' tag %}" style="font-size:{{count.1}}">{{tag}}</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

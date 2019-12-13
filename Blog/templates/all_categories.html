@@ -1,0 +1,10 @@
+{% extends "Blog/base.html" %}
+{% block content %}
+<div class="category row">
+    {% for category, count in categories.items %}
+        <div class="col-md-4 category cloud">
+            <a class="{{category}} heading" title="{{count}}" href="{% url 'Blog:categorised' category %}">{{category|title}}</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

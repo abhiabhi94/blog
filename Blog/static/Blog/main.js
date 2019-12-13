@@ -167,15 +167,18 @@ function fixToTop(div) {
  * On pages other than homepage, latest and featured posts will be added.
  */
 function loadSidebar() {
-    const latestPosts = { id: '#latest-posts', num: 5 };
+    const latestPosts = { id: '#latest-posts', top_n: 5 };
     latestPosts.url = $(latestPosts.id).data('url');
-    sendPost(latestPosts.url, latestPosts.id, { 'num': latestPosts.num });
-    const topTagsEle = { id: '#top-tags', num: 5 };
+    sendPost(latestPosts.url, latestPosts.id, { 'top_n': latestPosts.top_n });
+    const topTagsEle = { id: '#top-tags', top_n: 5 };
     topTagsEle.url = $(topTagsEle.id).data('url');
-    sendPost(topTagsEle.url, topTagsEle.id, { 'num': topTagsEle.num });
-    const allTagsEle = { id: '#all-tags' };
-    allTagsEle.url = $(allTagsEle.id).data('url');
-    sendPost(allTagsEle.url, allTagsEle.id);
+    sendPost(topTagsEle.url, topTagsEle.id, { 'top_n': topTagsEle.top_n });
+    // const allTagsEle = { id: '#all-tags' };
+    // allTagsEle.url = $(allTagsEle.id).data('url');
+    // sendPost(allTagsEle.url, allTagsEle.id);
+    const topCategoriesEle = { id: '#top-categories', top_n: 3 };
+    topCategoriesEle.url = $(topCategoriesEle.id).data('url');
+    sendPost(topCategoriesEle.url, topCategoriesEle.id, { 'top_n': topCategoriesEle.top_n });
 }
 
 function sendPost(url, responseEle, data) {

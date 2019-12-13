@@ -1,5 +1,4 @@
 import json
-from django.shortcuts import render
 from django.views.generic import (ListView,
                                   DetailView,
                                   CreateView,
@@ -10,7 +9,9 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from Users.models import Profile
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import (render,
+                              redirect,
+                              get_object_or_404)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -22,7 +23,7 @@ from meta.views import Meta
 from datetime import datetime
 from validate_email import validate_email
 from django.db import IntegrityError
-from .models import Post
+from .models import Post, Category
 from Subscribers.models import Subscriber
 
 '''
@@ -34,7 +35,7 @@ Use the name articles for frontend purposes.
 def published_posts(order='-date_posted'):
     '''
     TODO: support multiple filters.
-    returns a list of published posts. 
+    returns a list of published posts.
     if no order is given, the posts are ordered by their post date.
     '''
     return Post.objects.filter(publish=True).order_by(order)
@@ -43,6 +44,25 @@ def published_posts(order='-date_posted'):
 def email_verification(email):
     '''Verify whether an email is legit or not'''
     return validate_email(email_address=email, check_regex=True, check_mx=True)
+
+
+def get_font_cloud(obj, F=5.0, f=1.0):
+    '''
+    Returns a font-cloud based upon the values
+    Max font-size is 5{rem}
+    Min font-size is 1{rem}
+    In-between values are calculated based upon linear distribution{ax+b}.
+    '''
+    V = list(obj.values())[0]
+    v = 1
+    diff = V - v
+    b = (f * V - F * v) / diff
+    a = (F-f) / diff
+
+    # for key, val in obj:
+    # obj['key'] = (val, val*a + b)
+    return {key: (val, f'{val*a + b:.3f}' + 'rem') for (key, val) in obj.items()}
+    # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
 
 
 global meta_home
@@ -82,7 +102,7 @@ class HomeView(ListView):
 
         '''
         Add current_unique and unique
-        No need to use sets: both are unique and non-intersecting(current unique is just calculated above)) 
+        No need to use sets: both are unique and non-intersecting(current unique is just calculated above))
         '''
         unique = current_unique + unique
         # print('unique after union>>>', unique, len(unique), '\n')
@@ -100,7 +120,7 @@ class HomeView(ListView):
     def get_latest_posts(self):
         '''
         Returns top_n latest_posts
-        +self.NO_LATEST_POSTS latest posts for 
+        +self.NO_LATEST_POSTS latest posts for
         +self.NO_FEATURED_POSTS is for checking duplicacy with featured articles
         '''
         top_n = self.NO_LATEST_POSTS + self.NO_FEATURED_POSTS
@@ -417,6 +437,7 @@ class TaggedPostListView(ListView):
         context['meta'] = Meta(title=f'Posts tagged with {tag}',
                                description=f'Read posts with the tag {tag} from StayCurious',
                                keywords=meta_home.keywords + [tag])
+        context['tag'] = tag
         return context
 
 
@@ -425,10 +446,10 @@ def get_latest_posts(request, **kwargs):
         template_name = 'post_title.html'
         # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
-            num = int(json.loads(request.POST.get('data'))['num'])
+            top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as e:
             raise Http404('Wrong Request Format for post request')
-        posts = published_posts()[:num]
+        posts = published_posts()[:top_n]
         return render(request, template_name, {'posts': posts})
 
     elif request.method == 'GET':
@@ -441,35 +462,45 @@ def get_latest_posts(request, **kwargs):
     raise Http404('Wrong Request format')
 
 
-def get_tags(request):  # used in right sidebar
-    if request.method == 'POST':
-        template_name = 'tags.html'
-        tags_list = [post.get_tags_list()
-                     for post in published_posts()]
-        tags_list = list({item for outer in tags_list for item in outer})
-        # top_tags_list =  {tag:count for (tag, count) in top_tags}
-
-        # print(top_tags_list)
-        return render(request, template_name, {'tags': tags_list})
-
-    raise Http404("Wrong Request Format")
-
-
-def get_top_tags(request):  # used in right side bar above all tags.
+def get_tags(request):
+    '''
+    1. Get request is used for top tags(mostly used)
+    2. Post request is used for displaying the top_n tags in the sidebar
+    '''
+    context = {}
     if request.method == 'POST':
         template_name = 'tags.html'
         try:
-            num = int(json.loads(request.POST.get('data'))['num'])
+            top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as e:
             raise Http404("Wrong Request Format")
-        tags_list = [post.get_tags_list()
-                     for post in published_posts()]
-        top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common(num)
-        top_tags_list = {tag: count for (tag, count) in top_tags}
-        return render(request, template_name, {'tags': top_tags_list, 'html': True})
+        finally:
+            flag = 1    # Tells whether post request was executed or get
+            # For showing option of view more on sidebar
+            context['ajax'] = True
 
-    raise Http404("Wrong Request Format")
+    elif request.method == 'GET':
+        template_name = 'all_tags.html'
+        flag = 0
+
+    tags_list = [post.get_tags_list()
+                 for post in published_posts()]
+    if flag:    # for post request
+        top_tags = Counter(
+            [item for outer in tags_list for item in outer]).most_common(top_n)
+    else:   # for get request
+        top_tags = Counter(
+            [item for outer in tags_list for item in outer]).most_common()
+
+    top_tags_list = {tag: count for (tag, count) in top_tags}
+
+    # context['tags'] = top_tags_list
+    context['tags'] = get_font_cloud(top_tags_list)
+    print(context)
+
+    return render(request, template_name, context)
+
+    # raise Http404("Wrong Request Format")
 
 
 class CategoryPostListView(ListView):
@@ -492,6 +523,7 @@ class CategoryPostListView(ListView):
         context['meta'] = Meta(title=f'Posts tagged with {category}',
                                description=f'Read posts with the category {category} from HackAdda',
                                keywords=meta_home.keywords + [category])
+        context['category'] = category
         return context
 
 
@@ -541,3 +573,44 @@ def paginate_util(request, objects, paginate_by, kwargs):
         kwargs['is_paginated'] = True
     kwargs['page_obj'] = objects
     return objects
+
+
+def get_category(request):
+    '''
+    get categories(foriegn key) present in Blog
+    1. For get request, all categories are shown in a page.
+    2. For post request, top_n categories are shown in the sidebar.
+    '''
+    context = {}
+    if request.method == 'POST' and request.is_ajax():
+        template_name = 'Blog/categories.html'
+        try:
+            top_n = int(json.loads(request.POST.get('data'))['top_n'])
+        except Exception as e:
+            raise Http404("Wrong Request Format")
+        finally:
+            flag = 1
+            context['ajax'] = True
+
+    elif request.method == 'GET':
+        flag = 0
+        template_name = 'all_categories.html'
+
+    categories = Category.objects.filter(
+        post__in=published_posts())
+
+    if flag:
+        top_categories = Counter(categories).most_common(top_n)
+    else:
+        top_categories = Counter(categories).most_common()
+
+    top_categories_list = {
+        category: count for (category, count) in top_categories}
+
+    context['categories'] = top_categories_list
+    # context['categories'] = get_font_cloud(top_categories_list)
+    print(context)
+
+    return render(request, template_name, context)
+
+    # print(categories)

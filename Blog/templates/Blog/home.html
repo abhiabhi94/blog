@@ -4,7 +4,7 @@
 {% include "post_featured_home.html" with posts=featured_posts%}
 {% include "post_latest_home.html" with posts=latest_posts %}
 {% for category_name, category_posts in category.items %}
-    {% url "Blog:category" category_name as category_url %}
+    {% url "Blog:categorised" category_name as category_url %}
     {% include "heading.html" with heading=category_name view_more_url=category_url %}
     <div class="category article-list">
     {% include "post_list_home.html" with posts=category_posts %}

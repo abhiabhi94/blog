@@ -3,3 +3,6 @@
     <a href="{% url 'Blog:tagged' tag %}"><p class="article-tags">{{ tag }}</p></a>
 {% endfor %}
 </span>
+{% if ajax %}
+    <a class="btn-primary btn-sm" href="{% url 'Blog:all-tags' %}" title="View all tags">View More</a>
+{% endif %}

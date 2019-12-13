@@ -96,9 +96,9 @@
                     {% comment %} <p class='text-muted'>You can put any information here you'd like. {% endcomment %}
                         <ul class="list-group">
                             <li id="latest-posts" class="list-group-item list-group-item-light" data-url='{% url "Blog:latest-posts" %}'>Latest Posts</li>
-                            <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:top-tags" %}'>Top Tags<br></li>
+                            <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
+                            <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
                             {% comment %} <h5>Top Tags</h5> {% endcomment %}
-                            <li id="all-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>All Tags<br></li>
                             {% comment %} <h5>All Tags</h5> {% endcomment %}
                         </ul>
                     </p>
