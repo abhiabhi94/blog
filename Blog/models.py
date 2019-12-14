@@ -1,4 +1,5 @@
 import re
+import os
 from django.utils.html import strip_tags
 from django.db import models
 from django.utils import timezone
@@ -65,7 +66,7 @@ class Post(models.Model, ModelMeta):
         null=True, blank=True)
     featured = models.BooleanField(default=False)
     image = models.ImageField(
-        default='default.jpg', upload_to='profile_pics', blank=True)
+        default='default.jpg', upload_to='blog', blank=True)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -73,45 +74,57 @@ class Post(models.Model, ModelMeta):
     }
 
     def save(self, *args, **kwargs):
+        '''
+        1. slugify the title
+        2. save the tags in lower case
+        3. Sets the date_publish when the publish flag is set for the first time.
+        4. compress and resize images to make thumbnails and full size images
+        '''
         self.slug = slugify(self.title)
         self.tags = self.tags.lower()
 
+        # Save the publish date when the flag is set for the first time.
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
 
         super(*args, **kwargs).save()
-        img = Image.open(self.image.path)
-        img_thumbnail = img.copy() # thumbnail changes in place
-        # if(img.height > 350 or img.width > 350):
-        thumbnail_size, full_view_size = (350, 350), (800,400)
-        # for list view
-        img_thumbnail.thumbnail(thumbnail_size)
-        img_thumbnail.save(self._image_name('_thumbnail'), quality=50, optimize=True)
-        # for detail view
-        img.resize(full_view_size).save(self._image_name('_full_view'), quality=50, optimize=True)
+        with Image.open(self.image.path) as img:
+            thumbnail_size, full_view_size = (350, 350), (800, 800)
+
+            img_thumbnail = img.copy()  # thumbnail changes in place
+
+            # for list view
+            img_thumbnail.thumbnail(thumbnail_size)
+            img_thumbnail.save(self._image_name('_thumbnail'),
+                               quality=50, optimize=True)
+            # for detail view
+            img.thumbnail(full_view_size)
+            img.save(self._image_name('_full_view'), quality=50, optimize=True)
+
+        # Remove the original image
+        os.remove(self.image.path)
 
     @property
     def full_view_image(self):
-        """
-        to be used in template for getting the url of full_view_image for detail view
-        """
-        return self._image_name('_thumbnail', True)
+        '''To be used in template for getting the url of full_view_image for detail view'''
+
+        return self._image_name('_full_view', True)
 
     @property
     def thumbnail_image(self):
-        """
-        to be used in template for getting the url of full_view_image for list view
-        """
-        return self._image_name('_full_view', True)
+        '''To be used in template for getting the url of full_view_image for list view'''
+
+        return self._image_name('_thumbnail', True)
 
     def _image_name(self, modifier, view=False):
-        """
+        '''
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
-        """
+        '''
         new_name = self.image.name.split('.')
-        new_name.insert(-1, modifier+'.') # dont forget extension
-        if view: return self.image.storage.url(''.join(new_name))
+        new_name.insert(-1, modifier+'.')  # dont forget extension
+        if view:
+            return self.image.storage.url(''.join(new_name))
         return self.image.storage.path(''.join(new_name))
 
     def __str__(self):
