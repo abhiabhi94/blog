@@ -587,6 +587,15 @@ a.article-title:hover {
     border-color: #046293;
 }
 
+::selection {
+    color: white;
+    background-color: gray;
+}
+
+::-moz-selection { /* Code for Firefox */
+    color: white;
+    background-color: gray;
+  }
 
 /* .num {
     font-family: 'CooperHewittBold';
