@@ -1,5 +1,5 @@
 <div class="article-thumbnail">
-    <img src="https://picsum.photos/500/" alt="{{post.title}}" title="{{post.title}}">
+    <img src="{{post.thumbnail_image}}" alt="{{post.title}}" title="{{post.title}}">
 </div>
 <div class="col article-container">
     <h{{font|default:6}}><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title|truncatechars:'80' }}</a></h5>
