@@ -22,6 +22,10 @@ ul {
     margin: 0;
 }
 
+.btn-primary {
+    white-space: nowrap;
+}
+
 .navbar-color {
     background-color: #5f788a;
 }
@@ -86,7 +90,8 @@ a.dropdown-toggle {
 }
 
 #main {
-    margin: 2rem;
+    margin: 1rem;
+    padding: 0.5rem;
 }
 
 #latest-posts,
@@ -590,6 +595,13 @@ a.article-title:hover {
 } */
 
 @media(max-width:600px) {
+    #main {
+        margin: 1rem;
+        padding: 0;
+    }
+    #sidebar {
+        margin-top: 1rem;
+    }
     #post-options {
         left: 55%;
     }
@@ -658,5 +670,6 @@ a.article-title:hover {
     .footer>.col2>*,
     .footer>.col3>* {
         padding: 0.5rem;
+        text-align: left;
     }
 }
