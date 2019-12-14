@@ -1,9 +1,6 @@
-{% with domain='https://staycurious.in' %}
+{% with request.build_absolute_uri as link %}
 <ul class="list-unstyled share-icon mt-2 mb-2">
     <p class="text mt-0 mb-0">Share</p>
-    {% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug as link%}
-    {% comment %} {% url 'Blog:post-detail' post.slug as link %} {% endcomment %}
-    {% with domain|add:link as link %}
         <li><a href="http://www.facebook.com/sharer.php?u={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-facebook ml-2 mr-2"></i></a></li>
         <li><a href="http://www.twitter.com/share?text={{object.title}}&url={{link}}" rel="nofollow noopener noreferrer" target="_blank"><i class="fa fa-twitter ml-2 mr-2"></i></a></li>
         <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{link|urlencode:''}}&title={{object.title|urlencode}}&source=StayCurious-Blog" rel="nofollow noopener noreferrer" target="_blank" ><i class="fa fa-linkedin ml-2 mr-2"></i></a></li>
@@ -16,6 +13,5 @@
         {% else %}
         <li><a id="bookmark" class="btn bookmark" data-post={{post.slug}} data-url={% url 'Blog:bookmark-post'%} title="Bookmark this post"><i class="fa fa-bookmark" style="color:darkgrey"></i></a></li>
         {% endif %}
-    {% endwith %}
 </ul>
 {% endwith %}
