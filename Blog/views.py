@@ -48,7 +48,7 @@ def email_verification(email):
 
 def get_font_cloud(obj, F=5.0, f=1.0):
     '''
-    Returns a font-cloud based upon the values
+    Returns a font-cloud based upon the sorted dictionary received.
     Max font-size is 5{rem}
     Min font-size is 1{rem}
     In-between values are calculated based upon linear distribution{ax+b}.
@@ -209,7 +209,7 @@ class FeaturedPostListView(ListView):
     '''
     Returns a list view of featured posts
     '''
-    template_name = 'post_list_generic.html'
+    template_name = 'Blog/post_list_featured.html'
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -453,7 +453,7 @@ def get_latest_posts(request, **kwargs):
         return render(request, template_name, {'posts': posts})
 
     elif request.method == 'GET':
-        template_name = 'post_list_generic.html'
+        template_name = 'Blog/post_list_latest.html'
         paginate_by = 5
         posts = published_posts()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
