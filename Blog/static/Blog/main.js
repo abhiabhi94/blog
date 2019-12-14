@@ -5,6 +5,7 @@ $(document).ready(function(event) {
         onMobile();
     }
     $('.subForm').submit(subscribe);
+    marginFirstHeading();
     loadSidebar();
     addClassToAsideFeatured();
     $('.dropdown').on('click focus', function(event) {
@@ -81,7 +82,7 @@ function sendAjax(link, args) {
     } else {
         responseType = args.responseType;
     }
-    console.log(type, data, responseType, link);
+    // console.log(type, data, responseType, link);
     $.ajax({
         type: type,
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
@@ -232,4 +233,16 @@ function subscribe(event) {
         }
     });
     event.preventDefault();
+}
+
+/**
+ * Reduces the margin-top for the first class of heading.
+ */
+function marginFirstHeading() {
+    try {
+        const ele = $('.heading')[0]
+        ele.style.setProperty('margin-top', 0.1 + 'rem', 'important');
+    } catch (TypeError) {
+        return;
+    }
 }
