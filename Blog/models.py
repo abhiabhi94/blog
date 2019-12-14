@@ -64,7 +64,7 @@ class Post(models.Model, ModelMeta):
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
-    thumbnail = models.ImageField(
+    image = models.ImageField(
         default='default.jpg', upload_to='profile_pics', blank=True)
     _metadata = {
         'title': 'title',
@@ -79,25 +79,40 @@ class Post(models.Model, ModelMeta):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
 
-        # if not self.publish:
-        #     self.date_published = timezone.now()
-        # if self.short_des:
-        #     pass
-        # else:
-        #     # self.short_des = ('.').join(self.content.split('.')[:5])
-        #     self.short_des = self._content_rendered[:300]
-        # self.tags = self.create
-        # try:
-        #     if(type(eval(self.tags))!=list):
-        #         pass
-        # except:
-        #     self.tags = self.tags.lower().split()
         super(*args, **kwargs).save()
-        img = Image.open(self.thumbnail.path)
-        if(img.height > 350 or img.width > 350):
-            output_size = (350, 350)
-            img.thumbnail(output_size)
-            img.save(self.thumbnail.path)
+        img = Image.open(self.image.path)
+        img_thumbnail = img.copy() # thumbnail changes in place
+        # if(img.height > 350 or img.width > 350):
+        thumbnail_size, full_view_size = (350, 350), (800,400)
+        # for list view
+        img_thumbnail.thumbnail(thumbnail_size)
+        img_thumbnail.save(self._image_name('_thumbnail'), quality=50, optimize=True)
+        # for detail view
+        img.resize(full_view_size).save(self._image_name('_full_view'), quality=50, optimize=True)
+
+    @property
+    def full_view_image(self):
+        """
+        to be used in template for getting the url of full_view_image for detail view
+        """
+        return self._image_name('_thumbnail', True)
+
+    @property
+    def thumbnail_image(self):
+        """
+        to be used in template for getting the url of full_view_image for list view
+        """
+        return self._image_name('_full_view', True)
+
+    def _image_name(self, modifier, view=False):
+        """
+        modifier - used for changing the name for image
+        view - if true return url for template else return path for saving.
+        """
+        new_name = self.image.name.split('.')
+        new_name.insert(-1, modifier+'.') # dont forget extension
+        if view: return self.image.storage.url(''.join(new_name))
+        return self.image.storage.path(''.join(new_name))
 
     def __str__(self):
         return self.title
