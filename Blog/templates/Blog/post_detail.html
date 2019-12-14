@@ -11,14 +11,15 @@
         <article id="post-detail" class="content-section">
             <div class="media-body">
                 <div class="article-metadata">
+                    <div class="article-title">
+                        <h2>{{ object.title }}</h2>
+                    </div>
                     {% comment %} <div class="article-img"> {% endcomment %}
-                        <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+                        {% comment %} <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}"> {% endcomment %}
                     {% comment %} </div> {% endcomment %}
                     <div class="article-info">
                         <a class="mr-2" href="{% url 'Blog:user-posts' object.author.username %}">{{ object.author }}</a>
-                        <small class="text-muted">
-                            {{ object.date_posted|date:"j M Y" }}
-                        </small>
+                        <small class="text-muted">{{ object.date_posted|date:"j M Y" }}</small>
                         <small class="text-muted">views: {{object.hit_count}}</small>
                         {% if object.author == user %}
                             <div id="post-options">
@@ -26,10 +27,10 @@
                                 <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' object.date_posted.year object.date_posted.month object.date_posted.day object.slug %}">Delete</a>
                             </div>
                         {% endif %}
-                        <div class="article-title">
-                            <h2>{{ object.title }}</a></h2>
-                        </div>
                     </div>
+                </div>
+                <div class="article-image">
+                <img src="{{object.full_view_image}}">
                 </div>
                 <p class="article-content">{{ object.content }}</p>
                 {% include "tags.html" with tags=object.get_tags_list %}

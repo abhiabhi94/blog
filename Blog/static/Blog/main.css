@@ -114,6 +114,15 @@ a.dropdown-toggle {
     color: #444444;
 }
 
+.article-image {
+    max-width: 60%;
+    margin: auto;
+}
+
+.article-image>img {
+    max-width: 100%;
+}
+
 footer {
     display: flex;
     background-color: #13181b;
@@ -192,23 +201,11 @@ a.article-title:hover {
     margin-bottom: 16px;
 }
 
-#post-detail .article-img img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
-}
-
-#post-detail .article-info {
-    display: inline-block;
-    width: 80%;
-}
-
 #post-detail .article-metadata {
     padding-bottom: 1px;
     margin-bottom: 4px;
     border-bottom: 1px solid #e3e3e3;
-    /* display: flex; */
+    border-top: none;
 }
 
 .account-heading {
@@ -264,9 +261,7 @@ a.article-title:hover {
 }
 
 #post-options {
-    position: absolute;
-    left: 75%;
-    top: 5%;
+    display: inline-block;
 }
 
 #article-share-container {
@@ -592,10 +587,12 @@ a.article-title:hover {
     background-color: gray;
 }
 
-::-moz-selection { /* Code for Firefox */
+::-moz-selection {
+    /* Code for Firefox */
     color: white;
     background-color: gray;
-  }
+}
+
 
 /* .num {
     font-family: 'CooperHewittBold';
