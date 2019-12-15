@@ -285,13 +285,13 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 class PostDetailView(DetailView):
     queryset = published_posts()
     # context_object_name = 'object'
-    post = self.get_object()
-    post.hits+=1
-    post.save()
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context['object'].tags = context['object'].tags.split()
-        context['meta'] = self.get_object().as_meta(self.request)
+        obj = self.get_object()
+        obj.update_counter()
+        obj.save()
+        context['meta'] = obj.as_meta(self.request)
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
         return context
@@ -498,7 +498,7 @@ def get_tags(request):
 
     # context['tags'] = top_tags_list
     context['tags'] = get_font_cloud(top_tags_list)
-    # print(context)
+    print(context)
 
     return render(request, template_name, context)
 
@@ -611,6 +611,7 @@ def get_category(request):
 
     context['categories'] = top_categories_list
     # context['categories'] = get_font_cloud(top_categories_list)
+    print(context)
 
     return render(request, template_name, context)
 

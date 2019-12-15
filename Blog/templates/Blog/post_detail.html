@@ -20,7 +20,7 @@
                     <div class="article-info">
                         <a class="mr-2" href="{% url 'Blog:user-posts' object.author.username %}">{{ object.author }}</a>
                         <small class="text-muted">{{ object.date_posted|date:"j M Y" }}</small>
-                        <small class="text-muted">views: {{object.hit_count}}</small>
+                        <small class="text-muted">views: {{object.hits}}</small>
                         {% if object.author == user %}
                             <div id="post-options">
                                 <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' object.date_posted.year object.date_posted.month object.date_posted.day object.slug %}">Update</a>
