@@ -16,6 +16,9 @@ from django.core.files.base import ContentFile
 
 # from django.contrib.messages import messages
 
+DEFAULT_IMG = 'default.jpg'
+IMG_DIR = 'blog'
+
 
 class Category(models.Model, ModelMeta):
     name = models.CharField(help_text=(
@@ -68,9 +71,9 @@ class Post(models.Model, ModelMeta):
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
-    image = models.ImageField(
-        default='default.jpg', upload_to='blog', blank=True)
-    thumbnail = models.ImageField(editable=False, null=True, blank=True)
+    image = models.ImageField(help_text='Do not forget to change this before publishing',
+                              default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
+    thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -85,14 +88,14 @@ class Post(models.Model, ModelMeta):
         4. compress and resize images to make thumbnails and full size images
         '''
 
-        super(*args, **kwargs).save()
-
         self.slug = slugify(self.title)
         self.tags = self.tags.lower()
 
         # Save the publish date when the flag is set for the first time.
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
+
+        super(*args, **kwargs).save()
 
         with Image.open(self.image.path) as img:
             thumbnail_size, full_view_size = (350, 350), (800, 800)
@@ -101,20 +104,31 @@ class Post(models.Model, ModelMeta):
 
             # for list and card view
             img_thumbnail.thumbnail(thumbnail_size)
-            thumbnail_name = self._image_name('_thumbnail')
+            thumbnail_name = self._image_name(
+                '_thumbnail', True).lstrip('/media/')
             img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
+            # self.thumbnail = img_thumbnail
 
-            with open(self.image.path, 'rb') as f:
+            with open(thumbnail_name, 'rb') as f:
                 data = f.read()
 
-            # print(BytesIO(data), '\n')
-            # print('file>>>', File(f))
-            self.thumbnail.save(thumbnail_name, File(f))
+            self.thumbnail.save(thumbnail_name, ContentFile(data), save=False)
+
+            # self._save_thumbnail(img_thumbnail)
+            # os.remove(thumbnail_name)
+
             # for detail view
             img.thumbnail(full_view_size)
             img.save(self.image.path, quality=50, optimize=True)
+            # self.instance.save()
+            print('Thumbnail:', self.thumbnail.path)
+
         # Remove the original image
         # os.remove(self.image.path)
+        super(*args, **kwargs).save()
+
+    def _save_thumbnail(self, img):
+        img.save(self.thumbnail.path, quality=50, optimize=True)
 
     @property
     def full_view_image(self):

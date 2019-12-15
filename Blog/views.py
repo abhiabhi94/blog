@@ -145,7 +145,6 @@ class HomeView(ListView):
         context['meta'] = meta_home
         posts_unique = context['featured_posts'] = list(
             self.get_featured_posts())
-        print('hey you>>', context['featured_posts'][0].image.url)
         # posts_unique = context['featured_posts']
 
         latest_posts = list(self.get_latest_posts())
