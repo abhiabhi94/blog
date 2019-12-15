@@ -653,9 +653,6 @@ a.article-title:hover {
         display: block;
         height: auto;
     }
-    /* .featured-articles>.latest-featured {
-        flex: 1;
-    } */
     .featured-articles>.latest-featured>.article-card>.article-thumbnail {
         height: 200px;
     }
@@ -668,6 +665,9 @@ a.article-title:hover {
     .view-more {
         /* display: block; */
         margin: 5px auto;
+    }
+    .avatar {
+        max-width: unset;
     }
     footer {
         flex-direction: column;
