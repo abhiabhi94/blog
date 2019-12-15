@@ -57,9 +57,9 @@ class CategoryListFilter(admin.SimpleListFilter):
         return all_categories
 
     def queryset(self, request, queryset):
-        print(self.value())
+        # print(self.value())
         if self.value():
-            print(">>>>>>", Post.objects.all())
+            # print(">>>>>>", Post.objects.all())
             post_list = Post.objects.filter(
                 category__name=self.value()).order_by('-date_posted')
             return post_list
@@ -68,19 +68,14 @@ class CategoryListFilter(admin.SimpleListFilter):
 
 
 class PostAdmin(admin.ModelAdmin):
-    readonly_fields = ('slug', 'last_updated',
+    readonly_fields = ('slug', 'last_updated', 'hits', 'unique_hits',
                        '_content_rendered', 'date_published', 'thumbnail')
-    list_display = ('title', 'author', 'date_posted',
-                    'date_published', 'hit_count', 'publish', 'featured')
+    list_display = ('title', 'author', 'hits', 'date_posted',
+                    'date_published', 'unique_hits', 'publish', 'featured')
     tags_list = [post.get_tags_list()
                  for post in Post.objects.filter(publish=True)]
     all_tags = list({item for outer in tags_list for item in outer})
     list_filter = ['publish', 'featured', TagListFilter, CategoryListFilter]
-
-    # def hit_count(self, obj):
-    #     return obj.hit_count
-
-    # hit_count.admin_order_field = 'self.urlhit.hits'
 
 
 class CategoryAdmin(admin.ModelAdmin):
