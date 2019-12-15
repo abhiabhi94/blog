@@ -285,7 +285,9 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 class PostDetailView(DetailView):
     queryset = published_posts()
     # context_object_name = 'object'
-
+    post = self.get_object()
+    post.hits+=1
+    post.save()
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context['object'].tags = context['object'].tags.split()

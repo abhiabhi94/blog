@@ -44,6 +44,13 @@ class Category(models.Model, ModelMeta):
 
 
 class Post(models.Model, ModelMeta):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_title = self.title
+        self.__original_tags = self.tags
+        self.__original_img_path = self.image.path
+
     title = models.CharField(
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
@@ -74,6 +81,7 @@ class Post(models.Model, ModelMeta):
     image = models.ImageField(help_text='Do not forget to change this before publishing',
                               default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
     thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
+    hits = models.PositiveIntegerField(default=0)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -87,44 +95,45 @@ class Post(models.Model, ModelMeta):
         3. Sets the date_publish when the publish flag is set for the first time.
         4. compress and resize images to make thumbnails and full size images
         '''
-
-        self.slug = slugify(self.title)
-        self.tags = self.tags.lower()
+        if self.__original_title != self.title:
+            self.slug = slugify(self.title)
+        if self.__original_tags != self.tags:
+            self.tags = self.tags.lower()
 
         # Save the publish date when the flag is set for the first time.
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
 
         super(*args, **kwargs).save()
+        if self.__original_img_path!=self.image.path:
+            with Image.open(self.image.path) as img:
+                thumbnail_size, full_view_size = (350, 350), (800, 800)
 
-        with Image.open(self.image.path) as img:
-            thumbnail_size, full_view_size = (350, 350), (800, 800)
+                img_thumbnail = img.copy()  # thumbnail changes in place
 
-            img_thumbnail = img.copy()  # thumbnail changes in place
+                # for list and card view
+                img_thumbnail.thumbnail(thumbnail_size)
+                thumbnail_name = self._image_name(
+                    '_thumbnail', True).lstrip('/media/')
+                img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
+                # self.thumbnail = img_thumbnail
 
-            # for list and card view
-            img_thumbnail.thumbnail(thumbnail_size)
-            thumbnail_name = self._image_name(
-                '_thumbnail', True).lstrip('/media/')
-            img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
-            # self.thumbnail = img_thumbnail
+                with open(thumbnail_name, 'rb') as f:
+                    data = f.read()
 
-            with open(thumbnail_name, 'rb') as f:
-                data = f.read()
+                self.thumbnail.save(thumbnail_name, ContentFile(data), save=False)
 
-            self.thumbnail.save(thumbnail_name, ContentFile(data), save=False)
+                # self._save_thumbnail(img_thumbnail)
+                # os.remove(thumbnail_name)
 
-            # self._save_thumbnail(img_thumbnail)
-            # os.remove(thumbnail_name)
+                # for detail view
+                img.thumbnail(full_view_size)
+                img.save(self.image.path, quality=50, optimize=True)
+                # self.instance.save()
+                print('Thumbnail:', self.thumbnail.path)
 
-            # for detail view
-            img.thumbnail(full_view_size)
-            img.save(self.image.path, quality=50, optimize=True)
-            # self.instance.save()
-            print('Thumbnail:', self.thumbnail.path)
-
-        # Remove the original image
-        # os.remove(self.image.path)
+            # Remove the original image
+            # os.remove(self.image.path)
         super(*args, **kwargs).save()
 
     def _save_thumbnail(self, img):
@@ -184,6 +193,10 @@ class Post(models.Model, ModelMeta):
             'day': self.date_posted.day,
             'slug': self.slug
         })
+    
+    def update_counter(self):
+        self.hits += 1
+        print("hits: ", self.hits)
 
     @property
     def hit_count(self):
