@@ -58,10 +58,10 @@
                         <div class="dropdown-menu">
                             <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
                             <a class="nav-item nav-link" href="{% url 'profile' %}">Edit Profile</a>
-                            <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
-                            <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>
+                            {% if user.is_staff %}<a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>{% endif %}
+                            {% if user.is_staff %}<a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>{% endif %}
                             <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}">Bookmarks</a>
-                            <a class="nav-item nav-link" href="#">Drafts</a>
+                            {% if user.is_staff %}<a class="nav-item nav-link" href="#">Drafts</a>{% endif %}
                             <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
                         </div>
                     </div>

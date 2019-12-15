@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from Users import views as user_views
 from .import views
 from Track.views import hit_count
-
+from Blog.manager import hits_decorator
 
 app_name = 'Blog'
 ymds_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slug>[-\w]+)'
@@ -25,7 +25,7 @@ urlpatterns = [
     # path('post/<slug:slug>/delete', views.PostDeleteView.as_view(), name='post-delete'),
     re_path(r'post/preview/'+ymds_re+'$', views.preview, name='post-preview'),
     re_path(r'post/'+ymds_re+'$',
-            hit_count(views.PostDetailView.as_view()), name='post-detail'),
+            hits_decorator(views.PostDetailView.as_view()), name='post-detail'),
     re_path(r'post/'+ymds_re+'/update$',
             views.PostUpdateView.as_view(), name='post-update'),
     re_path(r'post/'+ymds_re+'/delete$',
