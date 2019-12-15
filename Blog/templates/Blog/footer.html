@@ -23,14 +23,34 @@
     </div>
     <div class="col3">
         <div class="social-icons">
-            {% with "facebook twitter instagram medium" as socials %}
+            {% comment %} {% with "facebook twitter instagram medium" as socials %}
             {% for social in socials.split %}
                 {% with "https://"|add:social|add:".com/"|add:"hackadda" as social_link %}
-                {% comment %} {{social_link}} {% endcomment %}
+               
                 {% include "./social_icons.html" with link=social_link  iclass=social %}
                 {% endwith %}
             {% endfor %}
-            {% endwith %}
+            {% endwith %} {% endcomment %}
+            <div class="col">
+            <div class="col3">
+                <h5 class="footer-text-color">Let's Connect</h5>
+                <div id="socialIcons">
+                    <a style="color: white;" class="mr-1" href="https://facebook.com/scdotin" target="_blank"><i
+                       style="color: white;"          class="fa fa-facebook"></i></a>
+                    <a style="color: white;" class="ml-1 mr-1" href="https://twitter.com/scdotin" target="_blank"><i
+                       style="color: white;"          class="fa fa-twitter"></i></a>
+                    <a style="color: white;" class="ml-1 mr-1" href="https://instagram.com/scdotin" target="_blank"><i
+                       style="color: white;"          class="fa fa-instagram"></i></a>
+                    <a style="color: white;" class="ml-1 mr-1" href="https://www.youtube.com/channel/UCRcN5Q5eCkzoAwolXEAdPKA?view_as=subscriber" target="_blank"><i class="fa fa-youtube"></i></a>
+                    <a style="color: white;" class="ml-1" href="https://linkedin.com/company/scdotin" target="_blank"><i
+                       style="color: white;"          class="fa fa-linkedin"></i></a>
+                    {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://medium.com/@scdotin" target="_blank"><i
+                       style="color: white;"          class="fa fa-medium"></i></a> {% endcomment %}
+                    {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://github.com/scdotin" target="_blank"><i
+                                class="fa fa-github"></i></a> {% endcomment %}
+                </div>
+            </div>
+        </div>
         </div>
         <div class="made-with-love">
             <h6>Made with ❤️ from <a href="http://wikipedia.com/tetarpur" target="_blank" alt="Tetarpur">Tetarpur</a></h6>

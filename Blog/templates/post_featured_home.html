@@ -9,18 +9,19 @@
                 {% define 8 as col %}
                 {% define 3 as font %}
                 {% define "latest" as label %}
-                {% define "post.image.url" as img_src %}
+                {% define 1 as latest_featured %}
             {% elif 1 < forloop.counter and forloop.counter < 4 %}
                 {% define 4 as col %}
                 {% define 6 as font %}
                 {% define "aside" as label %}
+                {% define 0 as latest_featured%}
             {% endif %}
             {% comment %} {% if forloop.counter > 1 and flag == 0 %}
                 <div class="{{label}}">
             {% endif %} {% endcomment %}
             <div class="{{label}}-featured">
                 <div class="col article-card">
-                    {% include "post_card_home.html" with font=font %}
+                    {% include "post_card_home.html" with font=font latest_featured=latest_featured%}
                 </div>
             </div>
             {% comment %} {% if forloop.counter > 1 and flag == 0 %}

@@ -1,5 +1,9 @@
 <div class="article-thumbnail">
-    <img src="{{post.img_src|default:post.thumbnail.url}}" alt="{{post.title}}" title="{{post.title}}">
+    {% if latest_featured == 1 %}
+        <img src="{{post.image.url}}" alt="{{post.title}}" title="{{post.title}}">
+    {% else %}
+        <img src="{{post.thumbnail.url}}" alt="{{post.title}}" title="{{post.title}}">
+    {% endif %}
 </div>
 <div class="col article-container">
     <h{{font|default:6}}><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title|truncatechars:'80' }}</a></h5>

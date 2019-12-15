@@ -324,7 +324,7 @@ a.article-title:hover {
     /* font-size: 1.2rem!important; */
 }
 
-.fa {
+/* .fa {
     padding: 0.2rem;
 }
 
@@ -353,7 +353,7 @@ a.article-title:hover {
 .fa-whatsapp {
     background: #43d854;
     color: #fff !important;
-}
+} */
 
 
 /* 
@@ -593,6 +593,12 @@ a.article-title:hover {
     background-color: gray;
 }
 
+#socialIcons .fa {
+    padding: 2px;
+    margin-right: 1px !important;
+    margin-left: 1px !important;
+    font-size: 2rem !important;
+}
 
 /* .num {
     font-family: 'CooperHewittBold';
