@@ -268,9 +268,6 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         if user == self.request.user:
-            #     # print(dir(user.profile.bookmarked_posts.values_list()))
-            #     # print(user.profile.bookmarked_posts.all())
-            #     print(self.request.user.profile)
             return user.profile.bookmarked_posts.all()
         ### Return HTTP Error: "You should be logged in as the user" ###
         raise Http404(
@@ -284,13 +281,12 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 
 class PostDetailView(DetailView):
     queryset = published_posts()
-    # context_object_name = 'object'
+    context_object_name = 'post'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['object'].tags = context['object'].tags.split()
         obj = self.get_object()
-        obj.update_counter()
-        obj.save()
+        # context['object'].tags = context['object'].tags.split()
         context['meta'] = obj.as_meta(self.request)
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
@@ -498,7 +494,6 @@ def get_tags(request):
 
     # context['tags'] = top_tags_list
     context['tags'] = get_font_cloud(top_tags_list)
-    print(context)
 
     return render(request, template_name, context)
 
@@ -611,8 +606,5 @@ def get_category(request):
 
     context['categories'] = top_categories_list
     # context['categories'] = get_font_cloud(top_categories_list)
-    print(context)
 
     return render(request, template_name, context)
-
-    # print(categories)

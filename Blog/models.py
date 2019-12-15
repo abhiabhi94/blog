@@ -1,5 +1,4 @@
 import re
-import os
 from django.utils.html import strip_tags
 from django.db import models
 from django.utils import timezone
@@ -10,10 +9,7 @@ from markupfield.fields import MarkupField
 from Track.models import UrlHit
 from meta.models import ModelMeta
 from PIL import Image
-from django.core.files import File
-from io import BytesIO
 from django.core.files.base import ContentFile
-
 # from django.contrib.messages import messages
 
 DEFAULT_IMG = 'default.jpg'
@@ -54,15 +50,6 @@ class Post(models.Model, ModelMeta):
     title = models.CharField(
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
-    # short_des = models.CharField(help_text=('This will be displayed on the home page.'
-    #                                 'If you leave it blank, the first 50 words from your article will be displayed.'
-    #                                 'It can not be more than 50 words'),
-    #                             default='',
-    #                             max_length=500,
-    #                             blank=True,
-    #                         # default_markup_type='markdown',
-    #                         )
-    # content = models.TextField()
     content = MarkupField(help_text=('This field supports all markup formatting'),
                           default='',
                           default_markup_type='markdown',
@@ -105,7 +92,9 @@ class Post(models.Model, ModelMeta):
             self.date_published = timezone.now()
 
         super(*args, **kwargs).save()
-        if self.__original_img_path!=self.image.path:
+
+        if self.__original_img_path != self.image.path:
+
             with Image.open(self.image.path) as img:
                 thumbnail_size, full_view_size = (350, 350), (800, 800)
 
@@ -113,56 +102,29 @@ class Post(models.Model, ModelMeta):
 
                 # for list and card view
                 img_thumbnail.thumbnail(thumbnail_size)
-                thumbnail_name = self._image_name(
-                    '_thumbnail', True).lstrip('/media/')
+                thumbnail_name = self._image_name('_thumbnail')
                 img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
-                # self.thumbnail = img_thumbnail
 
                 with open(thumbnail_name, 'rb') as f:
                     data = f.read()
 
-                self.thumbnail.save(thumbnail_name, ContentFile(data), save=False)
-
-                # self._save_thumbnail(img_thumbnail)
-                # os.remove(thumbnail_name)
+                self.thumbnail.save(
+                    thumbnail_name, ContentFile(data), save=False)
 
                 # for detail view
                 img.thumbnail(full_view_size)
                 img.save(self.image.path, quality=50, optimize=True)
-                # self.instance.save()
-                print('Thumbnail:', self.thumbnail.path)
 
-            # Remove the original image
-            # os.remove(self.image.path)
         super(*args, **kwargs).save()
 
-    def _save_thumbnail(self, img):
-        img.save(self.thumbnail.path, quality=50, optimize=True)
-
-    @property
-    def full_view_image(self):
-        '''To be used in template for getting the url of full_view_image for detail view'''
-
-        return self._image_name('_full_view', True)
-
-    @property
-    def thumbnail_image(self):
-        '''To be used in template for getting the url of full_view_image for list view'''
-
-        # self.image.path = self._image_name('_thumbnail', True)
-
-        return self._image_name('_thumbnail', True)
-
-    def _image_name(self, modifier, view=False):
+    def _image_name(self, modifier):
         '''
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
         '''
         new_name = self.image.name.split('.')
-        new_name.insert(-1, modifier+'.')  # dont forget extension
-        if view:
-            return self.image.storage.url(''.join(new_name))
-        return self.image.storage.path(''.join(new_name))
+        new_name.insert(-1, modifier + '.')  # dont forget extension
+        return ''.join(new_name)
 
     def __str__(self):
         return self.title
@@ -174,14 +136,6 @@ class Post(models.Model, ModelMeta):
             'day': self.date_posted.day,
             'slug': self.slug
         })
-
-    def get_short_des(self):
-        # Remove html tags and continuous whitespaces
-        text_only = re.sub('[ \t]+', ' ', strip_tags(self._content_rendered))
-        # Remove new lines with a full stop(.)
-        text_only = text_only.replace('\n', '.')
-        # Strip single spaces in the beginning of each line
-        return text_only.replace('\n ', '\n').strip()[:120]
 
     def get_tags_list(self):
         return self.tags.split()
@@ -195,12 +149,9 @@ class Post(models.Model, ModelMeta):
         })
 
     @property
-    def hit_count(self):
+    def unique_hits(self):
         url, created = UrlHit.objects.get_or_create(
             url=self.get_post_detail_url())
-        # print("absolute url: ", self.get_absolute_url())
         # print("in blog model url: ", url.url)
         # print("in blog model hits: ", url.hits)
         return url.hits
-# class Tags(models.Model):
-#     tags = models.CharField(max_length=80, blank=True)
