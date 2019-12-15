@@ -165,9 +165,8 @@ class HomeView(ListView):
             category_posts = list(self.get_category_posts(category, index))
             category_posts_unique, posts_unique = self.remove_duplicates(
                 category_posts, posts_unique, self.NO_CATEGORY_POSTS)
-            # context['category_posts'].append(
-            #     context['category_' + category + '_posts'])
             category_result[category] = category_posts_unique
+
         context['category'] = category_result
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
@@ -285,17 +284,18 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        # context['object'].tags = context['object'].tags.split()
-        context['meta'] = obj.as_meta(self.request)
+        context['meta'] = self.get_object().as_meta(self.request)
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
         return context
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+
+    def test_func(self):
+        return self.request.user.is_staff
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -326,23 +326,10 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         '''ensuring the author themselves is updating the post'''
-        # print("*************", 'test_func')
         post = self.get_object()
         if self.request.user == post.author:
             return True
         return False
-
-    # def post(self, *args, **kwargs):
-    #     post = self.get_object()
-    #     if self.request.user == post.author:
-    #         print('inside post request')
-    #         messages.success(
-    #             self.request, 'Your post has been submitted for approval')
-    #         return redirect('Blog:home')
-    #     else:
-    #         messages.warning(
-    #             self.request, 'Only posts written by you can be updated')
-    #         return redirect('Blog:home')
 
 
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -377,16 +364,6 @@ def about(request):
 @login_required
 def preview(request, year, month, day, slug):
     post = Post.objects.get(slug=slug)
-    # print(post.author)
-    # if request.user == post.author:
-    #     if request.method == 'POST':
-    #         # print ('inside post request')
-    #         messages.success(
-    #             request, 'Your post has been submitted for approval')
-    #         return redirect('Blog:home')
-    # else:
-    #     messages.warning(request, 'Only posts written by you can be previewed')
-    #     return redirect('Blog:home')
     return render(request, 'Blog/post_preview.html', {'post': post})
 
 
@@ -470,7 +447,7 @@ def get_tags(request):
         template_name = 'tags.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception as e:
+        except Exception as _:
             raise Http404("Wrong Request Format")
         finally:
             flag = 1    # Tells whether post request was executed or get
@@ -496,8 +473,6 @@ def get_tags(request):
     context['tags'] = get_font_cloud(top_tags_list)
 
     return render(request, template_name, context)
-
-    # raise Http404("Wrong Request Format")
 
 
 class CategoryPostListView(ListView):
@@ -583,7 +558,7 @@ def get_category(request):
         template_name = 'Blog/categories.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception as e:
+        except Exception as _:
             raise Http404("Wrong Request Format")
         finally:
             flag = 1
@@ -605,6 +580,5 @@ def get_category(request):
         category: count for (category, count) in top_categories}
 
     context['categories'] = top_categories_list
-    # context['categories'] = get_font_cloud(top_categories_list)
 
     return render(request, template_name, context)

@@ -147,7 +147,8 @@ class Post(models.Model, ModelMeta):
             'day': self.date_posted.day,
             'slug': self.slug
         })
-
+    def update_counter(self):
+        self.hits += 1
     @property
     def unique_hits(self):
         url, created = UrlHit.objects.get_or_create(
