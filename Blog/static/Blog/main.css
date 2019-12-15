@@ -240,7 +240,7 @@ a.article-title:hover {
 }
 
 .avatar {
-    /* max-width: 200px; */
+    max-width: 200px;
     max-height: 200px;
     line-height: 200px;
     text-align: center;
@@ -659,9 +659,6 @@ a.article-title:hover {
         display: block;
         height: auto;
     }
-    /* .featured-articles>.latest-featured {
-        flex: 1;
-    } */
     .featured-articles>.latest-featured>.article-card>.article-thumbnail {
         height: 200px;
     }
@@ -674,6 +671,9 @@ a.article-title:hover {
     .view-more {
         /* display: block; */
         margin: 5px auto;
+    }
+    .avatar {
+        max-width: unset;
     }
     footer {
         flex-direction: column;

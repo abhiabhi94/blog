@@ -4,12 +4,15 @@ from PIL import Image
 from Blog.models import Post
 # Create your models here.
 
+DEFAULT_IMG = 'profile_pics/default.jpg'
+IMG_DIR = 'profile_pics'
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(null=True, max_length=140, blank=True)
-    image = models.ImageField(default='default.jpg',
-                              upload_to='profile_pics', blank=True)
+    image = models.ImageField(default=DEFAULT_IMG,
+                              upload_to=IMG_DIR, blank=True)
     public = models.BooleanField(default=False)
     website = models.CharField(null=True, blank=True, max_length=80)
     location = models.CharField(null=True, max_length=200, blank=True)
