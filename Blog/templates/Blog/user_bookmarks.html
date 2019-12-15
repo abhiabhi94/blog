@@ -1,10 +1,8 @@
-{% extends "Blog/base.html" %}
-{% block content %}
+{% extends "post_list_generic.html" %}
+{% block topcontent %}
 {% if page_obj.paginator.count %}
-<h3 class="mb-3">Total Bookmarked Posts ({{ page_obj.paginator.count }})</h3>
-{% include "post_list_generic.html" %}
-{% include "paginate.html" %}
+    <legend class="heading">Total Bookmarked Posts ({{ page_obj.paginator.count }})</legend>
 {% else %}
-<h5 class="mt-5"> You are yet to bookmark a post. Get back to <a href="{% url 'Blog:home' %}">reading</a>.</h5>
+    <legend class="heading"> You are yet to bookmark a post. You might want to go back <a href="{% url 'Blog:home' %}">reading.</a>.</legend>
 {% endif %}
-{% endblock content %}
+{% endblock topcontent %}
