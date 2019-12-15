@@ -10,6 +10,9 @@ from markupfield.fields import MarkupField
 from Track.models import UrlHit
 from meta.models import ModelMeta
 from PIL import Image
+from django.core.files import File
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 # from django.contrib.messages import messages
 
@@ -67,6 +70,7 @@ class Post(models.Model, ModelMeta):
     featured = models.BooleanField(default=False)
     image = models.ImageField(
         default='default.jpg', upload_to='blog', blank=True)
+    thumbnail = models.ImageField(editable=False, null=True, blank=True)
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -80,6 +84,9 @@ class Post(models.Model, ModelMeta):
         3. Sets the date_publish when the publish flag is set for the first time.
         4. compress and resize images to make thumbnails and full size images
         '''
+
+        super(*args, **kwargs).save()
+
         self.slug = slugify(self.title)
         self.tags = self.tags.lower()
 
@@ -87,22 +94,27 @@ class Post(models.Model, ModelMeta):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
 
-        super(*args, **kwargs).save()
         with Image.open(self.image.path) as img:
             thumbnail_size, full_view_size = (350, 350), (800, 800)
 
             img_thumbnail = img.copy()  # thumbnail changes in place
 
-            # for list view
+            # for list and card view
             img_thumbnail.thumbnail(thumbnail_size)
-            img_thumbnail.save(self._image_name('_thumbnail'),
-                               quality=50, optimize=True)
+            thumbnail_name = self._image_name('_thumbnail')
+            img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
+
+            with open(self.image.path, 'rb') as f:
+                data = f.read()
+
+            # print(BytesIO(data), '\n')
+            # print('file>>>', File(f))
+            self.thumbnail.save(thumbnail_name, File(f))
             # for detail view
             img.thumbnail(full_view_size)
-            img.save(self._image_name('_full_view'), quality=50, optimize=True)
-
+            img.save(self.image.path, quality=50, optimize=True)
         # Remove the original image
-        os.remove(self.image.path)
+        # os.remove(self.image.path)
 
     @property
     def full_view_image(self):
@@ -113,6 +125,8 @@ class Post(models.Model, ModelMeta):
     @property
     def thumbnail_image(self):
         '''To be used in template for getting the url of full_view_image for list view'''
+
+        # self.image.path = self._image_name('_thumbnail', True)
 
         return self._image_name('_thumbnail', True)
 

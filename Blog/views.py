@@ -145,6 +145,7 @@ class HomeView(ListView):
         context['meta'] = meta_home
         posts_unique = context['featured_posts'] = list(
             self.get_featured_posts())
+        print('hey you>>', context['featured_posts'][0].image.url)
         # posts_unique = context['featured_posts']
 
         latest_posts = list(self.get_latest_posts())
@@ -496,7 +497,7 @@ def get_tags(request):
 
     # context['tags'] = top_tags_list
     context['tags'] = get_font_cloud(top_tags_list)
-    print(context)
+    # print(context)
 
     return render(request, template_name, context)
 
@@ -609,7 +610,6 @@ def get_category(request):
 
     context['categories'] = top_categories_list
     # context['categories'] = get_font_cloud(top_categories_list)
-    print(context)
 
     return render(request, template_name, context)
 

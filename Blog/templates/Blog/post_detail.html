@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="article-image">
-                <img src="{{object.full_view_image}}">
+                <img src="{{object.image.url}}">
                 </div>
                 <p class="article-content">{{ object.content }}</p>
                 {% include "tags.html" with tags=object.get_tags_list %}
