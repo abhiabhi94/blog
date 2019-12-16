@@ -11,7 +11,8 @@ from Track.models import UrlHit
 from meta.models import ModelMeta
 from PIL import Image
 from django.core.files.base import ContentFile
-# from django.contrib.messages import messages
+from django.db.models import F
+from django.core.exceptions import ValidationError
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -73,6 +74,29 @@ class Post(models.Model, ModelMeta):
         'keywords': 'get_tags_list',
     }
 
+    def clean(self):
+        '''provides custom validation for images before uploading'''
+
+        MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
+        MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (4096, 2160)
+
+        img = self.image
+        # print('width:', img.width, '\theight:', img.height)
+        if img is None:
+            raise ValidationError(f'Image not present', code='invalid')
+        if img.width < MIN_IMG_WIDTH:
+            raise ValidationError(
+                f'Image width should not be less than {MIN_IMG_WIDTH}, your width was {img.width}', code='invalid')
+        if img.width > MAX_IMG_WIDTH:
+            raise ValidationError(
+                f'Image width should not be greater than {MAX_IMG_WIDTH}, your width was {img.width}', code='invalid')
+        if img.height < MIN_IMG_HEIGHT:
+            raise ValidationError(
+                f'Image height should not be less than {MIN_IMG_HEIGHT}, your height was {img.height}', code='invalid')
+        if img.height > MAX_IMG_HEIGHT:
+            raise ValidationError(
+                f'Image height should not be greater than {MAX_IMG_HEIGHT}, your height was {img.height}', code='invalid')
+
     def save(self, *args, **kwargs):
         '''
         1. slugify the title
@@ -80,16 +104,17 @@ class Post(models.Model, ModelMeta):
         3. Sets the date_publish when the publish flag is set for the first time.
         4. compress and resize images to make thumbnails and full size images
         '''
+
         if self.__original_title != self.title:
             self.slug = slugify(self.title)
         if self.__original_tags != self.tags:
             self.tags = self.tags.lower()
 
+        super(Post, self).save(*args, **kwargs)
+
         # Save the publish date when the flag is set for the first time.
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
-
-        super(*args, **kwargs).save()
 
         if self.__original_img_path != self.image.path:
 
@@ -113,7 +138,7 @@ class Post(models.Model, ModelMeta):
                 img.thumbnail(full_view_size)
                 img.save(self.image.path, quality=50, optimize=True)
 
-        super(*args, **kwargs).save()
+        super(Post, self).save(*args, **kwargs)
 
     def _image_name(self, modifier):
         '''
@@ -147,7 +172,8 @@ class Post(models.Model, ModelMeta):
         })
 
     def update_counter(self):
-        self.hits += 1
+        '''Increment views'''
+        self.hits = F('hits') + 1
 
     @property
     def unique_hits(self):
