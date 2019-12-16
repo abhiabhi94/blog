@@ -1,12 +1,11 @@
 from .models import Post
-from django.shortcuts import get_object_or_404
+from django.db.models import F
 
 
 def hits_decorator(function):
     def wrap(request, *args, **kwargs):
-        obj = get_object_or_404(Post, slug=kwargs.get('slug'))
-        obj.update_counter()
-        obj.save(update_fields=['hits'])
+        '''Adds one to the hit field'''
+        Post.objects.filter(slug=kwargs.get('slug')).update(hits=F('hits')+1)
         return function(request, *args, **kwargs)
 
     wrap.__doc__ = function.__doc__

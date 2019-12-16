@@ -174,10 +174,6 @@ class Post(models.Model, ModelMeta):
             'slug': self.slug
         })
 
-    def update_counter(self):
-        '''Increment views'''
-        self.hits = F('hits') + 1
-
     @property
     def unique_hits(self):
         url, created = UrlHit.objects.get_or_create(
