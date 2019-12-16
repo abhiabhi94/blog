@@ -15,10 +15,11 @@ $(document).ready(function(event) {
     $('.copy').on('click', function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
+        let text;
         if ($(this).data) {
-            const text = $(this).data('text');
+            text = $(this).data('text');
         } else {
-            const text = window.location.href;
+            text = window.location.href;
         }
         // console.log('link:', text);
         const dummy = document.createElement('input');
