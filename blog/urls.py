@@ -31,7 +31,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(
         template_name='Users/logout.html'),
         name='logout'
-        ),
+    ),
     path('password-reset/',
          auth_views.PasswordResetView.as_view(
              template_name='Users/password_reset.html'),
@@ -54,5 +54,9 @@ urlpatterns = [
          ),
 ]
 
+# Adds ckeditor urls
+urlpatterns += [path('ckeditor/', include('ckeditor_uploader.urls'))]
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

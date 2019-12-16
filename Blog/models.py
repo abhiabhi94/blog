@@ -5,7 +5,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-from markupfield.fields import MarkupField
+# from markupfield.fields import MarkupField
+from ckeditor_uploader.fields import RichTextUploadingField
 from Track.models import UrlHit
 from meta.models import ModelMeta
 from PIL import Image
@@ -50,10 +51,7 @@ class Post(models.Model, ModelMeta):
     title = models.CharField(
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
-    content = MarkupField(help_text=('This field supports all markup formatting'),
-                          default='',
-                          default_markup_type='markdown',
-                          )
+    content = RichTextUploadingField()
     tags = models.CharField(
         help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
