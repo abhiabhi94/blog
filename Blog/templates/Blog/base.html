@@ -18,23 +18,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="{% static 'Blog/main.js' %}"></script>
     <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
-    {% comment %} <script type="text/javascript">
-        $.get('{% url "Blog:top-tags" %}?num=5', function(data){
-            console.log("get request:", data)
-            $('#top-tags').append(data)
-        })
-    </script>
-    <script type="text/javascript">
-        $.get('{% url "Blog:all-tags" %}', function(data){
-            console.log("get request:", data)
-            $('#all-tags').append(data)
-        })
-    </script> {% endcomment %}
-    {% comment %} {% if meta_title %}
-    <title>Blog - {{meta_title}}</title>
-    {% else %}
-    <title></title>
-    {% endif %} {% endcomment %}
 </head>
 <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark navbar-color fixed-top">
@@ -58,10 +41,12 @@
                         <div class="dropdown-menu">
                             <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
                             <a class="nav-item nav-link" href="{% url 'profile' %}">Edit Profile</a>
-                            {% if user.is_staff %}<a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>{% endif %}
-                            {% if user.is_staff %}<a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>{% endif %}
+                            {% if user.is_staff %}
+                            <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>
+                            <a class="nav-item nav-link" href="#">Drafts</a>
+                            {% endif %}
                             <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}">Bookmarks</a>
-                            {% if user.is_staff %}<a class="nav-item nav-link" href="#">Drafts</a>{% endif %}
                             <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
                         </div>
                     </div>
@@ -92,14 +77,10 @@
                 {% endblock %}
             </div>
                 <div id="sidebar" class="col-md-3 content-section">
-                    {% comment %} <h3>Our Sidebar</h3> {% endcomment %}
-                    {% comment %} <p class='text-muted'>You can put any information here you'd like. {% endcomment %}
                         <ul class="list-group">
                             <li id="latest-posts" class="list-group-item list-group-item-light" data-url='{% url "Blog:latest-posts" %}'>Latest Posts</li>
                             <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
                             <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
-                            {% comment %} <h5>Top Tags</h5> {% endcomment %}
-                            {% comment %} <h5>All Tags</h5> {% endcomment %}
                         </ul>
                     </p>
                 </div>
