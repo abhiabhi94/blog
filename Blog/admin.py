@@ -69,7 +69,7 @@ class CategoryListFilter(admin.SimpleListFilter):
 
 class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'hits',
-                       'unique_hits', 'date_published', 'thumbnail')
+                       'date_published', 'thumbnail')
     list_display = ('title', 'author', 'hits', 'date_posted',
                     'date_published', 'unique_hits', 'publish', 'featured')
     tags_list = [post.get_tags_list()
