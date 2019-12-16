@@ -6,7 +6,7 @@ def hits_decorator(function):
     def wrap(request, *args, **kwargs):
         obj = get_object_or_404(Post, slug=kwargs.get('slug'))
         obj.update_counter()
-        obj.save()
+        obj.save(update_fields=['hits'])
         return function(request, *args, **kwargs)
 
     wrap.__doc__ = function.__doc__
