@@ -99,6 +99,15 @@ a.dropdown-toggle {
     padding: 0.5rem;
 }
 
+.list-group-item.active {
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+#latest-posts,
+#trending-posts {
+    border-top: none;
+}
+
 #latest-posts,
 #top-tags,
 #all-tags {
