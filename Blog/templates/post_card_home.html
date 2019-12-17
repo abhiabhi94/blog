@@ -1,3 +1,4 @@
+{% load cool_num %}
 <div class="article-thumbnail">
 {% if latest_featured == 1 %}
     <img src="{{post.image.url}}" alt="{{post.title}}" title="{{post.title}}">
@@ -11,5 +12,5 @@
 <div class="article-metadata">
     <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a></small>
     <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
-    <small class="text-muted ml-2">views:{{post.hits}}</small>
+    <small class="text-muted ml-2" title={{post.hits}}>views:{{post.hits|cool_num}}</small>
 </div>

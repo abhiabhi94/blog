@@ -1,4 +1,5 @@
 import re
+import os
 from django.utils.html import strip_tags
 from django.db import models
 from django.utils import timezone
@@ -44,7 +45,7 @@ class Category(models.Model, ModelMeta):
 class Post(models.Model, ModelMeta):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(Post, self).__init__(*args, **kwargs)
         self.__original_title = self.title
         self.__original_tags = self.tags
         self.__original_img_path = self.image.path
@@ -124,18 +125,20 @@ class Post(models.Model, ModelMeta):
                 img_thumbnail = img.copy()  # thumbnail changes in place
 
                 # for list and card view
-                img_thumbnail.thumbnail(thumbnail_size)
+                img_thumbnail.thumbnail(thumbnail_size, filter='ANTIALIAS')
                 thumbnail_name = self._image_name('_thumbnail')
-                img_thumbnail.save(thumbnail_name, quality=50, optimize=True)
+                img_thumbnail.save(thumbnail_name, quality=75, optimize=True)
 
                 with open(thumbnail_name, 'rb') as f:
                     data = f.read()
 
                 self.thumbnail.save(
                     thumbnail_name, ContentFile(data), save=False)
+                # Remove thumbnail image
+                os.remove(thumbnail_name)
 
                 # for detail view
-                img.thumbnail(full_view_size)
+                img.thumbnail(full_view_size, filter='ANTIALIAS')
                 img.save(self.image.path, quality=50, optimize=True)
 
         super(Post, self).save(*args, **kwargs)
@@ -170,10 +173,6 @@ class Post(models.Model, ModelMeta):
             'day': self.date_posted.day,
             'slug': self.slug
         })
-
-    def update_counter(self):
-        '''Increment views'''
-        self.hits = F('hits') + 1
 
     @property
     def unique_hits(self):

@@ -78,7 +78,18 @@
             </div>
                 <div id="sidebar" class="col-md-3 content-section">
                         <ul class="list-group">
-                            <li id="latest-posts" class="list-group-item list-group-item-light" data-url='{% url "Blog:latest-posts" %}'>Latest Posts</li>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="true">Latest Posts</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false">Trending Posts</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <li id="latest-posts" class="tab-pane fade show active list-group-item list-group-item-light" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
+                                <li class="tab-pane fade" id="trending-posts" role="tabpanel" aria-labelledby="trending-posts-tab"></li>
+                            </div>
                             <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
                             <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
                         </ul>

@@ -1,36 +1,42 @@
 {% extends "Blog/base.html" %}
 {% block content %}
 {% if page_obj.paginator.count %}
-    <div class="row {{profile}} content-section mt-0">
-        <div class="avatar col-12 col-lg-3 col-xs-12 col-md-3 pr-3">
+    <div class="profile content-section">
+        <div class="avatar">
             <img class="user-img" src="{{ author.profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
         </div>
-        <div class="profile-info col-12 col-lg-9 col-xs-12 col-md-9 mt-1 pr-3">
-            <ul class="list-unstyled ml-5 pr-3">
-                <li class="user-name mt-2 account-heading">
-                    {{ author.first_name }} {{ author.last_name }}
+        <div class="author-info">
+            <ul class="list-unstyled">
+                <li>
+                    <h3 class="author-name">{{ author.first_name }} {{ author.last_name }}</h3>
                 </li>
-                <h4 class="user-bio mb-2">
-                    {{ author.profile.bio }}
-                </h4>
+                <li>
+                    {% if author.profile.bio %}
+                    <h5 class="author-bio">{{ author.profile.bio }}</h5>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <div class="author-profile-info">
+            <ul class="list-unstyled">
                 {% if author.profile.public %}
-                <li class="user-email mt-2">
+                <li class="author-email mt-2">
                     <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ author.email }}</span>
                 </li>
                 {% endif %}
                 {% if author.profile.location %}
-                <li class="user-location mt-2">
+                <li class="author-location mt-2">
                     <span><i class="fa fa-map-marker fa-fw mr-2"></i>{{ author.profile.location }}</span>
                 </li>
                 {% endif %}
                 {% if author.profile.website %}
-                <li class="user-website mt-2">
+                <li class="author-website mt-2">
                     <span>
                         <i class="fa fa-external-link fa-fw mr-2"></i><a href="//{{author.profile.website}}" target="_blank">{{ author.profile.website }}</a>
                     </span>
                 </li>
                 {% endif %}
-                <li class="user-join-date mt-2">
+                <li class="author-join-date mt-2">
                     <span>
                         <i class="fa fa-history fa-fw mr-2"></i>Joined {{ author.profile.join_date|date:"M Y" }}
                     </span>
@@ -63,6 +69,7 @@
                         <i class="fa fa-edit" style="font-size:1.5rem"></i>
                     </a>
                 {% endif %}
+
             </ul>
         </div>
     </div>
@@ -70,10 +77,6 @@
     {% include "post_list_home.html" %}
     {% include "paginate.html" %}
 {% else %}
-<h5 class="mt-5">There are no posts here.
-    {% if author == user %}
-    Try writing some <a class="" href="{% url 'Blog:post-create' %}">Posts</a>
-    {% endif %}
-</h5>
+<h5 class="mt-5">There are no posts here.{% if author == user %}Try writing some <a class="" href="{% url 'Blog:post-create' %}">Posts</a>{% endif %}</h5>
 {% endif %}
 {% endblock content %}
