@@ -69,6 +69,21 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'NAME':'blog',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'USER': 'blogadmin',
+#         'PASSWORD': 'Krishnajha987@',
+#         'HOST': 'localhost',
+#         'OPTIONS':{
+#             'autocommit': True,
+#         }
+#     }
+# }
+
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

@@ -9,10 +9,10 @@ class Migration(migrations.Migration):
         ('Blog', '0025_auto_20191205_2335'),
     ]
 
-    operations = [
-        migrations.AlterField(
-            model_name='post',
-            name='date_published',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-    ]
+    # operations = [
+    #     migrations.AlterField(
+    #         model_name='post',
+    #         name='date_published',
+    #         field=models.DateTimeField(blank=True, null=True),
+    #     ),
+    # ]

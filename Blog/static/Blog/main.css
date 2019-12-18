@@ -279,7 +279,7 @@ a.article-title:hover {
     max-height: 300px;
     max-width: 300px;
     text-align: center;
-    flex: 1;
+    flex: 2;
 }
 
 .avatar img {
@@ -657,6 +657,7 @@ a.article-title:hover {
     font-style: normal;
 } */
 
+
 @media(max-width:600px) {
     #main {
         margin: 1rem;
@@ -739,9 +740,9 @@ a.article-title:hover {
     .profile {
         flex-direction: column;
     }
-    .profile>* {
-        margin: 0.5rem;
-    }
+    /* .profile>* {
+        ! margin: 1rem;
+    } */
     .author-info {
         text-align: left;
     }
