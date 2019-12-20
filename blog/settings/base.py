@@ -6,12 +6,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 CONFIG_FILE = '/etc/config.json'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'i7p#7t*jp!1ag&fxq&90n$7rze*(9gv*-0uttxp12@8n0n239n'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
