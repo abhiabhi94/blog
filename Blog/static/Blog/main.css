@@ -724,4 +724,8 @@ a.article-title:hover {
         padding: 0.5rem;
         text-align: left;
     }
+
+    .social-icons>.col {
+        padding: 0 !important;
+    }
 }
