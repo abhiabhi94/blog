@@ -8,12 +8,13 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 # from markupfield.fields import MarkupField
 from ckeditor_uploader.fields import RichTextUploadingField
-from Track.models import UrlHit
 from meta.models import ModelMeta
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db.models import F
 from django.core.exceptions import ValidationError
+from hitcount.models import HitCountMixin, HitCount
+from django.contrib.contenttypes.fields import GenericRelation
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -42,7 +43,7 @@ class Category(models.Model, ModelMeta):
         return self.name
 
 
-class Post(models.Model, ModelMeta):
+class Post(models.Model, ModelMeta, HitCountMixin):
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -68,7 +69,14 @@ class Post(models.Model, ModelMeta):
     image = models.ImageField(help_text='Do not forget to change this before publishing',
                               default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
     thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
-    hits = models.PositiveIntegerField(default=0)
+    # hits = models.PositiveIntegerField(default=0)
+
+    # adding a generic relationship makes sorting by Hits possible:
+    # MyModel.objects.order_by("hit_count_generic__hits")
+    hit_count_generic = GenericRelation(
+        HitCount, object_id_field='object_slug',
+        related_query_name='hit_count_generic_relation')
+
     _metadata = {
         'title': 'title',
         'description': 'get_short_des',
@@ -181,3 +189,7 @@ class Post(models.Model, ModelMeta):
         # print("in blog model url: ", url.url)
         # print("in blog model hits: ", url.hits)
         return url.hits
+
+    @property
+    def hits(self):
+        return self.hit_count.hits

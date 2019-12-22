@@ -25,6 +25,7 @@ from validate_email import validate_email
 from django.db import IntegrityError
 from .models import Post, Category
 from Subscribers.models import Subscriber
+from hitcount.views import HitCountDetailView
 
 '''
 Use the name posts for backend purposes.
@@ -278,9 +279,10 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
         return context
 
 
-class PostDetailView(DetailView):
+class PostDetailView(HitCountDetailView, DetailView):
     queryset = published_posts()
     context_object_name = 'post'
+    count_hit = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Blog.apps.BlogConfig',
-    'Track.apps.TrackConfig',
     'Users.apps.UsersConfig',
     'Subscribers.apps.SubscribersConfig',
     'crispy_forms',
@@ -27,6 +26,7 @@ INSTALLED_APPS = [
     'meta',
     'ckeditor',
     'ckeditor_uploader',
+    'hitcount',
 ]
 
 MIDDLEWARE = [
@@ -184,6 +184,14 @@ CKEDITOR_CONFIGS = {
     }
 }
 ##########################
+
+#### HITCOUNT APP ######
+
+# This is the number of days, weeks, months, hours, etc(using a timedelta keyword argument), that an Hit is kept active
+HITCOUNT_KEEP_HIT_ACTIVE = {'seconds': 1}
+# Limit the number of active Hits from a single IP address. 0 means that it is unlimited
+HITCOUNT_HITS_PER_IP_LIMIT = 0
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
