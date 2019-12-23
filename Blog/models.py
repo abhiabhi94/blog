@@ -74,8 +74,11 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     # adding a generic relationship makes sorting by Hits possible:
     # MyModel.objects.order_by("hit_count_generic__hits")
     hit_count_generic = GenericRelation(
-        HitCount, object_id_field='object_slug',
-        related_query_name='hit_count_generic_relation')
+        HitCount,
+        object_id_field='object_pk',
+        content_type_field='content_type',
+        related_query_name='hit_count_generic'
+    )
 
     _metadata = {
         'title': 'title',
@@ -182,14 +185,14 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             'slug': self.slug
         })
 
-    @property
-    def unique_hits(self):
-        url, created = UrlHit.objects.get_or_create(
-            url=self.get_post_detail_url())
-        # print("in blog model url: ", url.url)
-        # print("in blog model hits: ", url.hits)
-        return url.hits
+    # @property
+    # def unique_hits(self):
+    #     url, created = UrlHit.objects.get_or_create(
+    #         url=self.get_post_detail_url())
+    #     # print("in blog model url: ", url.url)
+    #     # print("in blog model hits: ", url.hits)
+    #     return url.hits
 
     @property
-    def hits(self):
+    def views(self):
         return self.hit_count.hits
