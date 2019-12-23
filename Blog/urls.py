@@ -36,6 +36,7 @@ urlpatterns = [
     path('post/featured-posts/',
          views.FeaturedPostListView.as_view(), name='featured-posts'),
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
+    path('post/trending-posts/', views.get_trending_posts, name='trending-posts'),
     path('post/category',
          views.get_category, name='all-categories'),
     path('post/category/<str:category>',

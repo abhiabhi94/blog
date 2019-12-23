@@ -20,12 +20,14 @@ from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from collections import Counter
 from meta.views import Meta
-from datetime import datetime
+from datetime import datetime, timedelta
 from validate_email import validate_email
 from django.db import IntegrityError
 from .models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
+from operator import itemgetter
+from django.utils import timezone
 
 '''
 Use the name posts for backend purposes.
@@ -64,6 +66,34 @@ def get_font_cloud(obj, F=5.0, f=1.0):
     # obj['key'] = (val, val*a + b)
     return {key: (val, f'{val*a + b:.3f}' + 'rem') for (key, val) in obj.items()}
     # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
+
+
+def trending(objects, start=timezone.now(), interval={'days': 30}, top_n=5):
+    '''
+    Args:
+        interval: the interval to be considered for calculation.
+        top_n: no. of trending values required (default:).
+        start: starting time (default:datetime.now().
+
+    Returns:
+        The top_n trending values
+    '''
+    prev_date = start
+    for obj in objects:
+        views = {}
+        setattr(obj, 'score', 0)
+
+        for day in range(1, interval['days']):
+            print('Date:', prev_date.date)
+            prev_date = prev_date - timedelta(days=day)
+            views[f'day_{day}'] = obj.hit_count_generic.filter(
+                created__date=prev_date).count()
+            print('Views:', views[f'day_{day}'])
+            obj.score += views[f'day_{day}'] / (day + 1)
+
+        print('score for', obj, ':', obj.score +
+              obj.hit_count_generic.filter(created__date=start))
+    print(Counter(objects, key=getattr(objects, 'score')))
 
 
 global meta_home
@@ -584,3 +614,18 @@ def get_category(request):
     context['categories'] = top_categories_list
 
     return render(request, template_name, context)
+
+
+def get_trending_posts(request):
+    '''
+    Returns top_n trending post for a given time period for POST requests in AJAX format.
+    '''
+
+    # if request.method == 'POST' and request.is_ajax():
+    try:
+        # top_n = int(json.loads(request.POST.get('data'))['top_n'])
+        top_n = int(request.GET.get('top_n'))
+    except Exception as _:
+        raise Http404("Wrong Request Format")
+    posts = published_posts()
+    trending(posts, top_n=top_n)
