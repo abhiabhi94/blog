@@ -68,10 +68,10 @@ class CategoryListFilter(admin.SimpleListFilter):
 
 
 class PostAdmin(admin.ModelAdmin):
-    readonly_fields = ('slug', 'last_updated', 'hits',
+    readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
-    list_display = ('title', 'author', 'hits', 'date_posted',
-                    'date_published', 'unique_hits', 'publish', 'featured')
+    list_display = ('title', 'author', 'views', 'date_posted',
+                    'date_published', 'publish', 'featured')
     tags_list = [post.get_tags_list()
                  for post in Post.objects.filter(publish=True)]
     all_tags = list({item for outer in tags_list for item in outer})

@@ -12,5 +12,5 @@
 <div class="article-metadata">
     <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a></small>
     <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
-    <small class="text-muted ml-2" title={{post.hits}}>views:{{post.hits|cool_num}}</small>
+    <small class="text-muted ml-2" title={{post.views}}>views:{{post.views|cool_num}}</small>
 </div>
