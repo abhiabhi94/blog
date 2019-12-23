@@ -86,9 +86,9 @@
                                     <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false">Trending Posts</a>
                                 </li>
                             </ul>
-                            <div class="tab-content">
-                                <li id="latest-posts" class="tab-pane fade show active list-group-item list-group-item-light" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
-                                <li class="tab-pane fade" id="trending-posts" role="tabpanel" aria-labelledby="trending-posts-tab"></li>
+                            <div class="tab-content list-group-item list-group-item-light">
+                                <li id="latest-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
+                                <li id="trending-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
                             </div>
                             <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
                             <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>

@@ -26,8 +26,9 @@ from django.db import IntegrityError
 from .models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
-from operator import itemgetter
 from django.utils import timezone
+import time
+from hitcount.models import Hit
 
 '''
 Use the name posts for backend purposes.
@@ -68,32 +69,48 @@ def get_font_cloud(obj, F=5.0, f=1.0):
     # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
 
 
-def trending(objects, start=timezone.now(), interval={'days': 30}, top_n=5):
+def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
     '''
     Args:
         interval: the interval to be considered for calculation.
         top_n: no. of trending values required (default:).
-        start: starting time (default:datetime.now().
+        start: starting time (default:datetime.now()).
+        Note: Today will also be considered for calculation.
 
     Returns:
-        The top_n trending values
+        The top_n trending values considering {interval} days.
+        e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
+        score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day) 
     '''
-    prev_date = start
+    max_score = 0
     for obj in objects:
-        views = {}
-        setattr(obj, 'score', 0)
+        # Initialising the score attribute with the view value of current day
+        setattr(obj, 'score', Hit.objects.filter(
+            hitcount=obj.hit_count, created__day=start.day).count())
+        prev_date = start
+        # print('publish date:', obj.date_published)
 
         for day in range(1, interval['days']):
-            print('Date:', prev_date.date)
-            prev_date = prev_date - timedelta(days=day)
-            views[f'day_{day}'] = obj.hit_count_generic.filter(
-                created__date=prev_date).count()
-            print('Views:', views[f'day_{day}'])
-            obj.score += views[f'day_{day}'] / (day + 1)
+            # print('Day:', prev_date.day)
+            prev_date = prev_date - timedelta(days=1)
 
-        print('score for', obj, ':', obj.score +
-              obj.hit_count_generic.filter(created__date=start))
-    print(Counter(objects, key=getattr(objects, 'score')))
+            # No point in finding views if the post wasn't published
+            if prev_date.date() < obj.date_published.date():
+                break
+
+            views = Hit.objects.filter(
+                hitcount=obj.hit_count, created__day=prev_date.day).count()
+            # print(f'Views on {prev_date}:', views)
+            obj.score += views / (day + 1)
+
+        # print('\nScore for', obj, ':', obj.score)
+
+        # Normalizing the score
+        max_score = max(obj.score, max_score)
+        obj.score = obj.score / max_score
+
+    # [print(obj, ':\t', obj.score) for obj in objects]
+    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:5]
 
 
 global meta_home
@@ -214,7 +231,7 @@ def subscribe(request):
     Returns Jsonresponse with properties response and status.
     '''
     data = {'msg': '', 'email': '', 'status': -1}
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_ajax():
         email = request.POST['email']
         data['email'] = email
         if email_verification(email):
@@ -449,7 +466,7 @@ class TaggedPostListView(ListView):
 
 
 def get_latest_posts(request, **kwargs):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_ajax():
         template_name = 'post_title.html'
         # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
@@ -475,7 +492,7 @@ def get_tags(request):
     2. Post request is used for displaying the top_n tags in the sidebar
     '''
     context = {}
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_ajax():
         template_name = 'tags.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
@@ -621,11 +638,16 @@ def get_trending_posts(request):
     Returns top_n trending post for a given time period for POST requests in AJAX format.
     '''
 
-    # if request.method == 'POST' and request.is_ajax():
-    try:
-        # top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        top_n = int(request.GET.get('top_n'))
-    except Exception as _:
-        raise Http404("Wrong Request Format")
-    posts = published_posts()
-    trending(posts, top_n=top_n)
+    if request.method == 'POST' and request.is_ajax():
+        template_name = 'post_title.html'
+        start_time = time.time()
+        try:
+            top_n = int(json.loads(request.POST.get('data'))['top_n'])
+            # top_n = int(request.GET.get('top_n'))
+        except Exception as _:
+            raise Http404("Wrong Request Format")
+        posts = published_posts()
+        trending_posts = trending(posts, top_n=top_n)
+        print('\nTotal time taken:', time.time() - start_time)
+        # print('Trending posts:', trending_posts)
+        return render(request, template_name, {'posts': trending_posts})
