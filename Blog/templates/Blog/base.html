@@ -36,7 +36,7 @@
                     {% if user.is_authenticated %}
                     <div id="dropdown" class="dropdown">
                         {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src={{user.profile.image.url}} class="user-image ml-2"><span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-2"><span class="caret"></span></a>
                         {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
                         <div class="dropdown-menu">
                             <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
@@ -76,25 +76,23 @@
                 {% block content %}
                 {% endblock %}
             </div>
-                <div id="sidebar" class="col-md-3 content-section">
-                        <ul class="list-group">
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="true">Latest Posts</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false">Trending Posts</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content list-group-item list-group-item-light">
-                                <li id="latest-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
-                                <li id="trending-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
-                            </div>
-                            <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
-                            <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
-                        </ul>
-                    </p>
-                </div>
+            <div id="sidebar" class="col-md-3 content-section">
+                <ul class="list-group">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="true">Latest Posts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false">Trending Posts</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content list-group-item list-group-item-light">
+                        <li id="latest-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
+                        <li id="trending-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
+                    </div>
+                    <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
+                    <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
+                </ul>
             </div>
         </div>
     </main>

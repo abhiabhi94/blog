@@ -8,16 +8,13 @@
     </div>
 
 
-    <div class="article-detail">
+    <div class="article-contents">
         <article id="post-detail" class="content-section">
             <div class="media-body">
                 <div class="article-metadata">
                     <div class="article-title">
                         <h2>{{ post.title }}</h2>
                     </div>
-                    {% comment %} <div class="article-img"> {% endcomment %}
-                        {% comment %} <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}"> {% endcomment %}
-                    {% comment %} </div> {% endcomment %}
                     <div class="article-info">
                         <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a>
                         <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
@@ -31,7 +28,7 @@
                     </div>
                 </div>
                 <div class="article-image">
-                <img src="{{post.image.url}}">
+                    <img src="{{post.image.url}}" alt="{{post.title}}">
                 </div>
                 <p class="article-content">{{ post.content|safe }}</p>
                 {% include "tags.html" with tags=post.get_tags_list %}

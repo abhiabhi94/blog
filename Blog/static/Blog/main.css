@@ -296,7 +296,7 @@ a.article-title:hover {
     flex-direction: column;
 }
 
-.article-detail {
+.article-contents {
     margin-left: 4rem;
 }
 
@@ -451,7 +451,7 @@ a.article-title:hover {
     margin-top: 5px;
 }
 
-#details>.article-contents {
+.details>.article-contents {
     display: flex;
     flex-direction: column;
 }
@@ -667,7 +667,7 @@ a.article-title:hover {
     #article-share-container {
         flex-direction: column-reverse;
     }
-    .article-detail {
+    .article-contents {
         margin-left: 0;
     }
     .article-list>.article-thumbnail>img {
@@ -678,7 +678,7 @@ a.article-title:hover {
         padding-left: 0;
         padding-right: 0;
     }
-    #details {
+    .details {
         padding: 5px 5px;
     }
     .article-card {
@@ -724,7 +724,6 @@ a.article-title:hover {
         padding: 0.5rem;
         text-align: left;
     }
-
     .social-icons>.col {
         padding: 0 !important;
     }
