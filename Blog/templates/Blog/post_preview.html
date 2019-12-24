@@ -3,7 +3,7 @@
     <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
     <div class="media-body">
         <div class="article-metadata">
-            <a class="mr-2" href="#" title="Article written by {{post.author}}">{{ post.author }}</a>
+            <a class="mr-2" href="#" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2 class="article-title">{{ post.title }}</a></h2>

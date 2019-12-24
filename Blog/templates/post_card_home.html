@@ -10,7 +10,7 @@
     <h{{font|default:6}}><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="{{post.title}}">{{ post.title|truncatechars:'80' }}</a></h{{font|default:6}}>
 </div>
 <div class="article-metadata">
-    <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}" title="Posts written by {{post.author}}">{{ post.author }}</a></small>
+    <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name|title|truncatechars:'30'}}">{{ post.author.get_full_name }}</a></small>
     <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
     <small class="text-muted ml-2" title={{post.views}}>views:{{post.views|cool_num}}</small>
 </div>

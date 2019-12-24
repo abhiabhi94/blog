@@ -16,7 +16,7 @@
                         <h2>{{ post.title }}</h2>
                     </div>
                     <div class="article-info">
-                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="Articles written by {{post.author}}">{{ post.author }}</a>
+                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
                         <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
                         <small class="text-muted" title={{ post.views }}>views: {{ post.views|cool_num }}</small>
                         {% if post.author == user %}
