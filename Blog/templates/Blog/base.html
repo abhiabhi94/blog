@@ -3,100 +3,100 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head {% meta_namespaces %}>
-    {% include 'meta/meta.html' %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Rubik&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'Blog/main.css' %}">
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="{% static 'Blog/main.js' %}"></script>
-    <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
-</head>
-<header class="site-header">
-    <nav class="navbar navbar-expand-md navbar-dark navbar-color fixed-top">
-        <div class="container">
-            <a class="navbar-brand mr-4" href="{% url 'Blog:home' %}">Blog</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarToggle">
-                <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{% url 'Blog:home' %}">Home</a>
-                    <a class="nav-item nav-link" href="{% url 'Blog:about' %}">About</a>
-                </div>
-                <!-- Navbar Right Side -->
-                <div class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    <div id="dropdown" class="dropdown">
-                        {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-2"><span class="caret"></span></a>
-                        {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
-                        <div class="dropdown-menu">
-                            <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
-                            <a class="nav-item nav-link" href="{% url 'profile' %}">Edit Profile</a>
-                            {% if user.is_staff %}
-                            <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}">New Post</a>
-                            <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}">My Posts</a>
-                            <a class="nav-item nav-link" href="#">Drafts</a>
+    <head {% meta_namespaces %}>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% include 'meta/meta.html' %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto|Rubik&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static 'Blog/main.css' %}">
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="{% static 'Blog/main.js' %}"></script>
+        <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="navbar navbar-expand-md navbar-dark navbar-color fixed-top">
+                <div class="container">
+                    <a class="navbar-brand mr-4" href="{% url 'Blog:home' %}" title="Blog">Blog</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarToggle">
+                        <div class="navbar-nav mr-auto">
+                            <a class="nav-item nav-link" href="{% url 'Blog:home' %}" title="Home">Home</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:about' %}" title="About">About</a>
+                        </div>
+                        <!-- Navbar Right Side -->
+                        <div class="navbar-nav">
+                            {% if user.is_authenticated %}
+                            <div id="dropdown" class="dropdown">
+                                {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
+                                <a href="#" class="dropdown-toggle" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-2"><span class="caret"></span></a>
+                                {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
+                                <div class="dropdown-menu">
+                                    <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
+                                    <a class="nav-item nav-link" href="{% url 'profile' %}" title="Edit profile">Edit Profile</a>
+                                    {% if user.is_staff %}
+                                    <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}" title="New Post">New Post</a>
+                                    <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}" title="My Post">My Posts</a>
+                                    <a class="nav-item nav-link" href="#" title="">Drafts</a>
+                                    {% endif %}
+                                    <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}" title="Bookmarks">Bookmarks</a>
+                                    <a class="nav-item nav-link" href="{% url 'logout' %}" title="Log Out">Log Out</a>
+                                </div>
+                            </div>
+                            {% else %}
+                            <a class="nav-item nav-link" href="{% url 'login' %}" title="Login">Login</a>
+                            <a class="nav-item nav-link" href="{% url 'register' %}" title="Register">Register</a>
                             {% endif %}
-                            <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}">Bookmarks</a>
-                            <a class="nav-item nav-link" href="{% url 'logout' %}">Log Out</a>
                         </div>
                     </div>
-                    {% else %}
-                    <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                    <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
-                    {% endif %}
                 </div>
-            </div>
-        </div>
-    </nav>
-</header>
+            </nav>
+        </header>
 
-<body>
-    <main role="main" id="main">
-        <div class="row">
-            <div class="col-md-9">
-                {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{message.tags}}">
-                        {{message}}
+        <main role="main" id="main">
+            <div class="row">
+                <div class="col-md-9">
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{message.tags}}">
+                            {{message}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div id="response">
                     </div>
-                    {% endfor %}
-                {% endif %}
-                <div id="response">
+                    {% block content %}
+                    {% endblock %}
                 </div>
-                {% block content %}
-                {% endblock %}
-            </div>
-            <div id="sidebar" class="col-md-3 content-section">
-                <ul class="list-group">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="true">Latest Posts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false">Trending Posts</a>
-                        </li>
+                <div id="sidebar" class="col-md-3 content-section">
+                    <ul class="list-group">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="true" title="Latest Posts">Latest Posts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="false" title="Trending Posts">Trending Posts</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content list-group-item list-group-item-light">
+                            <li id="latest-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
+                            <li id="trending-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
+                        </div>
+                        <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
+                        <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
                     </ul>
-                    <div class="tab-content list-group-item list-group-item-light">
-                        <li id="latest-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
-                        <li id="trending-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
-                    </div>
-                    <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
-                    <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
-                </ul>
+                </div>
             </div>
-        </div>
-    </main>
-    {% include "./footer.html" %}
-</body>
+        </main>
+        {% include "./footer.html" %}
+    </body>
 
 </html>

@@ -9,7 +9,7 @@
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-danger" type="submit">Delete your post</button>
-            <a class="btn btn-outline-secondary" href="{% url 'Blog:post-update' object.date_posted.year object.date_posted.month object.date_posted.day object.slug %}">Cancel</a>
+            <a class="btn btn-outline-secondary" href="{% url 'Blog:post-update' object.date_posted.year object.date_posted.month object.date_posted.day object.slug %}" title="Cancel">Cancel</a>
         </div>
     </form>
 </div>

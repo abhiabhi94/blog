@@ -1,5 +1,5 @@
 <ul class="list-unstyled">
     {% for post in posts  %}
-    <li class="mt-2"><a href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">{{ post.title }}</a></li>
+    <li class="mt-2"><a href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></li>
     {% endfor %}
 </ul>

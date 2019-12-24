@@ -1,6 +1,6 @@
 <span>
 {% for tag in tags %}
-    <a href="{% url 'Blog:tagged' tag %}"><p class="article-tags">{{ tag }}</p></a>
+    <a href="{% url 'Blog:tagged' tag %}"  title="Posts with the tag {{tag}}"><p class="article-tags">{{ tag }}</p></a>
 {% endfor %}
 </span>
 {% if ajax %}

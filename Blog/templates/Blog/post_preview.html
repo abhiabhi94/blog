@@ -3,7 +3,7 @@
     <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
     <div class="media-body">
         <div class="article-metadata">
-            <a class="mr-2" href="#">{{ post.author }}</a>
+            <a class="mr-2" href="#" title="Article written by {{post.author}}">{{ post.author }}</a>
             <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
         </div>
         <h2 class="article-title">{{ post.title }}</a></h2>
@@ -14,7 +14,7 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Get back to edit</a>
+        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="Get back to edit">Get back to edit</a>
         {% comment %} <button class="btn btn-outline-info ml-2" type="submit">Submit for review</button> {% endcomment %}
     </div>
 </form>

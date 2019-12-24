@@ -3,6 +3,6 @@
 {% if page_obj.paginator.count %}
     <legend class="heading">Total Bookmarked Posts ({{ page_obj.paginator.count }})</legend>
 {% else %}
-    <legend class="heading"> You are yet to bookmark a post. You might want to go back <a href="{% url 'Blog:home' %}">reading.</a>.</legend>
+    <legend class="heading"> You are yet to bookmark a post. You might want to go back <a href="{% url 'Blog:home' %}" title="Home">reading.</a>.</legend>
 {% endif %}
 {% endblock topcontent %}

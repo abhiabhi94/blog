@@ -16,13 +16,13 @@
                         <h2>{{ post.title }}</h2>
                     </div>
                     <div class="article-info">
-                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}">{{ post.author }}</a>
+                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="Articles written by {{post.author}}">{{ post.author }}</a>
                         <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
                         <small class="text-muted" title={{ post.views }}>views: {{ post.views|cool_num }}</small>
                         {% if post.author == user %}
                             <div id="post-options">
-                                <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Update</a>
-                                <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}">Delete</a>
+                                <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="Update">Update</a>
+                                <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="Delete">Delete</a>
                             </div>
                         {% endif %}
                     </div>
