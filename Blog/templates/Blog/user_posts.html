@@ -3,12 +3,12 @@
 {% if page_obj.paginator.count %}
     <div class="profile content-section">
         <div class="avatar">
-            <img class="user-img" src="{{ author.profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
+            <img class="user-img overflow-parent" src="{{ author.profile.image.url }}" alt="{{ author.first_name }} {{ author.last_name }}">
         </div>
-        <div class="author-info">
+        <div class="author-info truncate-string-parent">
             <ul class="list-unstyled">
                 <li>
-                    <h3 class="author-name">{{ author.first_name }} {{ author.last_name }}</h3>
+                    <h3 class="author-name truncate-string">{{ author.first_name }} {{ author.last_name }}</h3>
                 </li>
                 <li>
                     {% if author.profile.bio %}
@@ -17,20 +17,20 @@
                 </li>
             </ul>
         </div>
-        <div class="author-profile-info">
+        <div class="author-profile-info truncate-string-parent">
             <ul class="list-unstyled">
                 {% if author.profile.public %}
-                <li class="author-email mt-2">
-                    <span><i class="fa fa-envelope fa-fw mr-2"></i>{{ author.email }}</span>
+                <li class="author-email truncate-string mt-2">
+                    <span><i class="fa fa-envelope fa-fw mr-2"></i><a href="mailto://{{ author.email }}">{{ author.email }}</a></span>
                 </li>
                 {% endif %}
                 {% if author.profile.location %}
-                <li class="author-location mt-2">
+                <li class="author-location truncate-string mt-2">
                     <span><i class="fa fa-map-marker fa-fw mr-2"></i>{{ author.profile.location }}</span>
                 </li>
                 {% endif %}
                 {% if author.profile.website %}
-                <li class="author-website mt-2">
+                <li class="author-website truncate-string mt-2">
                     <span>
                         <i class="fa fa-external-link fa-fw mr-2"></i><a href="//{{author.profile.website}}" title="Author's website" target="_blank">{{ author.profile.website }}</a>
                     </span>
