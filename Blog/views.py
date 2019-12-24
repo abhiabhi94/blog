@@ -87,6 +87,11 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         # Initialising the score attribute with the view value of current day
         setattr(obj, 'score', Hit.objects.filter(
             hitcount=obj.hit_count, created__day=start.day).count())
+        # If total views is 0, there's no point in processing any further
+        if not obj.views:
+            obj.score = 0
+            continue
+
         prev_date = start
         # print('publish date:', obj.date_published)
 
@@ -110,7 +115,7 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         obj.score = obj.score / max_score
 
     # [print(obj, ':\t', obj.score) for obj in objects]
-    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:5]
+    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:top_n]
 
 
 global meta_home
