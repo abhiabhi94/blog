@@ -6,8 +6,8 @@
             </div>
             <form class="subForm" action="{% url 'Blog:subscription' %}" method="post">
                 {% csrf_token %}
-                <input id="email" class="p-1" type="email" name="email" placeholder="Enter Email.." required>
-                <button type="submit" class="btn btn-sm subscribe" value="submit">Subscribe</button>
+                <input id="email" type="email" name="email" placeholder="Enter Email.." required>
+                <button type="submit" class="btn btn-sm btn-outline-info subscribe" value="submit">Subscribe</button>
             </form>
         </div>
         <div class="copyright">
@@ -16,24 +16,24 @@
     </div>
     <div class="col2">
         <div class="contact">
-            <a href="mailto:hackadda.com@gmail.com"><i class="fa fa-envelope"></i>
-                <h6 class="phone">hackadda.com@gmail.com</h6>
+            <a href="mailto:thehackadda.com@gmail.com"><i class="fa fa-envelope"></i>
+                <h6 class="phone">thehackadda@gmail.com</h6>
             </a>
         </div>
     </div>
     <div class="col3">
         <div class="social-icons">
-            {% comment %} {% with "facebook twitter instagram medium" as socials %}
+            <h5 class="footer-text-color">Let's Connect</h5>
+            {% with "facebook twitter instagram" as socials %}
             {% for social in socials.split %}
-                {% with "https://"|add:social|add:".com/"|add:"hackadda" as social_link %}
+                {% with "https://"|add:social|add:".com/"|add:"thehackadda" as social_link %}
                
                 {% include "./social_icons.html" with link=social_link  iclass=social %}
                 {% endwith %}
             {% endfor %}
-            {% endwith %} {% endcomment %}
-            <div class="col">
+            {% endwith %}
+            {% comment %} <div class="col">
             <div class="col3">
-                <h5 class="footer-text-color">Let's Connect</h5>
                 <div id="socialIcons">
                     <a style="color: white;" class="mr-1" href="https://facebook.com/scdotin" target="_blank"><i
                        style="color: white;"          class="fa fa-facebook"></i></a>
@@ -43,17 +43,17 @@
                        style="color: white;"          class="fa fa-instagram"></i></a>
                     <a style="color: white;" class="ml-1 mr-1" href="https://www.youtube.com/channel/UCRcN5Q5eCkzoAwolXEAdPKA?view_as=subscriber" target="_blank"><i class="fa fa-youtube"></i></a>
                     <a style="color: white;" class="ml-1" href="https://linkedin.com/company/scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-linkedin"></i></a>
+                       style="color: white;"          class="fa fa-linkedin"></i></a> {% endcomment %}
                     {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://medium.com/@scdotin" target="_blank"><i
                        style="color: white;"          class="fa fa-medium"></i></a> {% endcomment %}
                     {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://github.com/scdotin" target="_blank"><i
                                 class="fa fa-github"></i></a> {% endcomment %}
-                </div>
-            </div>
-        </div>
+                {% comment %} </div> {% endcomment %}
+            {% comment %} </div> {% endcomment %}
+        {% comment %} </div> {% endcomment %}
         </div>
         <div class="made-with-love">
-            <h6>Made with ❤️ from <a href="http://wikipedia.com/tetarpur" target="_blank" title="Tetarpur">Tetarpur</a></h6>
+            <h6>Made with ❤️ from Tetarpur</h6>
         </div>
     </div>
 </footer>
