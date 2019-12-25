@@ -35,9 +35,10 @@ ul {
     padding-right: 0;
 }
 
-.navbar-color {
+.navbar-color,
+footer {
     /* background-color: #5f788a; */
-    background-color: #447aa0;
+    background-color: #2B4A6F;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -144,7 +145,10 @@ a.dropdown-toggle {
 
 footer {
     display: flex;
-    background-color: #13181b;
+}
+
+#email {
+    width: 70%;
 }
 
 footer h5,
@@ -295,19 +299,13 @@ a.article-title:hover {
     white-space: nowrap;
 }
 
-
-/* .author-profile-info .author-email,.author-location,.author-website{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-} */
-
 #response {
     font-size: 0.9rem;
     position: fixed;
     top: 70px;
     left: 28%;
     opacity: 0.9;
+    z-index: 1030;
 }
 
 #post-options {
@@ -366,52 +364,6 @@ a.article-title:hover {
     display: block;
     margin: 0.5rem auto;
 }
-
-
-/* .copy,
-.bookmark {
-    border: none;
-    background: #fff;
-    font-size: 1.2rem!important;
-} */
-
-
-/* .fa {
-    padding: 0.2rem;
-}
-
-.fa-facebook {
-    background: #3b5998;
-    color: #fff!important;
-    padding-right: 0.3rem;
-    padding-left: 0.3rem;
-}
-
-.fa-twitter {
-    background: #00acee;
-    color: white;
-}
-
-.fa-linkedin {
-    background: #0077b5;
-    color: #fff !important;
-}
-
-.fa-reddit {
-    background: #fff;
-    color: #ff4500 !important;
-}
-
-.fa-whatsapp {
-    background: #43d854;
-    color: #fff !important;
-} */
-
-
-/* 
-.fa-bookmark {
-    font-size: 24px;
-} */
 
 .articles {
     display: flex;
@@ -656,6 +608,10 @@ a.article-title:hover {
     margin-right: 1px !important;
     margin-left: 1px !important;
     font-size: 2rem !important;
+}
+
+.contact {
+    width: min-content;
 }
 
 
