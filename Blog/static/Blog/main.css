@@ -30,6 +30,11 @@ ul {
     white-space: nowrap;
 }
 
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .navbar-color {
     /* background-color: #5f788a; */
     background-color: #447aa0;
@@ -290,6 +295,7 @@ a.article-title:hover {
     white-space: nowrap;
 }
 
+
 /* .author-profile-info .author-email,.author-location,.author-website{
     overflow: hidden;
     text-overflow: ellipsis;
@@ -481,9 +487,14 @@ a.article-title:hover {
     flex-direction: row;
 }
 
+.featured-articles,
+.latest-articles,
+.category-articles {
+    padding: 5px 15px;
+}
+
 .featured-articles {
     height: 38rem;
-    padding: 5px 10px;
     display: flex;
     flex-direction: row;
 }
