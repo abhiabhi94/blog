@@ -5,7 +5,6 @@ from django.views.generic import (ListView,
                                   UpdateView,
                                   DeleteView
                                   )
-from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from Users.models import Profile
 from django.contrib import messages
@@ -20,102 +19,18 @@ from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from collections import Counter
 from meta.views import Meta
-from datetime import datetime, timedelta
-from validate_email import validate_email
+from datetime import datetime
 from django.db import IntegrityError
 from .models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
 import time
-from hitcount.models import Hit
-
+from .manager import published_posts, email_verification, get_font_cloud, trending, paginate_util
 '''
 Use the name posts for backend purposes.
 Use the name articles for frontend purposes.
 '''
-
-
-def published_posts(order='-date_posted'):
-    '''
-    TODO: support multiple filters.
-    returns a list of published posts.
-    if no order is given, the posts are ordered by their post date.
-    '''
-    return Post.objects.filter(publish=True).order_by(order)
-
-
-def email_verification(email):
-    '''Verify whether an email is legit or not'''
-    return validate_email(email_address=email, check_regex=True, check_mx=True)
-
-
-def get_font_cloud(obj, F=5.0, f=1.0):
-    '''
-    Returns a font-cloud based upon the sorted dictionary received.
-    Max font-size is 5{rem}
-    Min font-size is 1{rem}
-    In-between values are calculated based upon linear distribution{ax+b}.
-    '''
-    V = list(obj.values())[0]
-    v = 1
-    diff = V - v
-    b = (f * V - F * v) / diff
-    a = (F-f) / diff
-
-    # for key, val in obj:
-    # obj['key'] = (val, val*a + b)
-    return {key: (val, f'{val*a + b:.3f}' + 'rem') for (key, val) in obj.items()}
-    # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
-
-
-def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
-    '''
-    Args:
-        interval: the interval to be considered for calculation.
-        top_n: no. of trending values required (default:).
-        start: starting time (default:datetime.now()).
-        Note: Today will also be considered for calculation.
-
-    Returns:
-        The top_n trending values considering {interval} days.
-        e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
-        score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day) 
-    '''
-    max_score = 0
-    for obj in objects:
-        # Initialising the score attribute with the view value of current day
-        setattr(obj, 'score', Hit.objects.filter(
-            hitcount=obj.hit_count, created__day=start.day).count())
-        # If total views is 0, there's no point in processing any further
-        if not obj.views:
-            obj.score = 0
-            continue
-
-        prev_date = start
-        # print('publish date:', obj.date_published)
-
-        for day in range(1, interval['days']):
-            # print('Day:', prev_date.day)
-            prev_date = prev_date - timedelta(days=1)
-
-            # No point in finding views if the post wasn't published
-            if prev_date.date() < obj.date_published.date():
-                break
-
-            views = Hit.objects.filter(
-                hitcount=obj.hit_count, created__day=prev_date.day).count()
-            # print(f'Views on {prev_date}:', views)
-            obj.score += views / (day + 1)
-
-        # print('\nScore for', obj, ':', obj.score)
-
-        # Normalizing the score
-        max_score = max(obj.score, max_score)
-        obj.score = obj.score / max_score
-
-    # [print(obj, ':\t', obj.score) for obj in objects]
-    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:top_n]
 
 
 global meta_home
@@ -268,6 +183,10 @@ class FeaturedPostListView(ListView):
     def get_queryset(self):
         return published_posts().filter(featured=True)
 
+    def get_context_data(self, **kwargs):
+        context = super(FeaturedPostListView, self).get_context_data(**kwargs)
+        context['meta'] = meta_home
+        return context
 
 class PostListView(ListView):
     # model = Post
@@ -326,7 +245,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
             "You should be signed in as %s to view this page" % (user))
 
     def get_context_data(self, **kwargs):
-        context = super(ListView, self).get_context_data(**kwargs)
+        context = super(ListView, self).get_context_data(**kwargs) # TODO
         context['profile'] = self.request.user.profile
         return context
 
@@ -412,7 +331,7 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
 
 
 def about(request):
-    return render(request, 'Blog/about.html', {'title': 'About'})
+    return render(request, 'Blog/about.html', {'title': 'About', 'meta': meta_home})
 
 
 @login_required
@@ -486,6 +405,7 @@ def get_latest_posts(request, **kwargs):
         paginate_by = 5
         posts = published_posts()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
+        kwargs['meta'] = meta_home
         return render(request, template_name, kwargs)
 
     raise Http404('Wrong Request format')
@@ -525,7 +445,7 @@ def get_tags(request):
 
     # context['tags'] = top_tags_list
     context['tags'] = get_font_cloud(top_tags_list)
-
+    context['meta'] = meta_home
     return render(request, template_name, context)
 
 
@@ -585,25 +505,17 @@ def get_timewise_list(request, *args, **kwargs):
 
         kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
+        kwargs['meta'] = meta_home
         return render(request, template_name, kwargs)
 
     raise Http404("Wrong Request Format")
 
 
-def paginate_util(request, objects, paginate_by, kwargs):
-    # Show {paginate_by} objects per page
-    paginator = Paginator(objects, paginate_by)
-    page = request.GET.get('page')
-    objects = paginator.get_page(page)
-    if paginator.num_pages > 1:  # no point in paginating if there is only one page.
-        kwargs['is_paginated'] = True
-    kwargs['page_obj'] = objects
-    return objects
 
 
 def get_category(request):
     '''
-    get categories(foriegn key) present in Blog
+    Get categories(foreign key) present in Blog
     1. For get request, all categories are shown in a page.
     2. For post request, top_n categories are shown in the sidebar.
     '''
@@ -634,6 +546,7 @@ def get_category(request):
         category: count for (category, count) in top_categories}
 
     context['categories'] = top_categories_list
+    context['meta'] = meta_home
 
     return render(request, template_name, context)
 
@@ -655,4 +568,4 @@ def get_trending_posts(request):
         trending_posts = trending(posts, top_n=top_n)
         print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
-        return render(request, template_name, {'posts': trending_posts})
+        return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
