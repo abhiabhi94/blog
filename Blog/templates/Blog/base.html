@@ -10,7 +10,7 @@
         {% include 'meta/meta.html' %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link href="https://fonts.googleapis.com/css?family=Roboto|Rubik&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Rubik&display=swap">
         <link rel="stylesheet" type="text/css" href="{% static 'Blog/main.css' %}">
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
@@ -62,37 +62,39 @@
         </header>
 
         <main role="main" id="main">
-            <div class="row">
-                <div class="col-md-9">
-                    {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{message.tags}}">
-                            {{message}}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-9">
+                        {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{message.tags}}">
+                                {{message}}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div id="response">
                         </div>
-                        {% endfor %}
-                    {% endif %}
-                    <div id="response">
+                        {% block content %}
+                        {% endblock %}
                     </div>
-                    {% block content %}
-                    {% endblock %}
-                </div>
-                <div id="sidebar" class="col-md-3 content-section">
-                    <ul class="list-group">
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="true" title="Trending Posts">Trending Posts</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="false" title="Latest Posts">Latest Posts</a>
-                            </li>
+                    <div id="sidebar" class="col-md-3 content-section">
+                        <ul class="list-group">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="trending-posts-tab" data-toggle="tab" href="#trending-posts" role="tab" aria-controls="trending-posts" aria-selected="true" title="Trending Posts">Trending Posts</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="latest-posts-tab" data-toggle="tab" href="#latest-posts" role="tab" aria-controls="latest-posts" aria-selected="false" title="Latest Posts">Latest Posts</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content list-group-item list-group-item-light">
+                                <li id="latest-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
+                                <li id="trending-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
+                            </div>
+                            <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
+                            <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
                         </ul>
-                        <div class="tab-content list-group-item list-group-item-light">
-                            <li id="latest-posts" class="tab-pane fade" role="tabpanel" aria-labelledby="latest-posts-tab" data-url='{% url "Blog:latest-posts" %}'></li>
-                            <li id="trending-posts" class="tab-pane fade show active" role="tabpanel" aria-labelledby="trending-posts-tab" data-url='{% url "Blog:trending-posts" %}'></li>
-                        </div>
-                        <li id="top-tags" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-tags" %}'>Top Tags<br></li>
-                        <li id="top-categories" class="list-group-item list-group-item-light" data-url='{% url "Blog:all-categories" %}'>Top Categories<br></li>
-                    </ul>
+                    </div>
                 </div>
             </div>
         </main>
