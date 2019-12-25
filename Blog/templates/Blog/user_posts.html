@@ -8,7 +8,7 @@
         <div class="author-info truncate-string-parent">
             <ul class="list-unstyled">
                 <li>
-                    <h3 class="author-name truncate-string">{{ author.first_name }} {{ author.last_name }}</h3>
+                    <h3 class="author-name truncate-string">{{ author.get_full_name|title }}</h3>
                 </li>
                 <li>
                     {% if author.profile.bio %}
