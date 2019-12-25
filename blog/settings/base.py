@@ -205,10 +205,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
+### Used by Django-Meta app for rendering meta tags ###
 META_USE_TITLE_TAG = True
-
 META_USE_TWITTER_PROPERTIES = True
-
 META_USE_OG_PROPERTIES = True
-
-META_SITE_DOMAIN = "hackadda.com"
+META_SITE_DOMAIN = 'hackadda.com'
+META_SITE_PROTOCOL = 'https'
+##########################################
