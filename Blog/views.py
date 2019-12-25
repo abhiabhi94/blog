@@ -35,9 +35,20 @@ Use the name articles for frontend purposes.
 
 global meta_home
 meta_home = Meta(title='StayCurious Blog | Nurturing curiosity in every mind.',
-                 description='Articles that encourage coding, robotics through STEM education',
-                 keywords=['robotics, coding, STEM, STEAM, education, blog, tinker, kids, StayCurious, curiousity'])
+                description='Articles that encourage coding, robotics through STEM education',
+                keywords=['robotics, coding, STEM, STEAM, education, blog, tinker, kids, StayCurious, curiousity'],
+                url='hackadda.com',
+                og_type='website',
+                locale='en_US',
+                site_name='HackAdda',
+                twitter_creator='@thehackadda',
+                twitter_site='@thehackadda',
+                og_publisher='https://www.facebook.com/thehackadda',
+                )
+# conditional og property - og_author_url, published_time, modified_time, image,                  
 
+
+# consider adding other property in future. TODO
 
 class HomeView(ListView):
     '''Return featured, latest, and categories wise articles for the front-page'''
@@ -261,7 +272,6 @@ class PostDetailView(HitCountDetailView, DetailView):
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
         return context
-
 
 def get_recommended_posts(request):
     '''
