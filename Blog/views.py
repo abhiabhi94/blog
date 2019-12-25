@@ -344,6 +344,41 @@ class PostDetailView(HitCountDetailView, DetailView):
         return context
 
 
+def get_recommended_posts(request):
+    '''
+    Condition:
+        Works only for requests which are POST and AJAX.
+
+    Args:
+        post: the object whose recommended posts are request
+        top_n: No. of recommended articles required
+
+    Returns:
+        Currently this function just returns the latest {top_n} posts (excluding the requesting post).
+
+    TODO:
+        Improve this function for a better user experience 
+    '''
+    if request.method == 'POST' and request.is_ajax:
+        try:
+            data = json.loads(request.POST.get('data'))
+            slug = data['slug']
+            top_n = int(data['top_n'])
+            print('post:', slug, 'top_n:', top_n)
+
+        except Exception as _:
+            raise Http404('Wrong Request Format for post request')
+
+        template_name = 'post_latest_home.html'
+        context = {}
+        # Exclude the current post
+        context['posts'] = published_posts().exclude(slug=slug)[:top_n]
+        context['recommend'] = True
+        return render(request, template_name, context)
+
+    raise Http404('Wrong Request format')
+
+
 class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']

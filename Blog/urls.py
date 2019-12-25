@@ -30,6 +30,8 @@ urlpatterns = [
             views.PostUpdateView.as_view(), name='post-update'),
     re_path(r'post/'+ymds_re+'/delete$',
             views.PostDeleteView.as_view(), name='post-delete'),
+    path('post/recommended-posts', views.get_recommended_posts,
+         name='recommended-posts'),
     path('post/bookmark/', views.bookmark_post, name='bookmark-post'),
     path('post/tag', views.get_tags, name='all-tags'),
     path('post/tag/<str:tag>', views.TaggedPostListView.as_view(), name='tagged'),

@@ -36,4 +36,15 @@
         </article>
     </div>
 </div>
+<div id="recommended-posts" class="article-contents content-section">
+</div>
+{% comment %} For requesting recommended posts {% endcomment %}
+<script>
+    const id ='#recommended-posts';
+    const data = {slug:'{{post.slug}}', top_n:3};
+    url = "{% url 'Blog:recommended-posts' %}";
+    $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+        $(id).append(response);
+    });
+</script>
 {% endblock content %}
