@@ -6,7 +6,7 @@
 {% for category_name, category_posts in category.items %}
     {% url "Blog:categorised" category_name as category_url %}
     {% include "heading.html" with heading=category_name view_more_url=category_url %}
-    <div class="category article-list">
+    <div class="category-articles article-list">
     {% include "post_list_home.html" with posts=category_posts %}
     </div>
 {% endfor %}
