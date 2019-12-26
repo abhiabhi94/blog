@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from hitcount.models import Hit
 from django.core.paginator import Paginator
 
-def published_posts(order='-date_posted'):
+
+def published_posts(order='-date_published'):
     '''
     TODO: support multiple filters.
     returns a list of published posts.
@@ -16,6 +17,7 @@ def published_posts(order='-date_posted'):
 def email_verification(email):
     '''Verify whether an email is legit or not'''
     return validate_email(email_address=email, check_regex=True, check_mx=True)
+
 
 def get_font_cloud(obj, F=5.0, f=1.0):
     '''
@@ -75,9 +77,10 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         # Normalizing the score
         max_score = max(obj.score, max_score)
         obj.score = obj.score / max_score
-            
+
     # [print(obj, ':\t', obj.score) for obj in objects]
     return sorted(objects, key=lambda obj: obj.score, reverse=True)[:5]
+
 
 def paginate_util(request, objects, paginate_by, kwargs):
     # Show {paginate_by} objects per page

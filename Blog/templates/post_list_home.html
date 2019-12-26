@@ -1,4 +1,5 @@
-{% load cool_num %}
+{% load cool_view %}
+{% load cool_timesince %}
 {% for post in posts %}
 <div class="container-fluid">
     <div class="row media content-section article-list">
@@ -8,19 +9,19 @@
         <div class="details col-md-9">
             <div class="media-body article-contents">
                 <div class="article-details">
-                    <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></h4>
+                    <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></h4>
                     {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
                     <div class="article-short-des" style="display:inline">
                         {{ post.content|truncatewords_html:'50'|safe }}&nbsp;
-                        <a style="display:inline-block" href="{% url 'Blog:post-detail' post.date_posted.year post.date_posted.month post.date_posted.day post.slug %}" title="Read full article">Read more</a>
+                        <a style="display:inline-block" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Read full article">Read more</a>
                     </div>
                     <div class="tags">
                         {% include "tags.html" with tags=post.get_tags_list %}
                     </div>
                     <div class="article-metadata">
                         <small><a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
-                        <small class="text-muted">{{ post.date_posted|date:"j M Y" }}</small>
-                        <small class="text-muted ml-4" title={{ post.views }}>views:{{ post.views|cool_num }}</small>
+                        <small class="mr-2 text-muted" title="{{ post.date_published|date:"j M Y" }}">{{ post.date_published|cool_timesince }}</small>
+                        <small class="text-muted ml-4" title={{ post.views }}>views:{{ post.views|cool_view }}</small>
                     </div>
                 </div>
             </div>

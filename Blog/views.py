@@ -26,7 +26,12 @@ from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
 import time
-from .manager import published_posts, email_verification, get_font_cloud, trending, paginate_util
+from .manager import (published_posts,
+                      email_verification,
+                      get_font_cloud,
+                      trending,
+                      paginate_util
+                      )
 '''
 Use the name posts for backend purposes.
 Use the name articles for frontend purposes.
@@ -34,18 +39,19 @@ Use the name articles for frontend purposes.
 
 
 global meta_home
-meta_home = Meta(title='StayCurious Blog | Nurturing curiosity in every mind.',
-                description='Articles that encourage coding, robotics through STEM education',
-                keywords=['robotics, coding, STEM, STEAM, education, blog, tinker, kids, StayCurious, curiousity'],
-                url='hackadda.com',
-                og_type='website',
-                locale='en_US',
-                site_name='HackAdda',
-                twitter_creator='@thehackadda',
-                twitter_site='@thehackadda',
-                og_publisher='https://www.facebook.com/thehackadda',
-                )
-# conditional og property - og_author_url, published_time, modified_time, image,                  
+meta_home = Meta(title='HackAdda| A Blog Nurturing curiosity in every mind.',
+                 description='Articles that encourage coding, robotics through STEM education',
+                 keywords=[
+                     'robotics, coding, STEM, STEAM, education, blog, tinker, kids, technology, curiousity'],
+                 url='hackadda.com',
+                 og_type='website',
+                 locale='en_US',
+                 site_name='HackAdda',
+                 twitter_creator='@thehackadda',
+                 twitter_site='@thehackadda',
+                 og_publisher='https://www.facebook.com/thehackadda',
+                 )
+# conditional og property - og_author_url, published_time, modified_time, image,
 
 
 # consider adding other property in future. TODO
@@ -199,6 +205,7 @@ class FeaturedPostListView(ListView):
         context['meta'] = meta_home
         return context
 
+
 class PostListView(ListView):
     # model = Post
     template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
@@ -256,7 +263,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
             "You should be signed in as %s to view this page" % (user))
 
     def get_context_data(self, **kwargs):
-        context = super(ListView, self).get_context_data(**kwargs) # TODO
+        context = super(ListView, self).get_context_data(**kwargs)  # TODO
         context['profile'] = self.request.user.profile
         return context
 
@@ -272,6 +279,7 @@ class PostDetailView(HitCountDetailView, DetailView):
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
         return context
+
 
 def get_recommended_posts(request):
     '''
@@ -421,7 +429,7 @@ class TaggedPostListView(ListView):
             return post_list
         raise Http404('Tag not present')
 
-    ordering = ['-date_posted']
+    ordering = ['-date_published']
     paginate_by = 5
 
     def get_context_data(self, **kwargs):
@@ -505,7 +513,7 @@ class CategoryPostListView(ListView):
             return post_list
         raise Http404('Category not present')
 
-    ordering = ['-date_posted']
+    ordering = ['-date_published']
     paginate_by = 5
 
     def get_context_data(self, **kwargs):
@@ -540,11 +548,11 @@ def get_timewise_list(request, *args, **kwargs):
             dummy = datetime(**kwargs)
 
         args_dict = {}
-        args_dict['date_posted__year'] = kwargs['year']
+        args_dict['date_published__year'] = kwargs['year']
         if flag_day:
-            args_dict['date_posted__day'] = kwargs['day']
+            args_dict['date_published__day'] = kwargs['day']
         if flag_month:
-            args_dict['date_posted__month'] = kwargs['month']
+            args_dict['date_published__month'] = kwargs['month']
 
         posts = published_posts().filter(**args_dict)
 
@@ -554,8 +562,6 @@ def get_timewise_list(request, *args, **kwargs):
         return render(request, template_name, kwargs)
 
     raise Http404("Wrong Request Format")
-
-
 
 
 def get_category(request):

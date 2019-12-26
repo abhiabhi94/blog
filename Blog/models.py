@@ -168,9 +168,9 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     def get_absolute_url(self):
         return reverse('Blog:post-preview', kwargs={
-            'year': self.date_posted.year,
-            'month': self.date_posted.month,
-            'day': self.date_posted.day,
+            'year': self.date_published.year,
+            'month': self.date_published.month,
+            'day': self.date_published.day,
             'slug': self.slug
         })
 
@@ -179,9 +179,9 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     def get_post_detail_url(self):
         return reverse('Blog:post-detail', kwargs={
-            'year': self.date_posted.year,
-            'month': self.date_posted.month,
-            'day': self.date_posted.day,
+            'year': self.date_published.year,
+            'month': self.date_published.month,
+            'day': self.date_published.day,
             'slug': self.slug
         })
 

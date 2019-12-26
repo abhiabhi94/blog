@@ -36,7 +36,7 @@ class TagListFilter(admin.SimpleListFilter):
         # print (self.value())
         if self.value():
             post_list = Post.objects.filter(
-                tags__contains=self.value()).order_by('-date_posted')
+                tags__contains=self.value()).order_by('-date_published')
             return post_list
         else:
             return queryset.filter()
@@ -61,7 +61,7 @@ class CategoryListFilter(admin.SimpleListFilter):
         if self.value():
             # print(">>>>>>", Post.objects.all())
             post_list = Post.objects.filter(
-                category__name=self.value()).order_by('-date_posted')
+                category__name=self.value()).order_by('-date_published')
             return post_list
         else:
             return queryset.filter()
@@ -70,7 +70,7 @@ class CategoryListFilter(admin.SimpleListFilter):
 class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
-    list_display = ('title', 'author', 'views', 'date_posted',
+    list_display = ('title', 'author', 'views', 'date_published',
                     'date_published', 'publish', 'featured')
     tags_list = [post.get_tags_list()
                  for post in Post.objects.filter(publish=True)]
