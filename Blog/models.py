@@ -57,7 +57,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     content = RichTextUploadingField()
     tags = models.CharField(
         help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
-    date_posted = models.DateTimeField(default=timezone.now)
+    date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(
