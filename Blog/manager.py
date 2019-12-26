@@ -45,7 +45,6 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         top_n: no. of trending values required (default:).
         start: starting time (default:datetime.now()).
         Note: Today will also be considered for calculation.
-
     Returns:
         The top_n trending values considering {interval} days.
         e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
@@ -56,6 +55,11 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         # Initialising the score attribute with the view value of current day
         setattr(obj, 'score', Hit.objects.filter(
             hitcount=obj.hit_count, created__day=start.day).count())
+        # If total views is 0, there's no point in processing any further
+        if not obj.views:
+            obj.score = 0
+            continue
+
         prev_date = start
         # print('publish date:', obj.date_published)
 
@@ -79,7 +83,7 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         obj.score = obj.score / max_score
 
     # [print(obj, ':\t', obj.score) for obj in objects]
-    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:5]
+    return sorted(objects, key=lambda obj: obj.score, reverse=True)[:top_n]
 
 
 def paginate_util(request, objects, paginate_by, kwargs):
