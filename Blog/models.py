@@ -77,7 +77,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         HitCount,
         object_id_field='object_pk',
         content_type_field='content_type',
-        related_query_name='hit_count_generic'
+        related_query_name='hit_count_generic',
     )
 
     _metadata = {
@@ -136,7 +136,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                 img_thumbnail = img.copy()  # thumbnail changes in place
 
                 # for list and card view
-                img_thumbnail.thumbnail(thumbnail_size, filter='ANTIALIAS')
+                img_thumbnail.thumbnail(thumbnail_size, Image.ANTIALIAS)
                 thumbnail_name = self._image_name('_thumbnail')
                 img_thumbnail.save(thumbnail_name, quality=75, optimize=True)
 
@@ -149,8 +149,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                 os.remove(thumbnail_name)
 
                 # for detail view
-                img.thumbnail(full_view_size, filter='ANTIALIAS')
-                img.save(self.image.path, quality=50, optimize=True)
+                img.thumbnail(full_view_size, Image.ANTIALIAS)
+                img.save(self.image.path, quality=75, optimize=True)
 
         super(Post, self).save(*args, **kwargs)
 
@@ -195,4 +195,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     @property
     def views(self):
-        return self.hit_count.hits
+        # return views only if the view is published
+        if self.publish:
+            return self.hit_count.hits
+        return 0
