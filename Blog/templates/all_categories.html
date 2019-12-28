@@ -4,7 +4,7 @@
 <div class="category row">
     {% for category, count in categories.items %}
         <div class="col-md-4 category cloud">
-            <a class="{{category}} article-tags" style="font-size:1.2rem" title="{{count}}" href="{% url 'Blog:categorised' category %}">{{category|title}}</a>
+            <a class="{{category}} article-tags" style="font-size:1.2rem" title="{{count}}" href="{% url 'Blog:categorised' category.slug %}">{{category|title}}</a>
         </div>
     {% endfor %}
 </div>

@@ -70,7 +70,7 @@ class CategoryListFilter(admin.SimpleListFilter):
 class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
-    list_display = ('title', 'author', 'views', 'date_published',
+    list_display = ('title', 'author', 'views', 'date_created',
                     'date_published', 'publish', 'featured')
     tags_list = [post.get_tags_list()
                  for post in Post.objects.filter(publish=True)]
@@ -79,7 +79,8 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', 'date_created')
+    readonly_fields = ['slug']
+    list_display = ('name', 'author', 'date_created', 'slug')
 
 
 admin.site.register(Post, PostAdmin)

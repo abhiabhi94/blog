@@ -23,6 +23,7 @@ IMG_DIR = 'blog'
 class Category(models.Model, ModelMeta):
     name = models.CharField(help_text=(
         "Name of the category. ex-Science, Technology"), max_length=50, unique=True)
+    slug = models.SlugField(default=slugify(name), max_length=80)
     info = models.TextField(help_text=(
         "Description of the category."), max_length=5000, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
@@ -36,6 +37,7 @@ class Category(models.Model, ModelMeta):
 
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
+        self.slug = slugify(self.name)
         super(*args, **kwargs).save()
 
     def __str__(self):

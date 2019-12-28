@@ -40,7 +40,7 @@ urlpatterns = [
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),
     path('post/trending-posts/', views.get_trending_posts, name='trending-posts'),
     path('post/category', views.get_category, name='all-categories'),
-    path('post/category/<str:category>',
+    path('post/category/<slug:slug>',
          views.CategoryPostListView.as_view(), name='categorised'),
     re_path(r'post/'+ymd_re+'$', views.get_timewise_list, name='timewise-list'),
 ]

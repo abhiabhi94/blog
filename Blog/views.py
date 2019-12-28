@@ -112,7 +112,7 @@ class HomeView(ListView):
 
         return published_posts()[:top_n]
 
-    def get_category_posts(self, category, index):
+    def get_category_posts(self, slug, index):
         '''
         Returns top_n posts under a certain category.
         for top_n = +self.NO_FEATURED_POSTS is for featured articles
@@ -123,7 +123,7 @@ class HomeView(ListView):
 
         top_n = self.NO_FEATURED_POSTS + self.NO_LATEST_POSTS + \
             self.NO_CATEGORY_POSTS * (index + 1)
-        return published_posts().filter(category__name=category)[:top_n]
+        return published_posts().filter(category__slug=slug)[:top_n]
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
@@ -138,16 +138,23 @@ class HomeView(ListView):
 
         '''
         Categories to displayed on the homepage
-        format: all small-case
+        format: all small-case and in slugified form
         '''
-        categories = [
+        home_categories = [
             'science',
             'technology',
         ]
 
+        # All category objects will be appended in this list
+        categories = []
+
+        [categories.append(Category.objects.get(
+            slug=category)) for category in home_categories]
+
         category_result = {}
         for index, category in enumerate(categories):
-            category_posts = list(self.get_category_posts(category, index))
+            category_posts = list(
+                self.get_category_posts(category.slug, index))
             category_posts_unique, posts_unique = self.remove_duplicates(
                 category_posts, posts_unique, self.NO_CATEGORY_POSTS)
             category_result[category] = category_posts_unique
@@ -508,7 +515,7 @@ class CategoryPostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        post_list = published_posts().filter(category__name=self.kwargs.get('category'))
+        post_list = published_posts().filter(category__slug=self.kwargs.get('slug'))
         if post_list:
             return post_list
         raise Http404('Category not present')
@@ -518,7 +525,9 @@ class CategoryPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        category = self.kwargs.get('category')
+        slug = self.kwargs.get('slug')
+        category = get_object_or_404(Category, slug=slug)
+
         context['meta'] = Meta(title=f'Posts tagged with {category}',
                                description=f'Read posts with the category {category} from HackAdda',
                                keywords=meta_home.keywords + [category])
