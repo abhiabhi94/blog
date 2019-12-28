@@ -688,6 +688,10 @@ a.article-title:hover {
         /* display: block; */
         margin: 5px auto;
     }
+    /* Push last-modified on detail page on the next line */
+    .date-modified {
+        margin-top: 1em;
+    }
     .avatar {
         max-width: unset;
     }
