@@ -43,14 +43,15 @@
         <header class="site-header">
             <nav class="navbar navbar-expand-md navbar-dark navbar-color fixed-top">
                 <div class="container">
-                    <a class="navbar-brand mr-4" href="{% url 'Blog:home' %}" title="Blog">Blog</a>
+                    <a class="navbar-brand mr-4" href="{% url 'Blog:home' %}" title="Blog"><svg id="brand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 15" width="35" height="35" style=""><defs><style>.cls-1,.cls-2{fill:none;stroke:#fff;stroke-miterlimit:10;}.cls-1{stroke-width:2px;}.cls-2{stroke-width:1.63px;}</style></defs><title>HackAdda Home</title><line class="cls-1" x1="1" x2="1" y2="15"></line><line class="cls-1" x1="9" x2="9" y2="15"></line><line class="cls-2" x1="2" y1="4" x2="8" y2="4"></line><line class="cls-2" x1="2" y1="10" x2="8" y2="10"></line></svg></a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarToggle">
                         <div class="navbar-nav mr-auto">
-                            <a class="nav-item nav-link" href="{% url 'Blog:home' %}" title="Home">Home</a>
+                            {% comment %} <a class="nav-item nav-link" href="{% url 'Blog:home' %}" title="Home">Home</a> {% endcomment %}
                             <a class="nav-item nav-link" href="{% url 'Blog:about' %}" title="About">About</a>
+                            {% comment %} Add categories here before launching {% endcomment %}
                         </div>
                         <!-- Navbar Right Side -->
                         <div class="navbar-nav">

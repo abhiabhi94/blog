@@ -36,6 +36,12 @@ ul {
     padding-right: 0;
 }
 
+#brand{
+    display: block;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .navbar-color,
 footer {
     /* background-color: #5f788a; */
