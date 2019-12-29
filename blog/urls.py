@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from Users import views as user_views
+import debug_toolbar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -60,3 +61,5 @@ urlpatterns += [path('ckeditor/', include('ckeditor_uploader.urls'))]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
+
+    urlpatterns += [path('__debug__', include(debug_toolbar.urls))]
