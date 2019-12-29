@@ -25,6 +25,11 @@ DEBUG = True
 
 print(ALLOWED_HOSTS)
 
+# Add debug_toolbar
+INSTALLED_APPS += ['debug_toolbar']
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+INTERNAL_IPS = ALLOWED_HOSTS
+
 '''
 Change this in future for migration to mysql database
 '''
