@@ -308,7 +308,6 @@ def get_recommended_posts(request):
             data = json.loads(request.POST.get('data'))
             slug = data['slug']
             top_n = int(data['top_n'])
-            print('post:', slug, 'top_n:', top_n)
 
         except Exception as _:
             raise Http404('Wrong Request Format for post request')
@@ -618,7 +617,7 @@ def get_trending_posts(request):
 
     if request.method == 'POST' and request.is_ajax():
         template_name = 'post_title.html'
-        start_time = time.time()
+        # start_time = time.time()
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
             # top_n = int(request.GET.get('top_n'))
@@ -626,6 +625,6 @@ def get_trending_posts(request):
             raise Http404("Wrong Request Format")
         posts = published_posts()
         trending_posts = trending(posts, top_n=top_n)
-        print('\nTotal time taken:', time.time() - start_time)
+        # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})

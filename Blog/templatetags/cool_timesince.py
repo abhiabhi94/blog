@@ -24,7 +24,7 @@ def cool_timesince(val, now=1):
         diff = current_time - val
     except (ValueError, TypeError):
         return val
-    print('difference:', diff)
+    # print('difference:', diff)
     if diff <= timedelta(minutes=now):
         return 'Just now'
 
