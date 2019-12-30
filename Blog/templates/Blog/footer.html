@@ -1,59 +1,52 @@
-<footer class="footer">
-    <div class="col1">
-        <div class="subscription">
-            <h5 id="noText">Stay updated with our latest articles and other stuff</h5>
-            <div id="sub-response">
+<footer class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="subscription">
+                <h5 id="noText">Stay updated with our latest articles and other stuff</h5>
+                <div id="sub-response"></div>
+                <form class="subForm" action="{% url 'Blog:subscription' %}" method="post">
+                    {% csrf_token %}
+                    <input id="email" type="email" name="email" placeholder="Enter Email.." required>
+                    <button type="submit" class="btn btn-sm btn-outline-info subscribe" value="submit">Subscribe</button>
+                </form>
             </div>
-            <form class="subForm" action="{% url 'Blog:subscription' %}" method="post">
-                {% csrf_token %}
-                <input id="email" type="email" name="email" placeholder="Enter Email.." required>
-                <button type="submit" class="btn btn-sm btn-outline-info subscribe" value="submit">Subscribe</button>
-            </form>
         </div>
-        <div class="copyright">
-            <h6>©2019 HackAdda All rights reserved</h6>
+        <div class="col">
+            <div class="contact">
+                <a href="mailto:thehackadda.com@gmail.com"><i class="fa fa-envelope"></i>
+                    <h6 class="phone">thehackadda@gmail.com</h6>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="col2">
-        <div class="contact">
-            <a href="mailto:thehackadda.com@gmail.com"><i class="fa fa-envelope"></i>
-                <h6 class="phone">thehackadda@gmail.com</h6>
-            </a>
-        </div>
-    </div>
-    <div class="col3">
-        <div class="social-icons">
-            <h5 class="footer-text-color">Let's Connect</h5>
-            {% with "facebook twitter instagram" as socials %}
-            {% for social in socials.split %}
+        <div class="col">
+            <div class="social-icons">
+                <h5 class="footer-text-color">Let's Connect</h5>
+                {% with "facebook twitter instagram" as socials %}
+                {% for social in socials.split %}
                 {% with "https://"|add:social|add:".com/"|add:"thehackadda" as social_link %}
-               
+                
                 {% include "./social_icons.html" with link=social_link  iclass=social %}
                 {% endwith %}
-            {% endfor %}
-            {% endwith %}
-            {% comment %} <div class="col">
-            <div class="col3">
-                <div id="socialIcons">
-                    <a style="color: white;" class="mr-1" href="https://facebook.com/scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-facebook"></i></a>
-                    <a style="color: white;" class="ml-1 mr-1" href="https://twitter.com/scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-twitter"></i></a>
-                    <a style="color: white;" class="ml-1 mr-1" href="https://instagram.com/scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-instagram"></i></a>
-                    <a style="color: white;" class="ml-1 mr-1" href="https://www.youtube.com/channel/UCRcN5Q5eCkzoAwolXEAdPKA?view_as=subscriber" target="_blank"><i class="fa fa-youtube"></i></a>
-                    <a style="color: white;" class="ml-1" href="https://linkedin.com/company/scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-linkedin"></i></a> {% endcomment %}
-                    {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://medium.com/@scdotin" target="_blank"><i
-                       style="color: white;"          class="fa fa-medium"></i></a> {% endcomment %}
-                    {% comment %} <a style="color: white;" class="ml-1 mr-1" href="https://github.com/scdotin" target="_blank"><i
-                                class="fa fa-github"></i></a> {% endcomment %}
-                {% comment %} </div> {% endcomment %}
-            {% comment %} </div> {% endcomment %}
-        {% comment %} </div> {% endcomment %}
+                {% endfor %}
+                {% endwith %}
+            </div>
         </div>
-        <div class="made-with-love">
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class=" copyright">
+                <h6>©2019 HackAdda All rights reserved</h6>
+            </div>
+        </div>
+        <div class="col">
+            <div class="about">
+            <a href="{% url 'Blog:about' %}" title="About HackAdda">About Us</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="made-with-love">
             <h6>Made with ❤️ from Tetarpur</h6>
+            </div>
         </div>
     </div>
 </footer>

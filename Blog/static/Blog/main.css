@@ -36,7 +36,7 @@ ul {
     padding-right: 0;
 }
 
-#brand{
+#brand {
     display: block;
     margin-top: auto;
     margin-bottom: auto;
@@ -52,8 +52,8 @@ footer {
     font-family: 'Rubik', sans-serif;
     font-weight: 900;
     color: #cbd5db;
-    margin-left: 1.25rem!important;
-    margin-right: 1.25rem!important;
+    margin-left: 1rem!important;
+    margin-right: 1rem!important;
 }
 
 .site-header .navbar-nav .nav-link:hover {
@@ -150,8 +150,19 @@ a.dropdown-toggle {
     max-width: 100%;
 }
 
-footer {
+footer .row {
     display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 15px;
+    margin-top: 5px;
+}
+
+footer .col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 5px;
 }
 
 #email {
@@ -161,29 +172,13 @@ footer {
 footer h5,
 footer h6,
 footer p,
+footer a,
 footer .fa-envelope {
     color: #f2f4f6!important;
 }
 
 footer .fa {
     font-size: 1.2rem;
-}
-
-footer>.col1,
-footer>.col2,
-footer>.col3 {
-    flex: 3 1 0;
-}
-
-.footer>.col1>*,
-.footer>.col2>*,
-.footer>.col3>* {
-    margin: 0.5rem;
-    padding: 1rem;
-}
-
-.footer>.col2 {
-    text-align: center;
 }
 
 a.article-title:hover {
@@ -636,6 +631,12 @@ a.article-title:hover {
     #sidebar {
         margin-top: 1rem;
     }
+    footer .row {
+        flex-direction: column;
+    }
+    footer .row .col {
+        margin-top: 1rem;
+    }
     #post-options {
         left: 55%;
     }
@@ -708,15 +709,6 @@ a.article-title:hover {
         margin: 0.5rem;
     }
     .author-info {
-        text-align: left;
-    }
-    footer {
-        flex-direction: column;
-    }
-    .footer>.col1>*,
-    .footer>.col2>*,
-    .footer>.col3>* {
-        padding: 0.5rem;
         text-align: left;
     }
     .social-icons>.col {
