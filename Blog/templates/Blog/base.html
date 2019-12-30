@@ -48,10 +48,13 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarToggle">
-                        <div class="navbar-nav mr-auto">
-                            {% comment %} <a class="nav-item nav-link" href="{% url 'Blog:home' %}" title="Home">Home</a> {% endcomment %}
-                            <a class="nav-item nav-link" href="{% url 'Blog:about' %}" title="About">About</a>
-                            {% comment %} Add categories here before launching {% endcomment %}
+                        {% comment %} <a class="nav-item nav-link navbar-about" href="{% url 'Blog:about' %}" title="About">About</a> {% endcomment %}
+                        <div class="navbar-nav ml-auto mr-auto navbar-categories">
+                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'coding' %}" title="Coding">Coding</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'science' %}" title="Science">Science</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'artificial-intelligence' %}" title="Artificial Intelligence">Artificial Intelligence</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'robotics' %}" title="Robotics">Robotics</a>
+                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'kids' %}" title="Kids">Kids</a>
                         </div>
                         <!-- Navbar Right Side -->
                         <div class="navbar-nav">
