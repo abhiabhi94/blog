@@ -5,6 +5,24 @@ from django.contrib.auth.decorators import login_required
 from meta.views import Meta
 
 # Create your views here.
+global meta_home
+meta_home = Meta(title='HackAdda | Never stop hacking!',
+                 description='Stay updated with latest technology news, articles and tutorials.',
+                 keywords=[
+                     'Hack', 'Robotics', 'Coding',
+                     'STEM', 'STEAM', 'Education',
+                     'Blog', 'Tinker', 'Kids',
+                     'Technology', 'Curiousity'
+                 ],
+                 url='https://hackadda.com',
+                 #  image='',
+                 og_type='website',
+                 locale='en_US',
+                 site_name='HackAdda',
+                 twitter_creator='@thehackadda',
+                 twitter_site='@thehackadda',
+                 og_publisher='https://www.facebook.com/thehackadda',
+                 )
 
 
 def register(request):
