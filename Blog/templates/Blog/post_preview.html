@@ -1,4 +1,6 @@
-{% extends "Blog/base.html" %} {% block content %}
+{% extends "Blog/base.html" %}
+{% block content %}
+{% load cool_timesince %}
 <article class="media content-section">
     <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
     <div class="media-body">
