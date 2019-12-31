@@ -39,11 +39,11 @@ Use the name articles for frontend purposes.
 
 
 global meta_home
-meta_home = Meta(title='HackAdda| A Blog Nurturing curiosity in every mind.',
-                 description='Articles that encourage coding, robotics through STEM education',
+meta_home = Meta(title='The adda for all your hacks.',
+                 description='Your daily hacks for almost all our technology needs.',
                  keywords=[
-                     'robotics, coding, STEM, STEAM, education, blog, tinker, kids, technology, curiousity'],
-                 url='hackadda.com',
+                     'hack', 'robotics, coding, STEM, STEAM, education, blog, tinker, kids, technology, curiousity'],
+                 url='https://hackadda.com',
                  og_type='website',
                  locale='en_US',
                  site_name='HackAdda',
