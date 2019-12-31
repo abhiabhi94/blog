@@ -11,7 +11,7 @@
     <h{{font|default:6}}><a class="article-title" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title|truncatechars:'80' }}</a></h{{font|default:6}}>
 </div>
 <div class="article-metadata">
-    <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name|title|truncatechars:'30'}}">{{ post.author.get_full_name }}</a></small>
+    <small class="text"><a class="mr-1" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name|title}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
     <small class="mr-1 text-muted" title="{{ post.date_published|date:"j M Y" }}">{{ post.date_published|cool_timesince }}</small>
     <small class="ml-1 text-muted" title={{post.views}}>views:{{post.views|cool_view}}</small>
 </div>
