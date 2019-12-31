@@ -23,7 +23,6 @@ def add_ip_to_host(port=8000):
         port which handles the request
     Add local IPv4 and public IP addresses to ALLOWED_HOST
     '''
-    global ALLOWED_HOSTS
 
     IP_PRIVATE = getoutput('hostname -I').strip()
     try:
