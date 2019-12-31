@@ -1,11 +1,22 @@
 {% extends "Blog/base.html" %}
 {% block content %}
+{% load cool_view %}
 <legend class="heading"> All categories </legend>
-<div class="category row">
+<div class="all-tags">
     {% for category, count in categories.items %}
-        <div class="col-md-4 category cloud">
-            <a class="{{category}} article-tags" style="font-size:1.2rem" title="{{count}}" href="{% url 'Blog:categorised' category.slug %}">{{category|title}}</a>
+    <div class="tag-details m-2">
+        <div class="article-tags tag-name truncate-string">
+            <a class="{{category}}" title="Articles under the category {{category}}" href="{% url 'Blog:categorised' category.slug %}">{{category|title}}</a>
         </div>
+        <div class="tag-count">
+        {% if count == 1 %}
+            <h6>{{ count }} article<h6>
+        {% else %}
+            <h6>{{ count|cool_view }} articles<h6>
+        {% endif %}
+        </div>
+    </div>
     {% endfor %}
+        
 </div>
 {% endblock content %}
