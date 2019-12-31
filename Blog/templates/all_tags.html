@@ -1,10 +1,29 @@
 {% extends "Blog/base.html" %}
 {% block content %}
+{% load cool_view %}
+{% comment %} This content is to be used while displaying tag cloud
 <div class="tag">
     {% for tag, count in tags.items %}
         <div class="article-tags cloud">
             <a class="{{tag}}" title="{{count.0}}" href="{% url 'Blog:tagged' tag %}" style="font-size:{{count.1}}">{{tag}}</a>
         </div>
     {% endfor %}
+</div> {% endcomment %}
+<div class="all-tags">
+    {% for tag, count in tags.items %}
+    <div class="tag-details m-2">
+        <div class="article-tags tag-name truncate-string">
+            <a class="{{tag}}" title="{{tag}}" href="{% url 'Blog:tagged' tag %}">{{tag}}</a>
+        </div>
+        <div class="tag-count">
+        {% if count == 1 %}
+            <h6>{{ count }} article<h6>
+        {% else %}
+            <h6>{{ count|cool_view }} articles<h6>
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+        
 </div>
 {% endblock content %}
