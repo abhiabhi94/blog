@@ -87,9 +87,21 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     _metadata = {
         'title': 'title',
-        'description': 'get_short_des',
+        # 'description': 'content',
         'keywords': 'get_tags_list',
+        'og_author': '_get_meta_author',
+        'image': '_get_meta_image',
+        'url': 'get_post_detail_url',
     }
+
+    def _get_meta_image(self):
+        '''Returns url of the image for meta'''
+        if self.image:
+            return self.image.url
+
+    def _get_meta_author(self):
+        '''Returns full name of author for meta'''
+        return self.author.get_full_name()
 
     def clean(self):
         '''provides custom validation for images before uploading'''
