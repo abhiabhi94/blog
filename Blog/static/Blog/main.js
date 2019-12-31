@@ -177,13 +177,13 @@ function loadSidebar() {
     trendingPosts.url = $(trendingPosts.id).data('url');
     sendPost(trendingPosts.url, trendingPosts.id, { 'top_n': trendingPosts.top_n });
 
-    const topTagsEle = { id: '#top-tags', top_n: 5 };
-    topTagsEle.url = $(topTagsEle.id).data('url');
-    sendPost(topTagsEle.url, topTagsEle.id, { 'top_n': topTagsEle.top_n });
+    const popTagsEle = { id: '#popular-tags', top_n: 5 };
+    popTagsEle.url = $(popTagsEle.id).data('url');
+    sendPost(popTagsEle.url, popTagsEle.id, { 'top_n': popTagsEle.top_n });
 
-    const topCategoriesEle = { id: '#top-categories', top_n: 3 };
-    topCategoriesEle.url = $(topCategoriesEle.id).data('url');
-    sendPost(topCategoriesEle.url, topCategoriesEle.id, { 'top_n': topCategoriesEle.top_n });
+    const popCategoriesEle = { id: '#popular-categories', top_n: 3 };
+    popCategoriesEle.url = $(popCategoriesEle.id).data('url');
+    sendPost(popCategoriesEle.url, popCategoriesEle.id, { 'top_n': popCategoriesEle.top_n });
 }
 
 function sendPost(url, responseEle, data) {
