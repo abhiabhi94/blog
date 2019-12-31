@@ -39,11 +39,16 @@ Use the name articles for frontend purposes.
 
 
 global meta_home
-meta_home = Meta(title='The adda for all your hacks.',
-                 description='Your daily hacks for almost all our technology needs.',
+meta_home = Meta(title='HackAdda | Never stop hacking!',
+                 description='Stay updated with latest technology news, articles and tutorials.',
                  keywords=[
-                     'hack', 'robotics, coding, STEM, STEAM, education, blog, tinker, kids, technology, curiousity'],
+                     'Hack', 'Robotics', 'Coding',
+                     'STEM', 'STEAM', 'Education',
+                     'Blog', 'Tinker', 'Kids',
+                     'Technology', 'Curiousity'
+                 ],
                  url='https://hackadda.com',
+                 #  image='',
                  og_type='website',
                  locale='en_US',
                  site_name='HackAdda',
@@ -197,9 +202,8 @@ def subscribe(request):
 
 
 class FeaturedPostListView(ListView):
-    '''
-    Returns a list view of featured posts
-    '''
+    '''Returns a list view of featured posts.'''
+
     template_name = 'Blog/post_list_featured.html'
     context_object_name = 'posts'
     paginate_by = 5
@@ -209,24 +213,9 @@ class FeaturedPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(FeaturedPostListView, self).get_context_data(**kwargs)
-        context['meta'] = meta_home
-        return context
-
-
-class PostListView(ListView):
-    # model = Post
-    template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
-    context_object_name = 'posts'
-    paginate_by = 5
-
-    def get_queryset(self):
-        return published_posts()
-
-    def get_context_data(self, **kwargs):
-        context = super(PostListView, self).get_context_data(**kwargs)
-        context['meta'] = meta_home
-        if self.request.user.is_authenticated:
-            context['profile'] = self.request.user.profile
+        context['meta'] = Meta(title='Featured Articles | HackAdda',
+                               description='Read featured articles on HackAdda',
+                               keywords=meta_home.keywords + ['featured'])
         return context
 
 
@@ -246,8 +235,9 @@ class UserPostListView(ListView):
                                               username=self.kwargs.get(
                                                   'username')
                                               )
-        context['meta'] = Meta(title=f'Posts by {context["author"].get_full_name()}',
-                               description=f'Posts authored by {context["author"].get_full_name()}',
+        context['meta'] = Meta(title=f'{context["author"].get_full_name().title()} | HackAdda',
+                               description=f'Articles authored by {context["author"].get_full_name()}',
+                               og_author=f'{context["author"].get_full_name()}',
                                keywords=meta_home.keywords)
         context['profile'] = context['author'].profile
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
@@ -315,7 +305,7 @@ def get_recommended_posts(request):
         template_name = 'post_latest_home.html'
         context = {}
         # Exclude the current post
-        context['posts'] = published_posts().exclude(slug=slug)[:top_n]
+        context[articles] = published_posts().exclude(slug=slug)[:top_n]
         context['recommend'] = True
         return render(request, template_name, context)
 
@@ -347,10 +337,10 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         post = self.get_object()
         if self.request.user == post.author:
             messages.success(
-                self.request, 'Your post has been submitted for approval')
+                self.request, 'Your articles has been submitted for approval')
         else:
             messages.warning(
-                self.request, 'Only posts written by you can be updated')
+                self.request, 'Only articles written by you can be updated')
             return redirect('Blog:home')
         form.instance.author = self.request.user
         form.instance.publish = False
@@ -390,13 +380,19 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
 
 
 def about(request):
-    return render(request, 'Blog/about.html', {'title': 'About', 'meta': meta_home})
+    context = {}
+    template_name = 'Blog/about.html'
+    context['meta'] = Meta(title=f'About | HackAdda',
+                           description=f'A glance at the stuff HackAdda offers',
+                           keywords=meta_home.keywords)
+    return render(request, template_name, context)
 
 
 @login_required
 def preview(request, year, month, day, slug):
+    template_name = 'Blog/post_preview.html'
     post = Post.objects.get(slug=slug)
-    return render(request, 'Blog/post_preview.html', {'post': post})
+    return render(request, template_name, {'post': post})
 
 
 @login_required
@@ -441,8 +437,8 @@ class TaggedPostListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tag = self.kwargs.get('tag')
-        context['meta'] = Meta(title=f'Posts tagged with {tag}',
-                               description=f'Read posts with the tag {tag} from StayCurious',
+        context['meta'] = Meta(title=f'{tag.title()} | HackAdda',
+                               description=f'Read articles with the tag {tag} on Hackadda',
                                keywords=meta_home.keywords + [tag])
         context['tag'] = tag
         return context
@@ -464,7 +460,9 @@ def get_latest_posts(request, **kwargs):
         paginate_by = 5
         posts = published_posts()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
-        kwargs['meta'] = meta_home
+        kwargs['meta'] = Meta(title=f'Latest Articles| HackAdda',
+                              description=f'Read latest articles on HackAdda',
+                              keywords=meta_home.keywords + ['latest'])
         return render(request, template_name, kwargs)
 
     raise Http404('Wrong Request format')
@@ -502,9 +500,14 @@ def get_tags(request):
 
     top_tags_list = {tag: count for (tag, count) in top_tags}
 
-    # context['tags'] = top_tags_list
-    context['tags'] = get_font_cloud(top_tags_list)
-    context['meta'] = meta_home
+    context['tags'] = top_tags_list
+
+    # Tag clouds will be probably implemented in a better way
+    # in a future release.
+    # context['tags'] = get_font_cloud(top_tags_list)
+    context['meta'] = Meta(title=f'Tags | HackAdda',
+                           description=f'List of all Tags on HackAdda',
+                           keywords=meta_home.keywords + list(top_tags_list.keys()))
     return render(request, template_name, context)
 
 
@@ -527,8 +530,8 @@ class CategoryPostListView(ListView):
         slug = self.kwargs.get('slug')
         category = get_object_or_404(Category, slug=slug)
 
-        context['meta'] = Meta(title=f'Posts tagged with {category}',
-                               description=f'Read posts with the category {category} from HackAdda',
+        context['meta'] = Meta(title=f'{str(category).title()} | HackAdda',
+                               description=f'Read articles of the category {category} from HackAdda',
                                keywords=meta_home.keywords + [category])
         context['category'] = category
         return context
@@ -603,9 +606,12 @@ def get_category(request):
 
     top_categories_list = {
         category: count for (category, count) in top_categories}
-
+    top_categories_list_str = [str(category)
+                               for category in top_categories_list]
     context['categories'] = top_categories_list
-    context['meta'] = meta_home
+    context['meta'] = Meta(title=f'Categories | HackAdda',
+                           description=f'List of all Categories on HackAdda',
+                           keywords=meta_home.keywords + top_categories_list_str)
 
     return render(request, template_name, context)
 
