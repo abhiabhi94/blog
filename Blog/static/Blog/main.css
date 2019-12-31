@@ -192,6 +192,7 @@ a.article-title:hover {
 
 .article-content {
     white-space: pre-line;
+    overflow-wrap: break-word;
 }
 
 .article-img {
@@ -318,6 +319,9 @@ a.article-title:hover {
     display: flex;
     flex-direction: column;
 }
+
+
+/* This is the parent container that contains all meta data and the contents of the article */
 
 .article-contents {
     margin-left: 4rem;
@@ -635,11 +639,6 @@ a.article-title:hover {
     margin-left: 1px !important;
     font-size: 2rem !important;
 }
-
-
-/* .contact {
-    width: min-content;
-} */
 
 
 /* .num {
