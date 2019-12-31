@@ -9,11 +9,12 @@
         </div>
     {% endfor %}
 </div> {% endcomment %}
+<legend class="heading"> All Tags </legend>
 <div class="all-tags">
     {% for tag, count in tags.items %}
     <div class="tag-details m-2">
         <div class="article-tags tag-name truncate-string">
-            <a class="{{tag}}" title="{{tag}}" href="{% url 'Blog:tagged' tag %}">{{tag}}</a>
+            <a class="{{tag}}" title="Articles with the tag {{tag}}" href="{% url 'Blog:tagged' tag %}">{{tag}}</a>
         </div>
         <div class="tag-count">
         {% if count == 1 %}
