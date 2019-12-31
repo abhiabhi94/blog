@@ -58,11 +58,11 @@
                             <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'kids' %}" title="Kids">Kids</a>
                         </div>
                         <!-- Navbar Right Side -->
-                        <div class="navbar-nav">
+                        <div class="navbar-nav ml-auto mr-auto">
                             {% if user.is_authenticated %}
                             <div id="dropdown" class="dropdown">
                                 {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                                <a href="#" class="dropdown-toggle" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-2"><span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-3"><span class="caret"></span></a>
                                 {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
                                 <div class="dropdown-menu">
                                     <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
