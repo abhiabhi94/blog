@@ -13,6 +13,8 @@ from django.shortcuts import (render,
                               get_object_or_404)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
@@ -305,13 +307,14 @@ def get_recommended_posts(request):
         template_name = 'post_latest_home.html'
         context = {}
         # Exclude the current post
-        context[articles] = published_posts().exclude(slug=slug)[:top_n]
+        context['posts'] = published_posts().exclude(slug=slug)[:top_n]
         context['recommend'] = True
         return render(request, template_name, context)
 
     raise Http404('Wrong Request format')
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
@@ -324,6 +327,7 @@ class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
@@ -332,15 +336,16 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # print("------->", 'form_valid')
         '''
         Checks whether the user logged in is the one updating the post.
+        Checks whether the user is authorised to update the article(non-staff member's aren't)
         It then reverses the published state so that admin's approval is required before publishing the updated post.
         '''
         post = self.get_object()
         if self.request.user == post.author:
             messages.success(
-                self.request, 'Your articles has been submitted for approval')
+                self.request, 'Your articles has been submitted for approval.')
         else:
             messages.warning(
-                self.request, 'Only articles written by you can be updated')
+                self.request, 'You are not allowed to update this post.')
             return redirect('Blog:home')
         form.instance.author = self.request.user
         form.instance.publish = False
@@ -354,6 +359,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     fields = fields = ['title', 'content', 'thumbnail', 'tags', 'category']
