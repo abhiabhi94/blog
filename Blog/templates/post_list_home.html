@@ -11,7 +11,7 @@
                 <div class="article-details">
                     <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></h4>
                     {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
-                    <div class="article-short-des" style="display:inline">
+                    <div class="article-short-des">
                         {{ post.content|truncatewords_html:'50'|safe }}&nbsp;
                         <a style="display:inline-block" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Read full article">Read more</a>
                     </div>
