@@ -1,17 +1,13 @@
-import re
 import os
-from django.utils.html import strip_tags
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-# from markupfield.fields import MarkupField
 from ckeditor_uploader.fields import RichTextUploadingField
 from meta.models import ModelMeta
 from PIL import Image
 from django.core.files.base import ContentFile
-from django.db.models import F
 from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
@@ -74,8 +70,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     image = models.ImageField(help_text='Do not forget to change this before publishing',
                               default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
     thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
-    # hits = models.PositiveIntegerField(default=0)
-
     # adding a generic relationship makes sorting by Hits possible:
     # MyModel.objects.order_by("hit_count_generic__hits")
     hit_count_generic = GenericRelation(
@@ -201,14 +195,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             'day': self.date_published.day,
             'slug': self.slug
         })
-
-    # @property
-    # def unique_hits(self):
-    #     url, created = UrlHit.objects.get_or_create(
-    #         url=self.get_post_detail_url())
-    #     # print("in blog model url: ", url.url)
-    #     # print("in blog model hits: ", url.hits)
-    #     return url.hits
 
     @property
     def views(self):
