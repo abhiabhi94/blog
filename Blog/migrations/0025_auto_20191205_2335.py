@@ -10,10 +10,10 @@ class Migration(migrations.Migration):
         ('Blog', '0024_auto_20191205_2325'),
     ]
 
-    operations = [
-        migrations.AlterField(
-            model_name='post',
-            name='date_published',
-            field=models.DateTimeField(blank=True, default=models.DateTimeField(default=django.utils.timezone.now), null=True),
-        ),
-    ]
+    # operations = [
+    #     migrations.AlterField(
+    #         model_name='post',
+    #         name='date_published',
+    #         field=models.DateTimeField(default=models.DateTimeField(default=django.utils.timezone.now()), null=True),
+    #     ),
+    # ]

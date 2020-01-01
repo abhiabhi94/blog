@@ -21,7 +21,7 @@ class Category(models.Model, ModelMeta):
         "Name of the category. ex-Science, Technology"), max_length=50, unique=True)
     slug = models.SlugField(default=slugify(name), max_length=80)
     info = models.TextField(help_text=(
-        "Description of the category."), max_length=5000, unique=True)
+        "Description of the category."), max_length=5000)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     # author of this category.

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('category_name', models.CharField(help_text='Name of the category. ex-Science, Technology', max_length=50, unique=True)),
-                ('category_info', models.TextField(help_text='Description of the category.', max_length=5000, unique=True)),
+                ('category_info', models.TextField(help_text='Description of the category.', max_length=5000)),
                 ('date_created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
                 ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),

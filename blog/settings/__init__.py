@@ -2,6 +2,7 @@ import os
 import json
 
 CONFIG_FILE = '/etc/config.json'
+DB_CONFIG_FILE = '/etc/db.cnf'
 
 try:
     with open(CONFIG_FILE) as config_file:
@@ -17,7 +18,9 @@ SECRET_KEY = config['SECRET_KEY']
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': DB_CONFIG_FILE,
+        },
     }
 }
