@@ -107,7 +107,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         '''provides custom validation for images before uploading'''
 
         MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
-        MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (4096, 2160)
+        MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 4320)
 
         img = self.image
         # print('width:', img.width, '\theight:', img.height)
