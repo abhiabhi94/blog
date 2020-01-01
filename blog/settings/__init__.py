@@ -2,6 +2,7 @@ import os
 import json
 
 CONFIG_FILE = '/etc/config.json'
+DB_CONFIG_FILE = '/etc/db.cnf'
 
 try:
     with open(CONFIG_FILE) as config_file:
@@ -17,13 +18,9 @@ SECRET_KEY = config['SECRET_KEY']
 
 DATABASES = {
     'default': {
-        'NAME':'blog',
         'ENGINE': 'django.db.backends.mysql',
-        'USER': 'blogadmin',
-        'PASSWORD': 'Krishnajha987@',
-        'HOST': 'localhost',
-        'OPTIONS':{
-            'autocommit': True,
-        }
+        'OPTIONS': {
+            'read_default_file': DB_CONFIG_FILE,
+        },
     }
 }
