@@ -118,7 +118,7 @@ CKEDITOR_BROWSE_SHOW_DIRS = True
 # to convert and compress the uploaded images to jpeg, to save disk space
 CKEDITOR_IMAGE_BACKEND = 'pillow'
 CKEDITOR_FORCE_JPEG_COMPRESSION = True
-CKEDITOR_IMAGE_QUALITY = 50
+CKEDITOR_IMAGE_QUALITY = 75
 # To restrict upload functionality to image files only
 CKEDITOR_ALLOW_NONIMAGE_FILES = False
 # CKEditor configurations
