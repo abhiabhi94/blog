@@ -28,6 +28,10 @@ ul {
     margin: 0;
 }
 
+.fa-heart {
+    color: red
+}
+
 .btn-primary {
     white-space: nowrap;
 }
