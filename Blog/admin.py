@@ -72,9 +72,9 @@ class PostAdmin(admin.ModelAdmin):
                        'date_published', 'thumbnail')
     list_display = ('title', 'author', 'views', 'date_created',
                     'date_published', 'publish', 'featured')
-    tags_list = [post.get_tags_list()
-                 for post in Post.objects.filter(publish=True)]
-    all_tags = list({item for outer in tags_list for item in outer})
+    # tags_list = [post.get_tags_list()
+    #              for post in Post.objects.filter(publish=True)]
+    # all_tags = list({item for outer in tags_list for item in outer})
     list_filter = ['publish', 'featured', TagListFilter, CategoryListFilter]
 
 
