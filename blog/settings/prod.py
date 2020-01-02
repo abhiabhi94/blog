@@ -15,7 +15,7 @@ sentry_sdk.init(
     send_default_pii=True
 )
 
-DEBUG = False
-ALLOWED_HOSTS = ['hackadda.com', '142.93.221.60', ]
+DEBUG = True
+ALLOWED_HOSTS = ['hackadda.com', '142.93.221.60', 'www.hackadda.com', ]
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'

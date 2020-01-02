@@ -42,11 +42,11 @@ def add_ip_to_host(port=8000):
 
 
 try:
-    host = sys.argv[2]
-    if '0.0.0.0' in host:
-        add_ip_to_host(port=host.split(':')[-1])
+     host = sys.argv[2]
+     if '0.0.0.0' in host:
+         add_ip_to_host(port=host.split(':')[-1])
 except IndexError:
-    pass
+     pass
 
 
 DEBUG = True
