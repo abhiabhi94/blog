@@ -85,7 +85,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         'keywords': 'get_tags_list',
         'og_author': '_get_meta_author',
         'image': '_get_meta_image',
-        'url': 'get_post_detail_url',
+        'url': 'get_absolute_url',
     }
 
     def _get_meta_image(self):
@@ -177,18 +177,18 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def __str__(self):
         return self.title
 
-    def get_absolute_url(self):
+    def get_preview_url(self):
         return reverse('Blog:post-preview', kwargs={
-            'year': self.date_published.year,
-            'month': self.date_published.month,
-            'day': self.date_published.day,
+            # 'year': self.date_published.year,
+            # 'month': self.date_published.month,
+            # 'day': self.date_published.day,
             'slug': self.slug
         })
 
     def get_tags_list(self):
         return self.tags.split()
 
-    def get_post_detail_url(self):
+    def get_absolute_url(self):
         return reverse('Blog:post-detail', kwargs={
             'year': self.date_published.year,
             'month': self.date_published.month,
