@@ -148,8 +148,8 @@ class HomeView(ListView):
         format: all small-case and in slugified form
         '''
         home_categories = [
-            'science',
-            'technology',
+            'kids',
+            'coding',
         ]
 
         # All category objects will be appended in this list
@@ -259,7 +259,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
             return user.profile.bookmarked_posts.all()
         ### Return HTTP Error: "You should be logged in as the user" ###
         raise Http404(
-            "You should be signed in as %s to view this page" % (user))
+            f'You should be signed in as {user} to view this page')
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)  # TODO
@@ -293,7 +293,7 @@ def get_recommended_posts(request):
         Currently this function just returns the latest {top_n} posts (excluding the requesting post).
 
     TODO:
-        Improve this function for a better user experience 
+        Improve this function for a better user experience
     '''
     if request.method == 'POST' and request.is_ajax:
         try:
@@ -342,7 +342,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         post = self.get_object()
         if self.request.user == post.author:
             messages.success(
-                self.request, 'Your articles has been submitted for approval.')
+                self.request, 'Your article has been submitted for approval.')
         else:
             messages.warning(
                 self.request, 'You are not allowed to update this post.')
@@ -395,10 +395,22 @@ def about(request):
 
 
 @login_required
-def preview(request, year, month, day, slug):
-    template_name = 'Blog/post_preview.html'
+def preview(request, slug):
     post = Post.objects.get(slug=slug)
-    return render(request, template_name, {'post': post})
+    if request.method == 'POST':
+        '''
+        Submit post for review
+        '''
+        if request.user == post.author:
+            messages.success(
+                request, 'Your article has been submitted for approval.')
+        else:
+            messages.warning(
+                request, 'You are not allowed to update this post.')
+            return redirect('Blog:home')
+    else:
+        template_name = 'Blog/post_preview.html'
+        return render(request, template_name, {'post': post})
 
 
 @login_required
@@ -432,7 +444,8 @@ class TaggedPostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        post_list = published_posts().filter(tags__contains=self.kwargs.get('tag'))
+        post_list = published_posts().filter(
+            tags__contains=self.kwargs.get('tag').lower())
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -442,7 +455,7 @@ class TaggedPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tag = self.kwargs.get('tag')
+        tag = self.kwargs.get('tag').lower()
         context['meta'] = Meta(title=f'{tag.title()} | HackAdda',
                                description=f'Read articles with the tag {tag} on Hackadda',
                                keywords=meta_home.keywords + [tag])
@@ -523,7 +536,8 @@ class CategoryPostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        post_list = published_posts().filter(category__slug=self.kwargs.get('slug'))
+        post_list = published_posts().filter(
+            category__slug=self.kwargs.get('slug').lower())
         if post_list:
             return post_list
         raise Http404('Category not present')
@@ -623,9 +637,7 @@ def get_category(request):
 
 
 def get_trending_posts(request):
-    '''
-    Returns top_n trending post for a given time period for POST requests in AJAX format.
-    '''
+    '''Returns top_n trending post for a given time period for POST requests in AJAX format.'''
 
     if request.method == 'POST' and request.is_ajax():
         template_name = 'post_title.html'
