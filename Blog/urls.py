@@ -23,7 +23,7 @@ urlpatterns = [
     # path('post/<slug:slug>', hit_count(views.PostDetailView.as_view()), name='post-detail'),
     # path('post/<slug:slug>/update', views.PostUpdateView.as_view(), name='post-update'),
     # path('post/<slug:slug>/delete', views.PostDeleteView.as_view(), name='post-delete'),
-    re_path(r'post/preview/'+ymds_re+'$', views.preview, name='post-preview'),
+    path('post/preview/<slug:slug>', views.preview, name='post-preview'),
     re_path(r'post/'+ymds_re+'$',
             views.PostDetailView.as_view(), name='post-detail'),
     re_path(r'post/'+ymds_re+'/update$',
