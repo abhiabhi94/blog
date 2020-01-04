@@ -1,4 +1,13 @@
+html,
 body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
     background: #f7f7f7;
     color: #333333;
     margin-top: 5rem;
@@ -656,7 +665,6 @@ a.article-title:hover {
     font-weight: normal;
     font-style: normal;
 } */
-
 
 @media(max-width:600px) {
     #main {
