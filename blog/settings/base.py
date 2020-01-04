@@ -58,32 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'blog.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'NAME':'blog',
-#         'ENGINE': 'django.db.backends.mysql',
-#         'USER': 'blogadmin',
-#         'PASSWORD': 'Krishnajha987@',
-#         'HOST': 'localhost',
-#         'OPTIONS':{
-#             'autocommit': True,
-#         }
-#     }
-# }
-
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -152,9 +126,9 @@ CKEDITOR_CONFIGS = {
                 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
             {'name': 'editing', 'items': [
                 'Find', 'Replace', '-', 'SelectAll']},
-            {'name': 'forms',
-             'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
-                       'HiddenField']},
+            # {'name': 'forms',
+            #  'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
+            #            'HiddenField']},
             '/',
             {'name': 'basicstyles',
              'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
@@ -173,6 +147,7 @@ CKEDITOR_CONFIGS = {
             {'name': 'about', 'items': ['About']},
             '/',  # put this to force next toolbar on new line
             {'name': 'yourcustomtools', 'items': [
+                'CodeSnippet',
                 # put the name of your editor.ui.addButton here
                 # 'Maximize',
 
@@ -183,18 +158,19 @@ CKEDITOR_CONFIGS = {
         'extraPlugins': ','.join([
             'uploadimage',  # the upload image feature
             # your extra plugins here
-            'div',
-            'autolink',
-            'autoembed',
-            'embedsemantic',
-            'autogrow',
-            # 'devtools',
-            'widget',
-            'lineutils',
-            'clipboard',
-            'dialog',
-            'dialogui',
-            'elementspath'
+            'codesnippet',
+            # 'div',
+            # 'autolink',
+            # 'autoembed',
+            # 'embedsemantic',
+            # 'autogrow',
+            # # 'devtools',
+            # 'widget',
+            # 'lineutils',
+            # 'clipboard',
+            # 'dialog',
+            # 'dialogui',
+            # 'elementspath'
         ]),
     }
 }
