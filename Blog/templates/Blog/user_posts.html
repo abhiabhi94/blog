@@ -42,6 +42,7 @@
                     </span>
                 </li>
                 <li>
+                {% if author.profile.twitter %}
                     <!-- Author Twitter -->
                     <span>
                         <a class="resp-sharing-button__link" href="{{profile.twitter}}" title="Author's Twitter profile" target="_blank" rel="noopener" aria-label="">
@@ -52,7 +53,9 @@
                         </div>
                         </a>
                     </span>
+                {% endif %}
 
+                {% if author.profile.linkedin %}
                     <!-- Author LinkedIn -->
                     <span>
                         <a class="resp-sharing-button__link" href="{{profile.linkedin}}" title="Author's LinkedIn profile" target="_blank" rel="noopener" aria-label="">
@@ -63,6 +66,7 @@
                         </div>
                         </a>
                     </span>
+                {% endif %}
                 </li>                
                 {% if author == user %}
                     <a class="edit-icon btn btn-md mt-2 mb-1 float-right" href="{% url 'profile' %}" title="update profile info">
