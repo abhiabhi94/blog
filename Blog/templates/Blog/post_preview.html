@@ -1,27 +1,49 @@
 {% extends "Blog/base.html" %}
+{% load cool_view %}
 {% block content %}
-{% load cool_timesince %}
-<article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-    <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2" href="#" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
-            {% if post.publish %}
-            <small class="text-muted" title="{{ post.date_posted|date:"j M Y" }}">{{ post.date_posted|cool_timesince }}</small>
-            {% else %}
-            <small class="text-muted">Just now</small>
-            {% endif %}
-        </div>
-        <h2 class="article-title">{{ post.title }}</a></h2>
-        <p class="article-content">{{ post.content|safe }}</p>
-        <p class="article-tags">{{ post.tags }}</p>
+<div id="article-share-container">
+    <div id="share">
+        {% include "share.html" %}
     </div>
-</article>
+
+
+    <div class="article-contents">
+        <article id="post-detail" class="content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="article-title">
+                        <h2>{{ post.title }}</h2>
+                    </div>
+                    <div class="article-info">
+                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
+                        {% comment %} <small class="text-muted mr-2" title={{ post.views }}>views: {{ post.views|cool_view }}</small> {% endcomment %}
+                        {% comment %} <small class="text-muted mr-2" title="{{ post.date_published }}">Published: {{ post.date_published|date:"j M Y" }}</small> {% endcomment %}
+                        {% comment %} {% if post.date_published != post.last_updated %} {% endcomment %}
+                        {% comment %} <small class="text-muted date-modified" title="{{ post.last_updated }}">Last modified: {{ post.last_updated|date:"j M Y" }}</small> {% endcomment %}
+                        {% comment %} {% endif %} {% endcomment %}
+                        {% comment %} {% if post.author == user and user.is_staff %}
+                            <div id="post-options">
+                                <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Update">Update</a>
+                                <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Delete">Delete</a>
+                            </div>
+                        {% endif %} {% endcomment %}
+                    </div>
+                </div>
+                <div class="article-image">
+                    <img src="{{post.image.url}}" alt="{{post.title}}">
+                </div>
+                <p class="article-content">{{ post.content|safe }}</p>
+                {% include "tags.html" with tags=post.get_tags_list %}
+            </div>
+        </article>
+    </div>
+</div>
+
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        <a class="btn btn-outline-info" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Get back to edit">Get back to edit</a>
-        {% comment %} <button class="btn btn-outline-info ml-2" type="submit">Submit for review</button> {% endcomment %}
+        {% comment %} <a class="btn btn-info" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Get back to edit">Get back to edit</a> {% endcomment %}
+        <button class="btn btn-info ml-auto mr-auto" type="submit">Submit for review</button>
     </div>
 </form>
 {% endblock content %}
