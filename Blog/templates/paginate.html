@@ -2,7 +2,7 @@
 {% endblock content %} {% endcomment %}
 
 {% if is_paginated %} 
-    <div class="pagination">
+    <div class="pagination mt-2 ml-2">
         {% if page_obj.has_previous %}
             <a class="btn btn-outline-info ml-3 mb-4" href="?page=1" title="Return to first page">First</a>
             <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.previous_page_number }}" title="Previous Page">Previous</a> 
