@@ -1,5 +1,11 @@
 {% extends "Blog/base.html" %}
+{% load static from staticfiles %}
 {% load cool_view %}
+{% block extrahead %}
+<script>window.CKEDITOR_BASEPATH = "{% static '/ckeditor/ckeditor/' %}";</script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}" data-ckeditor-basepath="{% static 'ckeditor/ckeditor/' %}" id="ckeditor-init-script"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+{% endblock extrahead %}
 {% block content %}
 <div id="article-share-container">
     <div id="share">
