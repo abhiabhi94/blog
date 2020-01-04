@@ -80,7 +80,9 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
 
         # Normalizing the score
         max_score = max(obj.score, max_score)
-        obj.score = obj.score / max_score
+        # Check if max_score is 0 or not
+        if max_score:
+            obj.score = obj.score / max_score
 
     # [print(obj, ':\t', obj.score) for obj in objects]
     return sorted(objects, key=lambda obj: obj.score, reverse=True)[:top_n]
