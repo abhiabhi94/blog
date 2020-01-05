@@ -182,6 +182,8 @@ CKEDITOR_CONFIGS = {
 HITCOUNT_KEEP_HIT_ACTIVE = {'seconds': 1}
 # Limit the number of active Hits from a single IP address. 0 means that it is unlimited
 HITCOUNT_HITS_PER_IP_LIMIT = 0
+# Exclude Hits from all users in the specified user groups
+HITCOUNT_EXCLUDE_USER_GROUP = ('Editors', )
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
