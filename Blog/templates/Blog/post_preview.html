@@ -38,7 +38,7 @@
                 <div class="article-image">
                     <img src="{{post.image.url}}" alt="{{post.title}}">
                 </div>
-                <p class="article-content">{{ post.content|safe }}</p>
+                <div class="article-content">{{ post.content|safe }}</div>
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>
         </article>

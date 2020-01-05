@@ -48,19 +48,18 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
     Returns:
         The top_n trending values considering {interval} days.
         e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
-        score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day) 
+        score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day)
     '''
-    max_score = 0
     for obj in objects:
         # Initialising the score attribute with the view value of current day
         setattr(obj, 'score', Hit.objects.filter(
-            hitcount=obj.hit_count, created__day=start.day).count())
-        # If total views is 0, there's no point in processing any further
+            hitcount=obj.hit_count, created__contains=start.date()).count())
+        # If total views are 0, there's no point in processing any further
         if not obj.views:
             obj.score = 0
             continue
 
-        prev_date = start
+        prev_date = start.date()
         # print('publish date:', obj.date_published)
 
         for day in range(1, interval['days']):
@@ -68,20 +67,20 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
             prev_date = prev_date - timedelta(days=1)
 
             # No point in finding views if the post wasn't published
-            if prev_date.date() < obj.date_published.date():
+            if prev_date < obj.date_published.date():
                 break
 
             views = Hit.objects.filter(
-                hitcount=obj.hit_count, created__day=prev_date.day).count()
+                hitcount=obj.hit_count, created__contains=prev_date).count()
             # print(f'Views on {prev_date}:', views)
             obj.score += views / (day + 1)
 
         # print('\nScore for', obj, ':', obj.score)
 
-        # Normalizing the score
-        max_score = max(obj.score, max_score)
-        # Check if max_score is 0 or not
-        if max_score:
+    max_score = max(objects, key=lambda obj: obj.score).score
+    # Check if max_score is 0 or not
+    if max_score:  # Normalizing the score
+        for obj in objects:
             obj.score = obj.score / max_score
 
     # [print(obj, ':\t', obj.score) for obj in objects]
