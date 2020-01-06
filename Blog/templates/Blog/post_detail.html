@@ -37,10 +37,10 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="article-image">
+                <div class="article-image m-auto">
                     <img src="{{post.image.url}}" alt="{{post.title}}">
                 </div>
-                <div class="article-content">{{ post.content|safe }}</div>
+                <div class="article-content mt-4">{{ post.content|safe }}</div>
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>
         </article>
@@ -48,7 +48,9 @@
 </div>
 <div id="recommended-posts" class="article-contents content-section">
 </div>
+{% endblock content %}
 {% comment %} For requesting recommended posts {% endcomment %}
+{% block extrabottom %}
 <script>
     const id ='#recommended-posts';
     const data = {slug:'{{post.slug}}', top_n:3};
@@ -57,4 +59,5 @@
         $(id).append(response);
     });
 </script>
-{% endblock content %}
+{% endblock extrabottom %}
+

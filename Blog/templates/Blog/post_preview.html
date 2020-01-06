@@ -35,10 +35,10 @@
                         {% endif %} {% endcomment %}
                     </div>
                 </div>
-                <div class="article-image">
+                <div class="article-image m-auto">
                     <img src="{{post.image.url}}" alt="{{post.title}}">
                 </div>
-                <div class="article-content">{{ post.content|safe }}</div>
+                <div class="article-content mt-4">{{ post.content|safe }}</div>
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>
         </article>
