@@ -350,7 +350,7 @@ a.article-title:hover {
 #share {
     text-align: center;
     position: fixed;
-    top: 35%;
+    top: 30%; /* TODO fix it later. */
     left: 2%;
     display: inline-block;
 }
