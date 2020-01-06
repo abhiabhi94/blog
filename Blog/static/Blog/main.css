@@ -355,7 +355,7 @@ a.article-title:hover {
 #share {
     text-align: center;
     position: fixed;
-    top: 35%;
+    top: 30%; /* TODO fix it later. */
     left: 2%;
     display: inline-block;
 }
@@ -649,13 +649,18 @@ a.article-title:hover {
 
 ::selection {
     color: white;
-    background-color: gray;
+    background-color: #808080fe;
+}
+
+::-webkit-selection {
+    background-color: #808080fe;
+    color: white;
 }
 
 ::-moz-selection {
     /* Code for Firefox */
     color: white;
-    background-color: gray;
+    background-color: #808080fe;
 }
 
 #socialIcons .fa {
