@@ -100,25 +100,27 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def clean(self):
         '''provides custom validation for images before uploading'''
 
-        MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
-        MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 4320)
+        if self.__original_img_path != self.image.path:
 
-        img = self.image
-        # print('width:', img.width, '\theight:', img.height)
-        if img is None:
-            raise ValidationError(f'Image not present', code='invalid')
-        if img.width < MIN_IMG_WIDTH:
-            raise ValidationError(
-                f'Image width should not be less than {MIN_IMG_WIDTH}, your width was {img.width}', code='invalid')
-        if img.width > MAX_IMG_WIDTH:
-            raise ValidationError(
-                f'Image width should not be greater than {MAX_IMG_WIDTH}, your width was {img.width}', code='invalid')
-        if img.height < MIN_IMG_HEIGHT:
-            raise ValidationError(
-                f'Image height should not be less than {MIN_IMG_HEIGHT}, your height was {img.height}', code='invalid')
-        if img.height > MAX_IMG_HEIGHT:
-            raise ValidationError(
-                f'Image height should not be greater than {MAX_IMG_HEIGHT}, your height was {img.height}', code='invalid')
+            MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
+            MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 4320)
+
+            img = self.image
+            # print('width:', img.width, '\theight:', img.height)
+            if img is None:
+                raise ValidationError(f'Image not present', code='invalid')
+            if img.width < MIN_IMG_WIDTH:
+                raise ValidationError(
+                    f'Image width should not be less than {MIN_IMG_WIDTH}, yours width was {img.width}', code='invalid')
+            if img.width > MAX_IMG_WIDTH:
+                raise ValidationError(
+                    f'Image width should not be greater than {MAX_IMG_WIDTH}, yours width was {img.width}', code='invalid')
+            if img.height < MIN_IMG_HEIGHT:
+                raise ValidationError(
+                    f'Image height should not be less than {MIN_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
+            if img.height > MAX_IMG_HEIGHT:
+                raise ValidationError(
+                    f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
 
     def save(self, *args, **kwargs):
         '''
@@ -188,7 +190,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def get_tags_list(self):
         return self.tags.split()
 
-    def get_absolute_url(self):
+    def get_detail_url(self):
         return reverse('Blog:post-detail', kwargs={
             'year': self.date_published.year,
             'month': self.date_published.month,
