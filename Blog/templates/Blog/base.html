@@ -102,7 +102,7 @@
                         <div id="response">
                         </div>
                         {% block content %}
-                        {% endblock %}
+                        {% endblock content %}
                     </div>
                     <div id="sidebar" class="col-md-3 content-section">
                         <ul class="list-group">
@@ -127,5 +127,7 @@
         </main>
         {% include "./footer.html" %}
     </body>
+{% block extrabottom %}
+{% endblock extrabottom %}
 
 </html>
