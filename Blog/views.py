@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from collections import Counter
 from meta.views import Meta
 from datetime import datetime
@@ -326,6 +326,10 @@ class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+    def get_success_url(self):
+        '''Since there's no absolute url in the model, this function provides a redirect on form success.'''
+        return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -357,6 +361,10 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         if self.request.user == post.author:
             return True
         return False
+
+    def get_success_url(self):
+        '''Since there's no absolute url in the model, this function provides a redirect on form success.'''
+        return reverse (self.get_detail_url)
 
 
 @method_decorator(staff_member_required, name='dispatch')
