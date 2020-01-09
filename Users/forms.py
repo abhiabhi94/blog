@@ -14,6 +14,10 @@ class UserRegisterForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name',
                   'email', 'password1', 'password2']
 
+    def clean_email(self):
+        '''Store the email address in lower case'''
+        return self.cleaned_data['email'].lower()
+
 
 class UserUpdateForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100)
