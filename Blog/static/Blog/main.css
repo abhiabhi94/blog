@@ -31,6 +31,7 @@ h4,
 h5,
 h6 {
     color: #444444;
+    font-family: 'Lato';
 }
 
 ul {
@@ -150,7 +151,6 @@ a.dropdown-toggle {
 }
 
 .article-title {
-    font-family: 'Roboto';
     font-weight: 600;
     color: #444444;
 }
@@ -349,7 +349,15 @@ a.article-title:hover {
 /* This is the parent container that contains all meta data and the contents of the article */
 
 .article-contents {
-    margin-left: 4rem;
+    margin-left: 1rem;
+}
+
+
+/* On the detail margin, more margin is required to accomodate share icons */
+
+#article-share-container .article-contents,
+#recommended-posts {
+    margin-left: 4rem!important;
 }
 
 #share {
@@ -447,6 +455,11 @@ a.article-title:hover {
 
 .article-container {
     padding: 0.5rem 5px;
+}
+
+.article-list>.article-thumbnail {
+    display: block;
+    margin: auto;
 }
 
 .article-list>.article-thumbnail>img {
@@ -882,6 +895,11 @@ a.article-title:hover {
     
     .article-contents {
         margin-left: 0;
+    }
+    
+    #article-share-container .article-contents,
+    #recommended-posts {
+        margin-left: 0!important;
     }
     
     .article-list>.article-thumbnail>img {

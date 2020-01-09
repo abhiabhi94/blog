@@ -11,7 +11,7 @@
         <link rel="canonical" href="{{request.build_absolute_uri}}">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Rubik&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Rubik|Lato&display=swap">
         <link rel="stylesheet" type="text/css" href="{% static 'Blog/main.css' %}">
         <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
         <link rel="icon" sizes="16x16 32x32 64x64" href="{% static 'favicon.ico' %}">
@@ -54,7 +54,7 @@
                         {% comment %} <a class="nav-item nav-link navbar-about" href="{% url 'Blog:about' %}" title="About">About</a> {% endcomment %}
                         <div class="navbar-nav ml-auto mr-auto navbar-categories">
                             <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'coding' %}" title="Coding">Coding</a>
-                            <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'science' %}" title="Science">Science</a>
+                            {% comment %} <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'science' %}" title="Science">Science</a> {% endcomment %}
                             <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'artificial-intelligence' %}" title="Artificial Intelligence">Artificial Intelligence</a>
                             <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'robotics' %}" title="Robotics">Robotics</a>
                             <a class="nav-item nav-link" href="{% url 'Blog:categorised' 'kids' %}" title="Kids">Kids</a>
