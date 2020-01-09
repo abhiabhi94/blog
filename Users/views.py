@@ -26,21 +26,29 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
 
 
 def register(request):
+    # Redirect to the homepage in case user is logged in.
+    if request.user.is_authenticated:
+        messages.error(
+            request, 'You are already logged in!'
+        )
+        return redirect('Blog:home')
+
     template_name = 'Users/register.html'
+    context = {}
     if(request.method == 'POST'):
-        form = UserRegisterForm(request.POST)
+        context['form'] = form = UserRegisterForm(request.POST)
         if(form.is_valid()):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(
                 request, f'Account created for {username}. You will now be able to Log In!')
             return redirect('Blog:home')
-    else:
-        context = {}
+    else:  # On GET request return a new form
         context['form'] = UserRegisterForm()
-        context['meta'] = Meta(title=f'Register | HackAdda',
-                               description=f'Register on HackAdda',
-                               keywords=meta_home.keywords + ['register'])
+
+    context['meta'] = Meta(title=f'Register | HackAdda',
+                           description=f'Register on HackAdda',
+                           keywords=meta_home.keywords + ['register'])
     return render(request, template_name, context)
 
 
