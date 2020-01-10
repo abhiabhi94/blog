@@ -21,7 +21,7 @@
         <div class="col">
             <div class="social-icons">
                 <h5 class="footer-text-color">Let's Connect</h5>
-                {% with "facebook twitter instagram" as socials %}
+                {% with "facebook twitter" as socials %}
                 {% for social in socials.split %}
                 {% with "https://"|add:social|add:".com/"|add:"thehackadda" as social_link %}
                 
@@ -29,12 +29,13 @@
                 {% endwith %}
                 {% endfor %}
                 {% endwith %}
+                <a style="color: white;" class="mr-5" href="https://instagram.com/hackadda" target="_blank"><i class="fa fa-instagram"></i></a>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <div class=" copyright">
+            <div class="copyright">
                 <h6>©2020 HackAdda All rights reserved</h6>
             </div>
         </div>
