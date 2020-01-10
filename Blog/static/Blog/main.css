@@ -194,6 +194,12 @@ footer .fa {
     font-size: 1.2rem;
 }
 
+.about-page-kids {
+    display: block;
+    max-width: 100%;
+    margin: 5px auto;
+}
+
 a.article-title:hover {
     color: #428bca;
     text-decoration: none;
@@ -217,7 +223,9 @@ a.article-title:hover {
 /* forcing any image passed from the backend to stay inside the container */
 
 .article-content img {
+    display: block;
     max-width: 100%!important;
+    margin: 5px auto;
 }
 
 .article-img {
@@ -772,8 +780,8 @@ a.article-title:hover {
     outline: solid 1px #ccc;
     background: rgba(0, 0, 0, 0.05);
     padding: 10px;
-    margin: 10px 20px;
-    display: inline-block;
+    display: table;
+    margin: 10px auto;
 }
 
 .article-content figure>figcaption {
