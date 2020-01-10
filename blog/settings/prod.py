@@ -6,7 +6,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 import sys
 
-Integrating sentry sdk inside django
+# Integrating sentry sdk inside django
 sentry_sdk.init(
     dsn="https://782c4ab18f3645bcb343911c744fbb86@sentry.io/1868228",
     integrations=[DjangoIntegration()],
