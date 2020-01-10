@@ -73,7 +73,7 @@ class HomeView(ListView):
 
     def __init__(self):
         self.NO_FEATURED_POSTS = 3
-        self.NO_LATEST_POSTS = 5
+        self.NO_LATEST_POSTS = 6
         self.NO_CATEGORY_POSTS = 2
         super().__init__()
 
@@ -364,7 +364,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         '''Since there's no absolute url in the model, this function provides a redirect on form success.'''
-        return reverse (self.get_detail_url)
+        return reverse(self.get_detail_url)
 
 
 @method_decorator(staff_member_required, name='dispatch')
