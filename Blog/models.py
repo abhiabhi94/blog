@@ -18,7 +18,7 @@ IMG_DIR = 'blog'
 
 class Category(models.Model, ModelMeta):
     name = models.CharField(help_text=(
-        "Name of the category. ex-Science, Technology"), max_length=50, unique=True)
+        "Name of the category. ex-Coding, Robotics"), max_length=50, unique=True)
     slug = models.SlugField(default=slugify(name), max_length=80)
     info = models.TextField(help_text=(
         "Description of the category."), max_length=5000)
@@ -85,7 +85,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         'keywords': 'get_tags_list',
         'og_author': '_get_meta_author',
         'image': '_get_meta_image',
-        'url': 'get_absolute_url',
+        'url': 'get_detail_url',
     }
 
     def _get_meta_image(self):
@@ -103,7 +103,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         if self.__original_img_path != self.image.path:
 
             MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
-            MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 4320)
+            MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 7680)
 
             img = self.image
             # print('width:', img.width, '\theight:', img.height)
