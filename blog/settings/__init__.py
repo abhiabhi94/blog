@@ -15,6 +15,8 @@ except KeyError:
     from .dev import *
 
 SECRET_KEY = config['SECRET_KEY']
+EMAIL_HOST_USER = config['EMAIL_USER']
+EMAIL_HOST_PASSWORD = config['EMAIL_PASS']
 
 DATABASES = {
     'default': {
