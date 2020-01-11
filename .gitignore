@@ -11,5 +11,9 @@
 # Binary python files
 *.py[c|o|d]
 
-# database
+# database and data files
 db.sqlite3
+*.json
+
+# assets
+assets/**
