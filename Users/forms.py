@@ -14,6 +14,10 @@ class UserRegisterForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name',
                   'email', 'password1', 'password2']
 
+    def clean_username(self):
+        '''Return username in lower case'''
+        return self.cleaned_data.get('username').lower()
+
     def clean_email(self):
         '''
         Returns
