@@ -90,8 +90,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     def _get_meta_image(self):
         '''Returns url of the image for meta'''
-        if self.image:
-            return self.image.url
+        if self.thumbnail:
+            return self.thumbnail.url
 
     def _get_meta_author(self):
         '''Returns full name of author for meta'''
