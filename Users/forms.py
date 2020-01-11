@@ -15,8 +15,17 @@ class UserRegisterForm(UserCreationForm):
                   'email', 'password1', 'password2']
 
     def clean_email(self):
-        '''Store the email address in lower case'''
-        return self.cleaned_data['email'].lower()
+        '''
+        Returns
+            email address in lower case if email is unique
+            error message in case it isn't.
+        '''
+        email = self.cleaned_data.get('email').lower()
+        username = self.cleaned_data.get('username').lower()
+        if email and User.objects.filter(email=email).exclude(username=username).exists():
+            raise forms.ValidationError(
+                f'This email address is already associated with another account.')
+        return email
 
 
 class UserUpdateForm(forms.ModelForm):
