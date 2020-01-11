@@ -17,6 +17,7 @@ sentry_sdk.init(
 )
 
 # global ALLOWED_HOSTS
+# DEBUG = True
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # # Add debug_toolbar
@@ -63,5 +64,21 @@ sentry_sdk.init(
 
 DEBUG = False
 ALLOWED_HOSTS = ['hackadda.com', '142.93.221.60', 'www.hackadda.com', ]
+
+# Enable only if you shift to HTTPS from HTTP
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True  # makes it difficult to hijack user sessions
+
+# prevent the browser from identifying content types incorrectly
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True  # prevents XSS attacks
+SECURE_SSL_REDIRECT = True  # Redirect connections to HTTPS
+
+# makes it difficult for network traffic sniffers to steal CSRF token
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_PRELOAD = True  # submit your website to the browser preload list
+SECURE_HSTS_SECONDS = 3600  # 1 hour. Refuses to connect over HTTP
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
