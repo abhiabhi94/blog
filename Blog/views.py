@@ -311,7 +311,7 @@ def get_recommended_posts(request):
         context['recommend'] = True
         return render(request, template_name, context)
 
-    raise Http404('Wrong Request format')
+    raise Http404('Wrong request format')
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -657,3 +657,5 @@ def get_trending_posts(request):
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
+    
+    return Http404('Wrong Request Format')
