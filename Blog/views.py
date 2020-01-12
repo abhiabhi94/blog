@@ -501,6 +501,8 @@ def get_tags(request):
     2. Post request is used for displaying the top_n tags in the sidebar
     '''
     context = {}
+    template_name = 'all_tags.html'
+    flag = 0
     if request.method == 'POST' and request.is_ajax():
         template_name = 'tags.html'
         try:
@@ -511,10 +513,6 @@ def get_tags(request):
             flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
             context['ajax'] = True
-
-    elif request.method == 'GET':
-        template_name = 'all_tags.html'
-        flag = 0
 
     tags_list = [post.get_tags_list()
                  for post in published_posts()]
@@ -610,6 +608,9 @@ def get_category(request):
     2. For post request, top_n categories are shown in the sidebar.
     '''
     context = {}
+    flag = 0
+    template_name = 'all_categories.html'
+
     if request.method == 'POST' and request.is_ajax():
         template_name = 'Blog/categories.html'
         try:
@@ -620,14 +621,10 @@ def get_category(request):
             flag = 1
             context['ajax'] = True
 
-    elif request.method == 'GET':
-        flag = 0
-        template_name = 'all_categories.html'
-
     categories = Category.objects.filter(
         post__in=published_posts())
 
-    if flag:
+    if flag:  # POST request
         top_categories = Counter(categories).most_common(top_n)
     else:
         top_categories = Counter(categories).most_common()
