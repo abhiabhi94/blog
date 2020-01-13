@@ -17,3 +17,6 @@ db.sqlite3
 
 # assets
 assets/**
+
+# media files
+media/**
