@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -7,10 +8,11 @@ from django.template.defaultfilters import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
 from meta.models import ModelMeta
 from PIL import Image
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
+import tempfile
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -142,24 +144,21 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             self.date_published = timezone.now()
 
         if self.__original_img_path != self.image.path:
+            ext = self.image.name.split('.')[-1]
+            # JPG isn't allowed in Pillow
+            extension = 'JPEG' if ext.lower() == 'jpg' else ext.upper()
 
             with Image.open(self.image.path) as img:
                 thumbnail_size, full_view_size = (350, 350), (800, 800)
-
                 img_thumbnail = img.copy()  # thumbnail changes in place
 
                 # for list and card view
                 img_thumbnail.thumbnail(thumbnail_size, Image.ANTIALIAS)
                 thumbnail_name = self._image_name('_thumbnail')
-                img_thumbnail.save(thumbnail_name, quality=75, optimize=True)
-
-                with open(thumbnail_name, 'rb') as f:
-                    data = f.read()
-
-                self.thumbnail.save(
-                    thumbnail_name, ContentFile(data), save=False)
-                # Remove thumbnail image
-                os.remove(thumbnail_name)
+                blob = BytesIO()
+                img_thumbnail.save(blob, format=extension,
+                                   quality=75, optimize=True)
+                self.thumbnail.save(thumbnail_name, File(blob), save=False)
 
                 # for detail view
                 img.thumbnail(full_view_size, Image.ANTIALIAS)
