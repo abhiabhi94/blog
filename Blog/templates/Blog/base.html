@@ -83,8 +83,7 @@
                                     <a class="nav-item nav-link" href="{% url 'profile' %}" title="Edit profile">Edit Profile</a>
                                     {% if user|has_group:"editor" %}
                                     <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}" title="New Post">New Post</a>
-                                    <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}" title="My Post">My Posts</a>
-                                    <a class="nav-item nav-link" href="#" title="">Drafts</a>
+                                    <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user 'draft' %}" title="My Post">My Posts</a>
                                     {% endif %}
                                     <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}" title="Bookmarks">Bookmarks</a>
                                     <a class="nav-item nav-link" href="{% url 'logout' %}" title="Log Out">Log Out</a>
