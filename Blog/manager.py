@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from hitcount.models import Hit
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User, Group
+from django.shortcuts import redirect
+from functools import wraps
 
 
 def published_posts(order='-date_published'):
@@ -100,14 +102,18 @@ def paginate_util(request, objects, paginate_by, kwargs):
     return objects
 
 
-def editor(group_name='editor'):
-    def decorator(func):
+def group(group_name='editor'):
+    def decorator(view_func):
+        @wraps(view_func)
         def wrapper(request, *args, **kwargs):
             try:
-                if User.objects.filter(id=self.request.user.id, groups__name=group_name).exists():
-                    return func(request, *args, **kwargs)
+                if User.objects.filter(id=request.user.id, groups__name=group_name).exists() or request.user.is_superuser:
+                    return view_func(request, *args, **kwargs)
             except Exception as _:
-                print('Exception caused:', _)
-            return redirect('Blog:login')
+                # print('Exception caused:', _,)
+                pass
+
+            return redirect('login')
+
         return wrapper
     return decorator
