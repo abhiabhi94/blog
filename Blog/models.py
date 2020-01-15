@@ -54,6 +54,16 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         self.__original_tags = self.tags
         self.__original_img_path = self.image.path
 
+    draft = -1
+    queued = 0
+    publish = 1
+
+    state_choices = [
+        (draft, 'Draft'),
+        (queued, 'Queued'),
+        (publish, 'Published'),
+    ]
+
     title = models.CharField(
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
@@ -65,7 +75,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
-    publish = models.BooleanField(default=False)
+    state = models.IntegerField(choices=state_choices, default=draft)
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)

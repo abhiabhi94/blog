@@ -9,10 +9,11 @@ from django.contrib.auth.models import User, Group
 def published_posts(order='-date_published'):
     """
     TODO: support multiple filters.
-    returns a list of published posts.
-    if no order is given, the posts are ordered by their post date.
+    Returns
+        a list of published posts.
+        If no order is given, the posts are ordered by their post date.
     """
-    return Post.objects.filter(publish=True).order_by(order)
+    return Post.objects.filter(state=1).order_by(order)
 
 
 def email_verification(email):
