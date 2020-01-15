@@ -42,7 +42,7 @@ class Category(models.Model, ModelMeta):
         super(*args, **kwargs).save()
 
     def __str__(self):
-        '''helps in showing name in foreign key field instead of category object'''
+        """helps in showing name in foreign key field instead of category object"""
         return self.name
 
 
@@ -91,16 +91,16 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     }
 
     def _get_meta_image(self):
-        '''Returns url of the image for meta'''
+        """Returns url of the image for meta"""
         if self.thumbnail:
             return self.thumbnail.url
 
     def _get_meta_author(self):
-        '''Returns full name of author for meta'''
+        """Returns full name of author for meta"""
         return self.author.get_full_name()
 
     def clean(self):
-        '''provides custom validation for images before uploading'''
+        """provides custom validation for images before uploading"""
 
         if self.__original_img_path != self.image.path:
 
@@ -125,12 +125,12 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                     f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
 
     def save(self, *args, **kwargs):
-        '''
+        """
         1. slugify the title
         2. save the tags in lower case
         3. Sets the date_publish when the publish flag is set for the first time.
         4. compress and resize images to make thumbnails and full size images
-        '''
+        """
 
         if self.__original_title != self.title:
             self.slug = slugify(self.title)
@@ -167,10 +167,10 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         super(Post, self).save(*args, **kwargs)
 
     def _image_name(self, modifier):
-        '''
+        """
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
-        '''
+        """
         new_name = self.image.name.split('.')
         new_name.insert(-1, modifier + '.')  # dont forget extension
         return ''.join(new_name)

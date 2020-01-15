@@ -15,14 +15,14 @@ INTERNAL_IPS = ALLOWED_HOSTS
 
 
 def add_ip_to_host(port=8000):
-    '''
+    """
     Returns
         None
 
     Args:
         port which handles the request
     Add local IPv4 and public IP addresses to ALLOWED_HOST
-    '''
+    """
 
     IP_PRIVATE = getoutput('hostname -I').strip()
     try:

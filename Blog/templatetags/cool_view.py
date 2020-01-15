@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter(name='cool_view', is_safe=False)
 def cool_view(val, precision=2):
-    '''Convert numbers to a cool format e.g: 1K, 123.4K, 111.42M.'''
+    """Convert numbers to a cool format e.g: 1K, 123.4K, 111.42M."""
 
     int_val = int(val)
     if int_val < 1000:
