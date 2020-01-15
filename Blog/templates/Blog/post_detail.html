@@ -1,6 +1,7 @@
 {% extends "Blog/base.html" %}
 {% load static from staticfiles %}
 {% load cool_view %}
+{% load extra_auth %}
 {% block extrahead %}
 <link rel="stylesheet"
       href="//cdn.jsdelivr.net/npm/highlightjs-themes@1.0.0/monokai_sublime.css">
@@ -29,7 +30,7 @@
                         {% if post.date_published != post.last_updated %}
                         <small class="text-muted date-modified" title="{{ post.last_updated }}">Last modified: {{ post.last_updated|date:"j M Y" }}</small>
                         {% endif %}
-                        {% if post.author == user and user.is_staff %}
+                        {% if post.author == user and user|has_group:"editor" %}
                             <div id="post-options">
                                 <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Update">Update</a>
                                 <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Delete">Delete</a>
