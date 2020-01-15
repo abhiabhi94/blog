@@ -85,7 +85,7 @@
 {% else %}
 {% comment %} Currently, this information is shown only to editors/staff {% endcomment %}
 {% if user|has_group:"Editor" %}
-<h5 class="mt-5">There are no posts here.{% if author == user %}Try writing some <a class="" href="{% url 'Blog:post-create' %}" title="Write a Post">Posts</a>{% endif %}</h5>
+<h5 class="mt-5">There are no posts here.{% if author == user %} Try writing some <a class="" href="{% url 'Blog:post-create' %}" title="Write a Post">Posts</a>{% endif %}</h5>
 {% endif %}
 {% endif %}
 {% endblock content %}
