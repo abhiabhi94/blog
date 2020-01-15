@@ -3,29 +3,30 @@ from .models import Post
 from datetime import datetime, timedelta
 from hitcount.models import Hit
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User, Group
 
 
 def published_posts(order='-date_published'):
-    '''
+    """
     TODO: support multiple filters.
     returns a list of published posts.
     if no order is given, the posts are ordered by their post date.
-    '''
+    """
     return Post.objects.filter(publish=True).order_by(order)
 
 
 def email_verification(email):
-    '''Verify whether an email is legit or not'''
+    """Verify whether an email is legit or not"""
     return validate_email(email_address=email, check_regex=True, check_mx=True)
 
 
 def get_font_cloud(obj, F=5.0, f=1.0):
-    '''
+    """
     Returns a font-cloud based upon the sorted dictionary received.
     Max font-size is 5{rem}
     Min font-size is 1{rem}
     In-between values are calculated based upon linear distribution{ax+b}.
-    '''
+    """
     V = list(obj.values())[0]
     v = 1
     diff = V - v
@@ -39,7 +40,7 @@ def get_font_cloud(obj, F=5.0, f=1.0):
 
 
 def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
-    '''
+    """
     Args:
         interval: the interval to be considered for calculation.
         top_n: no. of trending values required (default:).
@@ -49,7 +50,7 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         The top_n trending values considering {interval} days.
         e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
         score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day)
-    '''
+    """
     for obj in objects:
         # Initialising the score attribute with the view value of current day
         setattr(obj, 'score', Hit.objects.filter(
@@ -96,3 +97,16 @@ def paginate_util(request, objects, paginate_by, kwargs):
         kwargs['is_paginated'] = True
     kwargs['page_obj'] = objects
     return objects
+
+
+def editor(group_name='editor'):
+    def decorator(func):
+        def wrapper(request, *args, **kwargs):
+            try:
+                if User.objects.filter(id=self.request.user.id, groups__name=group_name).exists():
+                    return func(request, *args, **kwargs)
+            except Exception as _:
+                print('Exception caused:', _)
+            return redirect('Blog:login')
+        return wrapper
+    return decorator
