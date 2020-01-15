@@ -3,19 +3,55 @@
 {% block content %}
 {% if page_obj.paginator.count %}
     <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-    {% if unpublished_posts %}
+    <ul class="nav nav-pills nav-justified" id="postTab" role="tablist">
+        <li class="nav-item">
+        {% comment %} no tab is defined for draft {% endcomment %}
+            <a class="nav-link active" id="draft-tab" data-toggle="pill" data-url="{% url 'Blog:my-posts' user 'draft' %}" role="tab" aria-controls="draft" aria-selected="true" title="Posts under the draft section">Draft</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="draft-tab" data-toggle="pill" data-url="{% url 'Blog:my-posts' user 'queued' %}" role="tab" aria-controls="queued" aria-selected="false" title="Posts queued for publishing">Queued</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="published-tab" data-toggle="pill" data-url="{% url 'Blog:my-posts' user 'published' %}") role="tab" aria-controls="published" aria-selected="false" title="Posts published">Published</a>
+        </li>
+    </ul>
+    <div class="tab-content list-group-item list-group-item-light">
+        <li id="draft" class="tab-pane fade show active" role="tabpanel" aria-labelledby="draft-posts-tab">
+            {% include "post_list_home.html" %}
+        </li>
+        <li id="queued" class="tab-pane fade" role="tabpanel" aria-labelledby="queued-posts-tab">
+            {% include "post_list_home.html" %}
+        </li>
+        <li id="published" class="tab-pane fade" role="tabpanel" aria-labelledby="published-posts-tab">
+            {% include "post_list_home.html" %}
+        </li>
+    </div>
+    {% comment %} {% if unpublished_posts %}
         <legend>Unpublished</legend>
         {% include "post_list_home.html" with posts=unpublished_posts %}
     {% endif %}
     {% if published_posts %}
         <legend>Published</legend>
         {% include "post_list_home.html" with posts=published_posts %}
-    {% endif %}
+    {% endif %} {% endcomment %}
     {% include "paginate.html" %}
 {% else %}
 {% comment %} Currently, this information is shown only to editors/staff {% endcomment %}
-{% if user|has_group:"Editor" %}
+{% if user|has_group:"editor" %}
 <h5 class="mt-5">There are no posts here.{% if author == user %}Try writing some <a class="" href="{% url 'Blog:post-create' %}" title="Write a Post">Posts</a>{% endif %}</h5>
 {% endif %}
 {% endif %}
 {% endblock content %}
+{% block extrabottom %}
+<script>
+    $('#postTab a').click(function(e) {
+    e.preventDefault();
+    //$(this).tab('show');
+    const tab = $(this).id;
+    url = $(this).data('url');
+    $.get(url, {tab:tab}, function(response) {
+            $(tab).append(response);
+        });
+    });
+</script>
+{% endblock extrabottom %}
