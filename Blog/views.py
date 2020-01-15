@@ -35,7 +35,7 @@ from .manager import (published_posts,
                       get_font_cloud,
                       trending,
                       paginate_util,
-                      editor
+                      group
                       )
 """
 Use the name posts for backend purposes.
@@ -249,6 +249,7 @@ class AuthorPostListView(ListView):
         return context
 
 
+@method_decorator(group(group_name='editor'), name='dispatch')
 class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     # model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
@@ -282,7 +283,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
                                description=f'Articles authored by {name}',
                                og_author=f'{name}',
                                keywords=meta_home.keywords)
-        # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
+        print('context', context)
         return context
 
 
@@ -355,30 +356,72 @@ def get_recommended_posts(request):
 
 
 # @method_decorator(staff_member_required, name='dispatch')
-# @method_decorator(editor, name='dispatch')
-class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+@method_decorator(group('editor'), name='dispatch')
+class PostCreateView(CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
 
-    def test_func(self):
-        return User.objects.filter(id=self.request.user.id, groups__name='editor').exists()
+    # def test_func(self):
+    #     return User.objects.filter(id=self.request.user.id, groups__name='editor').exists()
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        print(self.request.POST.get, '\t:POST:', self.request.POST)
-        if 'queue' in self.request.POST:
-            form.instance.state = 0
-        elif 'draft' in self.request.POST:
+        # if 'queue' in self.request.POST:
+        #     form.instance.state = 0
+        if self.request.method == 'POST':
             form.instance.state = -1
         else:
             raise Http404('Wrong request!!!')
         return super().form_valid(form)
 
-    def get_success_url(self, form):
+    def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
-        if self.object.state == -1:  # draft option was selected
-            return self.object
-        return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+
+        if 'draft' in self.request.POST:  # draft option was selected
+            return reverse('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+        elif 'preview' in self.request.POST:
+            return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+        else:
+            raise Http404('Wrong request!!!')
+
+
+class DraftUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+
+    def form_valid(self, form):
+        # print("------->", 'form_valid')
+        """
+        Checks whether the user logged in is the one updating the post.
+        Checks whether the user is authorised to update the article(non-staff member's aren't)
+        It then reverses the published state so that admin's approval is required before publishing the updated post.
+        """
+        post = self.get_object()
+        if self.request.user == post.author:
+            messages.success(
+                self.request, 'Your article has been saved.')
+        else:
+            messages.warning(
+                self.request, 'You are not allowed to update this post.')
+            return redirect('Blog:home')
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        """ensuring the author themselves is updating the post"""
+        post = self.get_object()
+
+        return self.request.user == post.author
+
+    def get_success_url(self):
+        """Since there's no absolute url in the model, this function provides a redirect on form success."""
+
+        if 'draft' in self.request.POST:  # draft option was selected
+            return reverse('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+        elif 'preview' in self.request.POST:
+            return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+        else:
+            raise Http404('Wrong request!!!')
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -403,7 +446,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 self.request, 'You are not allowed to update this post.')
             return redirect('Blog:home')
         form.instance.author = self.request.user
-        form.instance.publish = False
+        form.instance.state = 0  # state -> queued
         return super().form_valid(form)
 
     def test_func(self):
@@ -419,11 +462,10 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 # @method_decorator(staff_member_required, name='dispatch')
-@method_decorator(editor, name='dispatch')
+@method_decorator(group(group_name='editor'), name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     fields = fields = ['title', 'content', 'thumbnail', 'tags', 'category']
-    success_url = '/blog'  # redirected path
     success_url = reverse_lazy('Blog:home')
     success_message = "Post %(title)s was removed successfully"
 
@@ -454,20 +496,21 @@ def about(request):
     return render(request, template_name, context)
 
 
-@login_required
+@method_decorator(group(group_name='editor'), name='dispatch')
 def preview(request, slug):
     post = Post.objects.get(slug=slug)
     if request.method == 'POST':
-        """
-        Submit post for review
-        """
+        """Submit post for review"""
         if request.user == post.author:
+            post.state = 0  # state -> queued
+            post.save()
             messages.success(
                 request, 'Your article has been submitted for approval.')
         else:
             messages.warning(
                 request, 'You are not allowed to update this post.')
-            return redirect('Blog:home')
+        return redirect('Blog:home')
+        # return reverse('Blog:my-posts', kwargs={'username': request.user, 'tab': 'drafts'})
     else:
         template_name = 'Blog/post_preview.html'
         return render(request, template_name, {'post': post})
