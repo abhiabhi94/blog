@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Post, Category
+from .manager import published_posts
 from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -23,7 +24,7 @@ class TagListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         tags_list = [post.get_tags_list()
-                     for post in Post.objects.filter(publish=True)]
+                     for post in published_posts()]
         all_tags = tuple({(item, item)
                           for outer in tags_list for item in outer})
         return all_tags
@@ -106,11 +107,11 @@ class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
     list_display = ('title', 'author', 'views', 'date_created',
-                    'date_published', 'publish', 'featured')
+                    'date_published', 'state', 'featured')
     # tags_list = [post.get_tags_list()
     #              for post in Post.objects.filter(publish=True)]
     # all_tags = list({item for outer in tags_list for item in outer})
-    list_filter = [AuthorListFilter, 'publish', 'featured',
+    list_filter = [AuthorListFilter, 'state', 'featured',
                    TagListFilter, CategoryListFilter]
 
 
