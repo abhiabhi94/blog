@@ -226,7 +226,7 @@ class FeaturedPostListView(ListView):
 
 class AuthorPostListView(ListView):
     # model = Post
-    template_name = 'Blog/editor_posts.html'   # <app>/<model>_<viewtype>.html
+    template_name = 'Blog/author_posts.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -268,16 +268,21 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         user = get_object_or_404(User, username=self.request.user)
         posts = Post.objects.filter(author=user).order_by('date_created')
 
-        context['user'] = user.get_full_name()
-        context['published_posts'] = posts.filter(publish=True)
-        context['unpublished_posts'] = posts.filter(publish=False)
+        name = user.get_full_name()
+        tab = self.kwargs.get('tab', 'draft')
+        # for drafts
+        if tab == 'queued':
+            context['posts'] = posts.filter(state=0)
+        elif tab == 'published':
+            context['posts'] = posts.filter(state=1)
+        else:
+            context['posts'] = posts.filter(state=-1)
 
-        context['meta'] = Meta(title=f'{context["user"]} | HackAdda',
-                               description=f'Articles authored by {context["user"]}',
-                               og_author=f'{context["user"]}',
+        context['meta'] = Meta(title=f'{name} | HackAdda',
+                               description=f'Articles authored by {name}',
+                               og_author=f'{name}',
                                keywords=meta_home.keywords)
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
-        print(context)
         return context
 
 
@@ -349,7 +354,7 @@ def get_recommended_posts(request):
     raise Http404('Wrong request format')
 
 
-@method_decorator(staff_member_required, name='dispatch')
+# @method_decorator(staff_member_required, name='dispatch')
 # @method_decorator(editor, name='dispatch')
 class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Post
@@ -360,10 +365,19 @@ class PostCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        print(self.request.POST.get, '\t:POST:', self.request.POST)
+        if 'queue' in self.request.POST:
+            form.instance.state = 0
+        elif 'draft' in self.request.POST:
+            form.instance.state = -1
+        else:
+            raise Http404('Wrong request!!!')
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self, form):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
+        if self.object.state == -1:  # draft option was selected
+            return self.object
         return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
 
 
