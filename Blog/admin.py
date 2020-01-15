@@ -83,7 +83,7 @@ class AuthorListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         author_list = User.objects.filter(
-            groups__name='Editors').values('id', 'username')
+            groups__name='editor').values('id', 'username')
         authors = tuple((author['id'], author['username'])
                         for author in author_list)
         return authors
