@@ -28,7 +28,7 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
 def register(request):
     # Redirect to the homepage in case user is logged in.
     if request.user.is_authenticated:
-        messages.error(
+        messages.warning(
             request, 'You are already logged in!'
         )
         return redirect('Blog:home')
