@@ -13,7 +13,6 @@ from django.shortcuts import (render,
                               get_object_or_404)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
@@ -27,9 +26,6 @@ from .models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
-import time
-from django.contrib.auth.decorators import user_passes_test
-
 from .manager import (published_posts,
                       email_verification,
                       get_font_cloud,
@@ -251,8 +247,9 @@ class AuthorPostListView(ListView):
 
 @method_decorator(group(group_name='editor'), name='dispatch')
 class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    # model = Post
+    model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
+    queryset = Post.objects.all()
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -262,23 +259,20 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user)
-        return Post.objects.filter(author=user).order_by('-date_created')
+        tab = self.kwargs.get('tab', 'draft')
+
+        if tab == 'queued':
+            return self.queryset.filter(author=user, state=0).order_by('-date_created')
+        elif tab == 'published':
+            return self.queryset.filter(author=user, state=1).order_by('-date_published')
+        else:  # for drafts
+            return self.queryset.filter(author=user, state=-1).order_by('-date_created')
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
+
         user = get_object_or_404(User, username=self.request.user)
-        posts = Post.objects.filter(author=user).order_by('date_created')
-
         name = user.get_full_name()
-        tab = self.kwargs.get('tab', 'draft')
-        # for drafts
-        if tab == 'queued':
-            context['posts'] = posts.filter(state=0)
-        elif tab == 'published':
-            context['posts'] = posts.filter(state=1)
-        else:
-            context['posts'] = posts.filter(state=-1)
-
         context['meta'] = Meta(title=f'{name} | HackAdda',
                                description=f'Articles authored by {name}',
                                og_author=f'{name}',
@@ -355,8 +349,7 @@ def get_recommended_posts(request):
     raise Http404('Wrong request format')
 
 
-# @method_decorator(staff_member_required, name='dispatch')
-@method_decorator(group('editor'), name='dispatch')
+@method_decorator(group(group_name='editor'), name='dispatch')
 class PostCreateView(CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
@@ -385,7 +378,7 @@ class PostCreateView(CreateView):
             raise Http404('Wrong request!!!')
 
 
-class DraftUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
 
@@ -424,8 +417,7 @@ class DraftUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             raise Http404('Wrong request!!!')
 
 
-@method_decorator(staff_member_required, name='dispatch')
-# @method_decorator(editor, name='dispatch')
+@method_decorator(group(group_name='editor'), name='dispatch')
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
@@ -434,7 +426,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # print("------->", 'form_valid')
         """
         Checks whether the user logged in is the one updating the post.
-        Checks whether the user is authorised to update the article(non-staff member's aren't)
+        Checks whether the user is authorised to update the article(only members of the group editors are allowed)
         It then reverses the published state so that admin's approval is required before publishing the updated post.
         """
         post = self.get_object()
@@ -461,7 +453,6 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse(self.get_detail_url)
 
 
-# @method_decorator(staff_member_required, name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
