@@ -21,7 +21,7 @@ urlpatterns = [
          views.UserPostListView.as_view(), name='my-posts'),
     path('about', views.about, name='about'),
     path('post/new', views.PostCreateView.as_view(), name='post-create'),
-    path('post/draft/<slug:slug>', views.DraftUpdateView.as_view(),
+    path('post/draft/<slug:slug>', views.DraftPostUpdateView.as_view(),
          name='draft-post-update'),
     # path('post/<slug:slug>', hit_count(views.PostDetailView.as_view()), name='post-detail'),
     # path('post/<slug:slug>/update', views.PostUpdateView.as_view(), name='post-update'),
