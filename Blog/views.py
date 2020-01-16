@@ -277,7 +277,6 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
                                description=f'Articles authored by {name}',
                                og_author=f'{name}',
                                keywords=meta_home.keywords)
-        print('context', context)
         return context
 
 
@@ -487,7 +486,7 @@ def about(request):
     return render(request, template_name, context)
 
 
-@method_decorator(group(group_name='editor'), name='dispatch')
+@group(group_name='editor')
 def preview(request, slug):
     post = Post.objects.get(slug=slug)
     if request.method == 'POST':
