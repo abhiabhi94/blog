@@ -5,6 +5,8 @@ from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.conf import settings
 
 
 class TagListFilter(admin.SimpleListFilter):
@@ -108,6 +110,34 @@ class PostAdmin(admin.ModelAdmin):
                        'date_published', 'thumbnail')
     list_display = ('title', 'author', 'views', 'date_created',
                     'date_published', 'state', 'featured')
+    autocomplete_fields = ('category', )
+    search_fields = ['author__username', 'slug']
+
+    actions = ['make_published']
+
+    def view_on_site(self, obj):
+        """
+        This function is overriden because we don't have a get_absolute_url method in the model
+        It will open the preview url
+        """
+        url = reverse('Blog:post-preview', kwargs={'slug': obj.slug})
+        if settings.DEBUG:
+            return 'http://localhost' + url
+        return settings.META_SITE_DOMAIN + url
+
+    def make_published(self, request, queryset):
+        """Add action to publish many articles in 1 go"""
+        rows_updated = queryset.update(state=1)
+        if rows_updated == 1:
+            message_bit = '1 article was'
+        else:
+            message_bit = f'{rows_updated} articles were'
+
+        self.message_user(
+            request, f'{message_bit} were successfully marked as published')
+
+    make_published.short_description = 'Mark selected articles as published'
+
     # tags_list = [post.get_tags_list()
     #              for post in Post.objects.filter(publish=True)]
     # all_tags = list({item for outer in tags_list for item in outer})
@@ -118,6 +148,7 @@ class PostAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['slug']
     list_display = ('name', 'author', 'date_created', 'slug')
+    search_fields = ('name', )
 
 
 admin.site.register(Post, PostAdmin)
