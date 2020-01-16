@@ -103,15 +103,20 @@ def paginate_util(request, objects, paginate_by, kwargs):
 
 
 def group(group_name='editor'):
+    """
+    Returns
+        whether the current user belong to a group or not
+        in case they aren't, they are redirected to the login page
+        Returns True always for superusers
+
+    Params
+        group_name: name of the group to be matched(default:editor)
+    """
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
-            try:
-                if User.objects.filter(id=request.user.id, groups__name=group_name).exists() or request.user.is_superuser:
-                    return view_func(request, *args, **kwargs)
-            except Exception as _:
-                # print('Exception caused:', _,)
-                pass
+            if request.user.is_superuser or User.objects.filter(id=request.user.id, groups__name=group_name).exists():
+                return view_func(request, *args, **kwargs)
 
             return redirect('login')
 
