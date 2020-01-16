@@ -12,7 +12,6 @@ from django.core.files import File
 from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
-import tempfile
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -72,7 +71,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, limit_choices_to={
+                               'groups__name': 'editor'})
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
     state = models.IntegerField(choices=state_choices, default=draft)
@@ -210,6 +210,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     @property
     def views(self):
         # return views only if the view is published
-        if self.publish:
+        if self.state == 1:
             return self.hit_count.hits
         return 0
