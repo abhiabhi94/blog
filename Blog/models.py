@@ -3,7 +3,7 @@ from io import BytesIO
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.template.defaultfilters import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
 from meta.models import ModelMeta
@@ -189,7 +189,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         return self.title
 
     def get_preview_url(self):
-        return reverse('Blog:post-preview', kwargs={
+        url = reverse_lazy('Blog:post-preview', kwargs={
             # 'year': self.date_published.year,
             # 'month': self.date_published.month,
             # 'day': self.date_published.day,
@@ -200,7 +200,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         return self.tags.split()
 
     def get_detail_url(self):
-        return reverse('Blog:post-detail', kwargs={
+        return reverse_lazy('Blog:post-detail', kwargs={
             'year': self.date_published.year,
             'month': self.date_published.month,
             'day': self.date_published.day,
