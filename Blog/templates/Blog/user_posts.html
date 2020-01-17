@@ -19,7 +19,7 @@
         {% include "Blog/draft_post_list.html" %}
         {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here.</h5>
+        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
     <li id="queued" class="tab-pane fade" role="tabpanel" aria-labelledby="queued-tab">
@@ -28,7 +28,7 @@
         {% include "Blog/draft_post_list.html" %}
         {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here.</h5>
+        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
     <li id="published" class="tab-pane fade" role="tabpanel" aria-labelledby="published-tab">
@@ -37,7 +37,7 @@
         {% include "post_list_home.html" %}
         {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here.</h5>
+        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
 </div>
