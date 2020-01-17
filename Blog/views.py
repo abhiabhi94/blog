@@ -16,8 +16,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
-from django.http import JsonResponse, Http404
-from django.urls import reverse_lazy, reverse
+from django.http import (JsonResponse,
+                         Http404,
+                         HttpResponseBadRequest,
+                         )
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
 from collections import Counter
 from meta.views import Meta
 from datetime import datetime
@@ -58,10 +63,10 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
                  og_publisher='https://www.facebook.com/thehackadda',
                  )
 # conditional og property - og_author_url, published_time, modified_time, image,
-
-
 # consider adding other property in future. TODO
 
+
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class HomeView(ListView):
     """Return featured, latest, and categories wise articles for the front-page"""
 
@@ -175,6 +180,7 @@ class HomeView(ListView):
         return context
 
 
+@require_http_methods(['POST'])
 def subscribe(request):
     """
     adds emails to the model Subscribers after verifying legit emails only on POST requests.
@@ -199,9 +205,8 @@ def subscribe(request):
         data['msg'] = ' is not a valid email'
         return JsonResponse(data)
 
-    return Http404('Wrong request format')
 
-
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class FeaturedPostListView(ListView):
     """Returns a list view of featured posts."""
 
@@ -220,6 +225,7 @@ class FeaturedPostListView(ListView):
         return context
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class AuthorPostListView(ListView):
     # model = Post
     template_name = 'Blog/author_posts.html'   # <app>/<model>_<viewtype>.html
@@ -245,6 +251,7 @@ class AuthorPostListView(ListView):
         return context
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Post
@@ -280,6 +287,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class UserPostBookmark(LoginRequiredMixin, ListView):
     model = User
     context_object_name = 'posts'
@@ -301,6 +309,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class PostDetailView(HitCountDetailView, DetailView):
     queryset = published_posts()
     context_object_name = 'post'
@@ -314,6 +323,7 @@ class PostDetailView(HitCountDetailView, DetailView):
         return context
 
 
+@require_http_methods(['POST'])
 def get_recommended_posts(request):
     """
     Condition:
@@ -336,7 +346,8 @@ def get_recommended_posts(request):
             top_n = int(data['top_n'])
 
         except Exception as _:
-            raise Http404('Wrong Request Format for post request')
+            raise HttpResponseBadRequest(
+                'Wrong Request Format for post request')
 
         template_name = 'post_latest_home.html'
         context = {}
@@ -345,16 +356,12 @@ def get_recommended_posts(request):
         context['recommend'] = True
         return render(request, template_name, context)
 
-    raise Http404('Wrong request format')
 
-
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostCreateView(CreateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
-
-    # def test_func(self):
-    #     return User.objects.filter(id=self.request.user.id, groups__name='editor').exists()
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -363,20 +370,21 @@ class PostCreateView(CreateView):
         if self.request.method == 'POST':
             form.instance.state = -1
         else:
-            raise Http404('Wrong request!!!')
+            raise HttpResponseBadRequest('Wrong request method')
         return super().form_valid(form)
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
 
         if 'draft' in self.request.POST:  # draft option was selected
-            return reverse('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': self.object.slug})
         elif 'preview' in self.request.POST:
-            return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
         else:
-            raise Http404('Wrong request!!!')
+            raise HttpResponseBadRequest('Wrong request!!!')
 
 
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
@@ -385,7 +393,7 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # print("------->", 'form_valid')
         """
         Checks whether the user logged in is the one updating the post.
-        Checks whether the user is authorised to update the article(non-staff member's aren't)
+        Checks whether the user is authorised to update the article(only members of the group editors are allowed)
         It then reverses the published state so that admin's approval is required before publishing the updated post.
         """
         post = self.get_object()
@@ -403,21 +411,24 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """ensuring the author themselves is updating the post"""
         post = self.get_object()
 
-        return self.request.user == post.author
+        if self.request.user == post.author:
+            return True
+        raise PermissionDenied('You are not allowed to update this request')
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
 
         if 'draft' in self.request.POST:  # draft option was selected
-            return reverse('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': self.object.slug})
         elif 'preview' in self.request.POST:
-            return reverse('Blog:post-preview', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
         else:
-            raise Http404('Wrong request!!!')
+            raise HttpResponseBadRequest('Wrong request!!!')
 
 
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'thumbnail', 'tags', 'category']
 
@@ -430,14 +441,31 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """
         post = self.get_object()
         if self.request.user == post.author:
-            messages.success(
-                self.request, 'Your article has been submitted for approval.')
+            # Currently we can't keep more than 1 version of a Post
+            # Hence when the preview option is selected, the state is changed to draft, and the post is unpublished
+            # I(Abhyudai), currently expect the author to make review the changes soon in the next view and queue(editor) or publish them(superuser)
+            # I know this is a dangerous.
+
+            # if publish option is choosen
+            if 'publish' in self.request.POST:
+                # publish for superuser and queued for others
+                if self.request.user.is_superuser:
+                    form.instance.state = 1  # state -> published
+                    messages.success(
+                        self.request, 'Your article has been published.')
+                else:
+                    form.instance.state = 0  # state -> queued
+                    messages.success(
+                        self.request, 'Your article has been submitted for approval.')
+            # otherwise set the state to draft
+            else:
+                form.instance.state = -1
         else:
             messages.warning(
                 self.request, 'You are not allowed to update this post.')
             return redirect('Blog:home')
+
         form.instance.author = self.request.user
-        form.instance.state = 0  # state -> queued
         return super().form_valid(form)
 
     def test_func(self):
@@ -445,13 +473,21 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         post = self.get_object()
         if self.request.user == post.author:
             return True
-        return False
+        raise PermissionDenied('You are not allowed to update this request')
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
-        return reverse(self.get_detail_url)
+        if 'save' in self.request.POST:  # draft option was selected
+            return redirect(self.get_object().get_detail_url())
+        elif 'preview' in self.request.POST:
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
+        elif 'publish' in self.request.POST:
+            return reverse_lazy('Blog:home')
+        else:
+            raise HttpResponseBadRequest('Wrong request!!!')
 
 
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -469,7 +505,7 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
         post = self.get_object()
         if self.request.user == post.author:
             return True
-        return False
+        raise PermissionDenied('You are not allowed to update this request')
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -477,6 +513,7 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
         return super().delete(request, *args, **kwargs)
 
 
+@require_http_methods(['GET'])
 def about(request):
     context = {}
     template_name = 'Blog/about.html'
@@ -487,15 +524,21 @@ def about(request):
 
 
 @group(group_name='editor')
+@require_http_methods(['GET', 'POST'])
 def preview(request, slug):
     post = Post.objects.get(slug=slug)
     if request.method == 'POST':
         """Submit post for review"""
         if request.user == post.author:
-            post.state = 0  # state -> queued
+            if request.user.is_superuser:  # publish directly for superuser
+                post.state = 1  # state -> published
+                messages.success(request, 'Your article has been published')
+            else:
+                post.state = 0  # state -> queued
+                messages.success(
+                    request, 'Your article has been submitted for approval.')
+
             post.save()
-            messages.success(
-                request, 'Your article has been submitted for approval.')
         else:
             messages.warning(
                 request, 'You are not allowed to update this post.')
@@ -507,6 +550,7 @@ def preview(request, slug):
 
 
 @login_required
+@method_decorator(require_http_methods(['POST']), name='dispatch')
 def bookmark_post(request):
     if request.method == 'POST' and request.is_ajax():
         data = {'message': '', 'status': 1}
@@ -531,6 +575,7 @@ def bookmark_post(request):
         return redirect('Blog:home')
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class TaggedPostListView(ListView):
     # model = Post
     template_name = 'Blog/post_tagged.html'   # <app>/<model>_<viewtype>.html
@@ -556,6 +601,7 @@ class TaggedPostListView(ListView):
         return context
 
 
+@require_http_methods(['GET', 'POST'])
 def get_latest_posts(request, **kwargs):
     if request.method == 'POST' and request.is_ajax():
         template_name = 'post_title.html'
@@ -563,7 +609,8 @@ def get_latest_posts(request, **kwargs):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as e:
-            raise Http404('Wrong Request Format for post request')
+            raise HttpResponseBadRequest(
+                'Wrong Request Format for post request')
         posts = published_posts()[:top_n]
         return render(request, template_name, {'posts': posts})
 
@@ -577,9 +624,8 @@ def get_latest_posts(request, **kwargs):
                               keywords=meta_home.keywords + ['latest'])
         return render(request, template_name, kwargs)
 
-    raise Http404('Wrong Request format')
 
-
+@require_http_methods(['GET', 'POST'])
 def get_tags(request):
     """
     1. Get request is used for top tags(mostly used)
@@ -593,7 +639,7 @@ def get_tags(request):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as _:
-            raise Http404("Wrong Request Format")
+            raise HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
@@ -621,6 +667,7 @@ def get_tags(request):
     return render(request, template_name, context)
 
 
+@method_decorator(require_http_methods(['GET']), name='dispatch')
 class CategoryPostListView(ListView):
     # model = Post
     template_name = 'Blog/post_list_category.html'   # <app>/<model>_<viewtype>.html
@@ -648,6 +695,7 @@ class CategoryPostListView(ListView):
         return context
 
 
+@require_http_methods(['GET'])
 def get_timewise_list(request, *args, **kwargs):
 
     template_name = 'Blog/post_list_time.html'
@@ -683,9 +731,8 @@ def get_timewise_list(request, *args, **kwargs):
         kwargs['meta'] = meta_home
         return render(request, template_name, kwargs)
 
-    raise Http404("Wrong Request Format")
 
-
+@require_http_methods(['GET', 'POST'])
 def get_category(request):
     """
     Get categories(foreign key) present in Blog
@@ -701,7 +748,7 @@ def get_category(request):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as _:
-            raise Http404("Wrong Request Format")
+            raise HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1
             context['ajax'] = True
@@ -726,6 +773,7 @@ def get_category(request):
     return render(request, template_name, context)
 
 
+@require_http_methods(['POST'])
 def get_trending_posts(request):
     """Returns top_n trending post for a given time period for POST requests in AJAX format."""
 
@@ -736,11 +784,9 @@ def get_trending_posts(request):
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
             # top_n = int(request.GET.get('top_n'))
         except Exception as _:
-            raise Http404("Wrong Request Format")
+            raise HttpResponseBadRequest("Wrong Request Format")
         posts = published_posts()
         trending_posts = trending(posts, top_n=top_n)
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
-
-    return Http404('Wrong Request Format')
