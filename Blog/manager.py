@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User, Group
 from django.shortcuts import redirect
 from functools import wraps
+from django.contrib import messages
 
 
 def published_posts(order='-date_published'):
@@ -117,6 +118,9 @@ def group(group_name='editor'):
         def wrapper(request, *args, **kwargs):
             if request.user.is_superuser or User.objects.filter(id=request.user.id, groups__name=group_name).exists():
                 return view_func(request, *args, **kwargs)
+
+            messages.warning(
+                'You are not allowed to enter into this part of the world of hackers')
 
             return redirect('login')
 
