@@ -346,7 +346,7 @@ def get_recommended_posts(request):
             top_n = int(data['top_n'])
 
         except Exception as _:
-            raise HttpResponseBadRequest(
+            return HttpResponseBadRequest(
                 'Wrong Request Format for post request')
 
         template_name = 'post_latest_home.html'
@@ -361,16 +361,16 @@ def get_recommended_posts(request):
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostCreateView(CreateView):
     model = Post
-    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+    fields = ['title', 'content', 'image', 'tags', 'category']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        # if 'queue' in self.request.POST:
-        #     form.instance.state = 0
         if self.request.method == 'POST':
             form.instance.state = -1
+            messages.success(
+                self.request, 'Your article has been saved.')
         else:
-            raise HttpResponseBadRequest('Wrong request method')
+            return HttpResponseBadRequest('Wrong request method')
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -381,13 +381,13 @@ class PostCreateView(CreateView):
         elif 'preview' in self.request.POST:
             return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
         else:
-            raise HttpResponseBadRequest('Wrong request!!!')
+            return HttpResponseBadRequest('Wrong request!!!')
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+    fields = ['title', 'content', 'image', 'tags', 'category']
 
     def form_valid(self, form):
         # print("------->", 'form_valid')
@@ -423,14 +423,14 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         elif 'preview' in self.request.POST:
             return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
         else:
-            raise HttpResponseBadRequest('Wrong request!!!')
+            return HttpResponseBadRequest('Wrong request!!!')
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+    fields = ['title', 'content', 'image', 'tags', 'category']
 
     def form_valid(self, form):
         # print("------->", 'form_valid')
@@ -477,21 +477,19 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
-        if 'save' in self.request.POST:  # draft option was selected
-            return redirect(self.get_object().get_detail_url())
-        elif 'preview' in self.request.POST:
-            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
-        elif 'publish' in self.request.POST:
+        if 'publish' in self.request.POST:
             return reverse_lazy('Blog:home')
+        elif 'preview' or 'draft' in self.request.POST:  # for both preview and draft, show preview
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
         else:
-            raise HttpResponseBadRequest('Wrong request!!!')
+            return HttpResponseBadRequest('Wrong request!!!')
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(group(group_name='editor'), name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    fields = fields = ['title', 'content', 'thumbnail', 'tags', 'category']
+    fields = ['title', 'content', 'image', 'tags', 'category']
     success_url = reverse_lazy('Blog:home')
     success_message = "Post %(title)s was removed successfully"
 
@@ -609,7 +607,7 @@ def get_latest_posts(request, **kwargs):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as e:
-            raise HttpResponseBadRequest(
+            return HttpResponseBadRequest(
                 'Wrong Request Format for post request')
         posts = published_posts()[:top_n]
         return render(request, template_name, {'posts': posts})
@@ -639,7 +637,7 @@ def get_tags(request):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as _:
-            raise HttpResponseBadRequest("Wrong Request Format")
+            return HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
@@ -748,7 +746,7 @@ def get_category(request):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception as _:
-            raise HttpResponseBadRequest("Wrong Request Format")
+            return HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1
             context['ajax'] = True
@@ -784,7 +782,7 @@ def get_trending_posts(request):
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
             # top_n = int(request.GET.get('top_n'))
         except Exception as _:
-            raise HttpResponseBadRequest("Wrong Request Format")
+            return HttpResponseBadRequest("Wrong Request Format")
         posts = published_posts()
         trending_posts = trending(posts, top_n=top_n)
         # print('\nTotal time taken:', time.time() - start_time)
