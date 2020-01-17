@@ -13,12 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from __future__ import absolute_import
 from django.contrib import admin
+from ckeditor_uploader import views as ck_views
+from django.views.decorators.cache import never_cache
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from Users import views as user_views
+from Blog.manager import group
 import debug_toolbar
 
 urlpatterns = [
@@ -56,7 +60,13 @@ urlpatterns = [
 ]
 
 # Adds ckeditor urls
-urlpatterns += [path('ckeditor/', include('ckeditor_uploader.urls'))]
+# urlpatterns += [path('ckeditor/', include('ckeditor_uploader.urls'))]
+urlpatterns += [
+    path('ckeditor/upload/', group('editor')
+         (ck_views.upload), name='ckeditor_upload'),
+    path('ckeditor/browse/', never_cache(group('editor')(ck_views.browse)),
+         name='ckeditor_browse'),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
