@@ -10,9 +10,19 @@
             {{ form.as_p }}
         </fieldset>
         <div class="form-group">
-            {% comment %} <button class="btn btn-outline-info" type="submit">Preview your post</button> {% endcomment %}
+            {% if request.resolver_match.url_name == 'post-update' %}
+            <button id="draft" class="btn btn-outline-info ml-2 mr-2" name="draft" value="Save" type="submit">Move to Draft</button>            
+            <button id="preview" class="btn btn-outline-info ml-2 mr-1" name="preview" value="Preview" type="submit">Preview</button>            
+            {% if user.is_superuser %}
+            <button id="publish" class="btn btn-outline-info ml-2 mr-2" name="publish" value="Publish" type="submit">Publish</button>            
+            {% else %}
+            <button id="publish" class="btn btn-outline-info ml-2 mr-2" name="publish" value="Publish" type="submit">Submit for Review</button>            
+            {% endif %}
+            {% comment %} This is used in draft-post-update {% endcomment %}
+            {% else %}
             <button id="draft" class="btn btn-outline-info ml-2 mr-2" name="draft" value="Draft" type="submit">Save Draft</button>            
-            <button id="submit" class="btn btn-outline-info ml-2 mr-1" name="preview" value="Preview" type="submit">Preview</button>            
+            <button id="preview" class="btn btn-outline-info ml-2 mr-1" name="preview" value="Preview" type="submit">Preview</button>            
+            {% endif %}
         </div>
     </form>
 </div>
