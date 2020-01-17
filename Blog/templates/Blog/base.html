@@ -113,6 +113,9 @@
                             </div>
                             {% endfor %}
                         {% endif %}
+                        {% if exception %}
+                        <p>{{ exception }}</p>
+                        {% endif %}                        
                         <div id="response">
                         </div>
                         {% block content %}
