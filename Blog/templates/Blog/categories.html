@@ -3,4 +3,4 @@
     <a href="{% url 'Blog:categorised' category.slug %}" title="Article under the category {{category}}"><p class="article-tags">{{ category|title }}</p></a>
 {% endfor %}
 </span>
-<a class="btn-primary btn-sm" href="{% url 'Blog:all-categories' %}" title="View all categories">View More</a>
+<a class="btn btn-outline-primary btn-sm" href="{% url 'Blog:all-categories' %}" title="View all categories">View More</a>
