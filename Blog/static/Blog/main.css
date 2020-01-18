@@ -9,19 +9,19 @@ body {
     display: flex;
     flex-direction: column;
     background: #f7f7f7;
-    color: #333333;
+    color: #18121e;
     margin-top: 5rem;
-    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
     overflow-wrap: break-word;
 }
 
 a {
-    color: #424e8c;
+    color: #337ab7;
 }
 
 p {
-    font-family: 'Roboto', sans-serif;
-    color: #3c3d47;
+    font-family: "Roboto", sans-serif;
+    color: #0a1612;
 }
 
 h1,
@@ -30,8 +30,8 @@ h3,
 h4,
 h5,
 h6 {
-    color: #444444;
-    font-family: 'Lato';
+    color: #18121e;
+    font-family: "Lato";
 }
 
 img {
@@ -43,10 +43,10 @@ ul {
 }
 
 .fa-heart {
-    color: red
+    color: red;
 }
 
-.btn-primary {
+.btn {
     white-space: nowrap;
 }
 
@@ -64,15 +64,15 @@ ul {
 .navbar-color,
 footer {
     /* background-color: #5f788a; */
-    background-color: #2B4A6F;
+    background-color: #192231;
 }
 
 .site-header .navbar-nav .nav-link {
-    font-family: 'Rubik', sans-serif;
+    font-family: "Rubik", sans-serif;
     font-weight: 900;
     color: #cbd5db;
-    margin-left: 1rem!important;
-    margin-right: 1rem!important;
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
 }
 
 .site-header .navbar-nav .nav-link:hover {
@@ -144,11 +144,13 @@ a.dropdown-toggle {
     border-top: none;
 }
 
+
+/* 
 #latest-posts,
 #popular-tags,
 #all-tags {
     background-color: #f8f8ff;
-}
+} */
 
 .content-section {
     background: #ffffff;
@@ -195,7 +197,7 @@ footer h6,
 footer p,
 footer a,
 footer .fa-envelope {
-    color: #f2f4f6!important;
+    color: #f2f4f6 !important;
 }
 
 footer .fa {
@@ -209,7 +211,7 @@ footer .fa {
 }
 
 a.article-title:hover {
-    color: #428bca;
+    color: #34a1d4;
     text-decoration: none;
 }
 
@@ -232,7 +234,7 @@ a.article-title:hover {
 
 .article-content img {
     display: block;
-    max-width: 100%!important;
+    max-width: 100% !important;
     margin: 5px auto;
 }
 
@@ -277,7 +279,7 @@ a.article-title:hover {
 
 .article-tags {
     display: inline-block;
-    padding: .4em .5em;
+    padding: 0.4em 0.5em;
     margin: 0.5rem 2px 0.5rem 0;
     font-size: 15px;
     line-height: 1;
@@ -287,12 +289,12 @@ a.article-title:hover {
     border-width: 1px;
     border-style: solid;
     border-radius: 3px;
-    transition: all .15s ease-in-out;
+    transition: all 0.15s ease-in-out;
     /* color: #39739d; */
     color: #142d40;
     /* background-color: #E1ECF4;
     border-color: #E1ECF4; */
-    background-color: #1734484a;
+    background-color: #a5a5af4a;
     border-color: #e1eef4;
 }
 
@@ -373,7 +375,7 @@ a.article-title:hover {
 
 #article-share-container .article-contents,
 #recommended-posts {
-    margin-left: 4rem!important;
+    margin-left: 4rem !important;
 }
 
 #share {
@@ -387,7 +389,7 @@ a.article-title:hover {
 
 .share-icon {
     display: inline;
-    font-size: 16px!important;
+    font-size: 16px !important;
     text-shadow: 1px 1px 1px #ccc;
 }
 
@@ -493,9 +495,9 @@ a.article-title:hover {
 }
 
 .heading {
-    font-family: 'Rubik', sans-serif;
+    font-family: "Rubik", sans-serif;
     color: #272121;
-    margin-top: 2rem!important;
+    margin-top: 2rem !important;
     display: flex;
     flex-direction: row;
 }
@@ -575,32 +577,32 @@ a.article-title:hover {
 
 .resp-sharing-button__link,
 .resp-sharing-button__icon {
-    display: inline-block
+    display: inline-block;
 }
 
 .resp-sharing-button__link {
     text-decoration: none;
     color: #fff;
-    margin: 0.5em
+    margin: 0.5em;
 }
 
 .resp-sharing-button {
     border-radius: 5px;
     transition: 25ms ease-out;
     padding: 0.5em 0.75em;
-    font-family: Helvetica Neue, Helvetica, Arial, sans-serif
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 .resp-sharing-button__icon svg {
     width: 1em;
     height: 1em;
     margin-right: 0.4em;
-    vertical-align: top
+    vertical-align: top;
 }
 
 .resp-sharing-button--small svg {
     margin: 0;
-    vertical-align: middle
+    vertical-align: middle;
 }
 
 
@@ -608,7 +610,7 @@ a.article-title:hover {
 
 .resp-sharing-button__icon {
     stroke: #fff;
-    fill: none
+    fill: none;
 }
 
 
@@ -617,31 +619,31 @@ a.article-title:hover {
 .resp-sharing-button__icon--solid,
 .resp-sharing-button__icon--solidcircle {
     fill: #fff;
-    stroke: none
+    stroke: none;
 }
 
 .resp-sharing-button--twitter {
-    background-color: #55acee
+    background-color: #55acee;
 }
 
 .resp-sharing-button--twitter:hover {
-    background-color: #2795e9
+    background-color: #2795e9;
 }
 
 .resp-sharing-button--facebook {
-    background-color: #3b5998
+    background-color: #3b5998;
 }
 
 .resp-sharing-button--facebook:hover {
-    background-color: #2d4373
+    background-color: #2d4373;
 }
 
 .resp-sharing-button--linkedin {
-    background-color: #0077b5
+    background-color: #0077b5;
 }
 
 .resp-sharing-button--linkedin:hover {
-    background-color: #046293
+    background-color: #046293;
 }
 
 .resp-sharing-button--facebook {
@@ -729,7 +731,7 @@ a.article-title:hover {
 }
 
 .article-content a {
-    color: #0782C1;
+    color: #0782c1;
 }
 
 .article-content ol,
@@ -797,14 +799,14 @@ a.article-title:hover {
     display: block;
     font-size: 80%;
     font-weight: 400;
-    color: #6c757d!important;
+    color: #6c757d !important;
 }
 
 .article-content a>img {
     padding: 1px;
     margin: 1px;
     border: none;
-    outline: 1px solid #0782C1;
+    outline: 1px solid #0782c1;
 }
 
 
@@ -828,7 +830,7 @@ a.article-title:hover {
 }
 
 .article-content .image-clean>figcaption {
-    font-size: .9em;
+    font-size: 0.9em;
     text-align: right;
 }
 
@@ -879,7 +881,7 @@ a:not([href]):not([tabindex]) {
     cursor: pointer;
 }
 
-@media(max-width:600px) {
+@media (max-width: 600px) {
     #main {
         margin: 1rem;
         padding: 0;
@@ -920,7 +922,7 @@ a:not([href]):not([tabindex]) {
     }
     #article-share-container .article-contents,
     #recommended-posts {
-        margin-left: 0!important;
+        margin-left: 0 !important;
     }
     .article-list>.article-thumbnail>img {
         width: 100%;
@@ -934,7 +936,7 @@ a:not([href]):not([tabindex]) {
         padding: 5px 5px;
     }
     .article-card {
-        margin-bottom: 10px!important;
+        margin-bottom: 10px !important;
     }
     .featured-articles {
         /* flex-direction: column;
