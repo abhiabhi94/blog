@@ -150,7 +150,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         super(Post, self).save(*args, **kwargs)
 
         # Save the publish date when the flag is set for the first time.
-        if self.publish and self.date_published is None:
+        if self.state == 1 and self.date_published is None:
             self.date_published = timezone.now()
 
         if self.__original_img_path != self.image.path:
