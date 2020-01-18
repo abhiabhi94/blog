@@ -113,7 +113,7 @@ CKEDITOR_ALLOW_NONIMAGE_FILES = False
 # CKEditor configurations
 CKEDITOR_CONFIGS = {
     'default': {
-        'skin': 'moono',
+        # 'skin': 'moono',
         'width': '100%',
         # 'skin': 'office2013',
         'toolbar_Basic': [
@@ -138,7 +138,7 @@ CKEDITOR_CONFIGS = {
                        'Language']},
             {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
             {'name': 'insert',
-             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+             'items': ['Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
             '/',
             {'name': 'styles', 'items': [
                 'Styles', 'Format', 'Font', 'FontSize']},
@@ -147,7 +147,9 @@ CKEDITOR_CONFIGS = {
             {'name': 'about', 'items': ['About']},
             '/',  # put this to force next toolbar on new line
             {'name': 'yourcustomtools', 'items': [
+                'Image',
                 'CodeSnippet',
+                'Youtube',
                 # put the name of your editor.ui.addButton here
                 # 'Maximize',
 
@@ -159,20 +161,21 @@ CKEDITOR_CONFIGS = {
             'uploadimage',  # the upload image feature
             # your extra plugins here
             'codesnippet',
-            'image2'
-            # 'div',
-            # 'autolink',
-            # 'autoembed',
-            # 'embedsemantic',
-            # 'autogrow',
-            # # 'devtools',
-            # 'widget',
-            # 'lineutils',
-            # 'clipboard',
-            # 'dialog',
-            # 'dialogui',
-            # 'elementspath'
+            'image2',
+            'youtube',
         ]),
+        'external_plugin_resources': [(
+            # format for specifying plugin resources
+            # 'someplugin', -> name of plugin
+            # '/static/.../path-to-someplugin/',
+            # 'plugin.js',
+            'youtube',
+            '/static/Blog/ckeditor_plugins/youtube/youtube/',
+            'plugin.js',
+        )],
+        'youtube_resposive': 'true',
+        'youtube_related': 'true',
+        'youtube_controls': 'true',
     }
 }
 ##########################
