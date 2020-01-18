@@ -1,6 +1,7 @@
 {% extends "Blog/base.html" %}
 {% load static from staticfiles %}
 {% load cool_view %}
+{% load extra_auth %}
 {% block extrahead %}
 <link rel="stylesheet"
       href="//cdn.jsdelivr.net/npm/highlightjs-themes@1.0.0/monokai_sublime.css">
@@ -23,13 +24,13 @@
                         <h1>{{ post.title }}</h1>
                     </div>
                     <div class="article-info">
-                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
+                        <a class="mr-2" href="{% url 'Blog:author-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
                         <small class="text-muted mr-2" title={{ post.views }}>views: {{ post.views|cool_view }}</small>
                         <small class="text-muted mr-2" title="{{ post.date_published }}">Published: {{ post.date_published|date:"j M Y" }}</small>
                         {% if post.date_published != post.last_updated %}
                         <small class="text-muted date-modified" title="{{ post.last_updated }}">Last modified: {{ post.last_updated|date:"j M Y" }}</small>
                         {% endif %}
-                        {% if post.author == user and user.is_staff %}
+                        {% if post.author == user and user|has_group:"editor" %}
                             <div id="post-options">
                                 <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Update">Update</a>
                                 <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Delete">Delete</a>

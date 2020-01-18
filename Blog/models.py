@@ -3,7 +3,7 @@ from io import BytesIO
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.template.defaultfilters import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
 from meta.models import ModelMeta
@@ -12,7 +12,6 @@ from django.core.files import File
 from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
-import tempfile
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -42,7 +41,7 @@ class Category(models.Model, ModelMeta):
         super(*args, **kwargs).save()
 
     def __str__(self):
-        '''helps in showing name in foreign key field instead of category object'''
+        """helps in showing name in foreign key field instead of category object"""
         return self.name
 
 
@@ -54,6 +53,16 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         self.__original_tags = self.tags
         self.__original_img_path = self.image.path
 
+    draft = -1
+    queued = 0
+    publish = 1
+
+    state_choices = [
+        (draft, 'Draft'),
+        (queued, 'Queued'),
+        (publish, 'Published'),
+    ]
+
     title = models.CharField(
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
@@ -62,10 +71,11 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, limit_choices_to={
+                               'groups__name': 'editor'})
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
-    publish = models.BooleanField(default=False)
+    state = models.IntegerField(choices=state_choices, default=draft)
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
@@ -91,16 +101,16 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     }
 
     def _get_meta_image(self):
-        '''Returns url of the image for meta'''
+        """Returns url of the image for meta"""
         if self.thumbnail:
             return self.thumbnail.url
 
     def _get_meta_author(self):
-        '''Returns full name of author for meta'''
+        """Returns full name of author for meta"""
         return self.author.get_full_name()
 
     def clean(self):
-        '''provides custom validation for images before uploading'''
+        """provides custom validation for images before uploading"""
 
         if self.__original_img_path != self.image.path:
 
@@ -125,12 +135,12 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                     f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
 
     def save(self, *args, **kwargs):
-        '''
+        """
         1. slugify the title
         2. save the tags in lower case
         3. Sets the date_publish when the publish flag is set for the first time.
         4. compress and resize images to make thumbnails and full size images
-        '''
+        """
 
         if self.__original_title != self.title:
             self.slug = slugify(self.title)
@@ -167,10 +177,10 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         super(Post, self).save(*args, **kwargs)
 
     def _image_name(self, modifier):
-        '''
+        """
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
-        '''
+        """
         new_name = self.image.name.split('.')
         new_name.insert(-1, modifier + '.')  # dont forget extension
         return ''.join(new_name)
@@ -179,7 +189,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         return self.title
 
     def get_preview_url(self):
-        return reverse('Blog:post-preview', kwargs={
+        url = reverse_lazy('Blog:post-preview', kwargs={
             # 'year': self.date_published.year,
             # 'month': self.date_published.month,
             # 'day': self.date_published.day,
@@ -190,7 +200,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         return self.tags.split()
 
     def get_detail_url(self):
-        return reverse('Blog:post-detail', kwargs={
+        return reverse_lazy('Blog:post-detail', kwargs={
             'year': self.date_published.year,
             'month': self.date_published.month,
             'day': self.date_published.day,
@@ -200,6 +210,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     @property
     def views(self):
         # return views only if the view is published
-        if self.publish:
+        if self.state == 1:
             return self.hit_count.hits
         return 0

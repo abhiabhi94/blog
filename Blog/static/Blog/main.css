@@ -34,6 +34,10 @@ h6 {
     font-family: 'Lato';
 }
 
+img {
+    max-width: 100%;
+}
+
 ul {
     margin: 0;
 }
@@ -125,6 +129,10 @@ a.dropdown-toggle {
 #main {
     margin: 1rem;
     padding: 0.5rem;
+}
+
+#sidebar {
+    height: max-content;
 }
 
 .list-group-item.active {
@@ -862,6 +870,13 @@ a.article-title:hover {
     max-width: 1920px;
     max-height: 1080px;
     margin: 0 auto;
+}
+
+
+/* user for nav-tabs on the user's posts page */
+
+a:not([href]):not([tabindex]) {
+    cursor: pointer;
 }
 
 @media(max-width:600px) {

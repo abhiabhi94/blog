@@ -1,9 +1,12 @@
 from django.contrib import admin
 from .models import Post, Category
+from .manager import published_posts
 from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.conf import settings
 
 
 class TagListFilter(admin.SimpleListFilter):
@@ -23,7 +26,7 @@ class TagListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         tags_list = [post.get_tags_list()
-                     for post in Post.objects.filter(publish=True)]
+                     for post in published_posts()]
         all_tags = tuple({(item, item)
                           for outer in tags_list for item in outer})
         return all_tags
@@ -83,7 +86,7 @@ class AuthorListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         author_list = User.objects.filter(
-            groups__name='Editors').values('id', 'username')
+            groups__name='editor').values('id', 'username')
         authors = tuple((author['id'], author['username'])
                         for author in author_list)
         return authors
@@ -106,17 +109,59 @@ class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
     list_display = ('title', 'author', 'views', 'date_created',
-                    'date_published', 'publish', 'featured')
+                    'date_published', 'state', 'featured')
+    autocomplete_fields = ('category', )
+    search_fields = ['author__username', 'slug']
+
+    actions = ['make_published', 'make_featured']
+
+    def view_on_site(self, obj):
+        """
+        This function is overriden because we don't have a get_absolute_url method in the model
+        It will open the preview url
+        """
+        url = reverse('Blog:post-preview', kwargs={'slug': obj.slug})
+        if settings.DEBUG:
+            return 'http://localhost:8000' + url
+        return settings.META_SITE_DOMAIN + url
+
+    def make_published(self, request, queryset):
+        """Add action to publish many articles in 1 go"""
+        rows_updated = queryset.update(state=1)
+        if rows_updated == 1:
+            message_bit = '1 article was'
+        else:
+            message_bit = f'{rows_updated} articles were'
+
+        self.message_user(
+            request, f'{message_bit} were successfully marked as published')
+
+    make_published.short_description = 'Mark selected articles as published'
+
+    def make_featured(self, request, queryset):
+        """Add action to set article as featured for many articles in 1 go"""
+        rows_updated = queryset.update(featured=True)
+        if rows_updated == 1:
+            message_bit = '1 article was'
+        else:
+            message_bit = f'{rows_updated} articles were'
+
+        self.message_user(
+            request, f'{message_bit} were successfully marked as featured')
+
+    make_featured.short_description = 'Mark selected articles as featured'
+
     # tags_list = [post.get_tags_list()
     #              for post in Post.objects.filter(publish=True)]
     # all_tags = list({item for outer in tags_list for item in outer})
-    list_filter = [AuthorListFilter, 'publish', 'featured',
+    list_filter = [AuthorListFilter, 'state', 'featured',
                    TagListFilter, CategoryListFilter]
 
 
 class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['slug']
     list_display = ('name', 'author', 'date_created', 'slug')
+    search_fields = ('name', )
 
 
 admin.site.register(Post, PostAdmin)

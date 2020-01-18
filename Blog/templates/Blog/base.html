@@ -1,5 +1,6 @@
 {% load static from staticfiles %}
 {% load meta %}
+{% load extra_auth %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +35,10 @@
         <meta name="msapplication-TileImage" content={% static "favicon-144.png" %}>
         <meta name="msapplication-config" content={% static "browserconfig.xml" %}>
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+        <script
+			  src="https://code.jquery.com/jquery-3.4.1.min.js"
+			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			  crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script src="{% static 'Blog/main.js' %}"></script>
@@ -80,10 +84,9 @@
                                 <div class="dropdown-menu">
                                     <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
                                     <a class="nav-item nav-link" href="{% url 'profile' %}" title="Edit profile">Edit Profile</a>
-                                    {% if user.is_staff %}
+                                    {% if user|has_group:"editor" %}
                                     <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}" title="New Post">New Post</a>
-                                    <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user %}" title="My Post">My Posts</a>
-                                    <a class="nav-item nav-link" href="#" title="">Drafts</a>
+                                    <a class="nav-item nav-link" href="{% url 'Blog:my-posts' user 'draft' %}" title="My Post">My Posts</a>
                                     {% endif %}
                                     <a class="nav-item nav-link" href="{% url 'Blog:user-bookmarks' user %}" title="Bookmarks">Bookmarks</a>
                                     <a class="nav-item nav-link" href="{% url 'logout' %}" title="Log Out">Log Out</a>
@@ -110,6 +113,9 @@
                             </div>
                             {% endfor %}
                         {% endif %}
+                        {% if exception %}
+                        <p>{{ exception }}</p>
+                        {% endif %}                        
                         <div id="response">
                         </div>
                         {% block content %}

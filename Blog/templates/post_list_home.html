@@ -19,7 +19,7 @@
                         {% include "tags.html" with tags=post.get_tags_list %}
                     </div>
                     <div class="article-metadata">
-                        <small><a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
+                        <small><a class="mr-2" href="{% url 'Blog:author-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
                         <small class="mr-2 text-muted" title="{{ post.date_published|date:"j M Y" }}">{{ post.date_published|cool_timesince }}</small>
                         <small class="text-muted ml-4" title={{ post.views }}>views:{{ post.views|cool_view }}</small>
                     </div>

@@ -21,13 +21,13 @@
                         <h1>{{ post.title }}</h1>
                     </div>
                     <div class="article-info">
-                        <a class="mr-2" href="{% url 'Blog:user-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
+                        <a class="mr-2" href="{% url 'Blog:author-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
                         {% comment %} <small class="text-muted mr-2" title={{ post.views }}>views: {{ post.views|cool_view }}</small> {% endcomment %}
                         {% comment %} <small class="text-muted mr-2" title="{{ post.date_published }}">Published: {{ post.date_published|date:"j M Y" }}</small> {% endcomment %}
                         {% comment %} {% if post.date_published != post.last_updated %} {% endcomment %}
                         {% comment %} <small class="text-muted date-modified" title="{{ post.last_updated }}">Last modified: {{ post.last_updated|date:"j M Y" }}</small> {% endcomment %}
                         {% comment %} {% endif %} {% endcomment %}
-                        {% comment %} {% if post.author == user and user.is_staff %}
+                        {% comment %} {% if post.author == user and user|has_group:"editor" %}
                             <div id="post-options">
                                 <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Update">Update</a>
                                 <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'Blog:post-delete' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Delete">Delete</a>
@@ -48,8 +48,11 @@
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
-        {% comment %} <a class="btn btn-info" href="{% url 'Blog:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Get back to edit">Get back to edit</a> {% endcomment %}
+        {% if user.is_superuser %}
+        <button class="btn btn-info ml-auto mr-auto" style="display:block;" type="submit">Publish</button>
+        {% else %}
         <button class="btn btn-info ml-auto mr-auto" style="display:block;" type="submit">Submit for review</button>
+        {% endif %}
     </div>
 </form>
 {% endblock content %}
