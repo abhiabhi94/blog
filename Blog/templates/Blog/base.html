@@ -59,10 +59,10 @@
                             {% if user.is_authenticated %}
                             <div id="dropdown" class="dropdown">
                                 {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                                <a href="#" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-3"></a>
+                                <a href="#" class="ml-3" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image"></a>
                                 {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
                                 <div class="dropdown-menu">
-                                    <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
+                                    <p class="ml-1 mb-0">Signed in as <strong>{{user.username}}</strong><p>
                                     <a class="nav-item nav-link" href="{% url 'profile' %}" title="Edit profile">Edit Profile</a>
                                     {% if user|has_group:"editor" %}
                                     <a class="nav-item nav-link" href="{% url 'Blog:post-create' %}" title="New Post">New Post</a>
