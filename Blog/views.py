@@ -549,7 +549,7 @@ def preview(request, slug):
 
 
 @login_required
-@method_decorator(require_http_methods(['POST']), name='dispatch')
+@require_http_methods(['POST'])
 def bookmark_post(request):
     if request.method == 'POST' and request.is_ajax():
         data = {'message': '', 'status': 1}
