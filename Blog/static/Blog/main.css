@@ -740,7 +740,7 @@ a.article-title:hover {
     /* IE7: reset rtl list margin. (#7334) */
     *margin-right: 0px;
     /* Preserved spaces for list items with text direction different than the list. (#6249,#8049)*/
-    padding: 0 1.2rem;
+    padding: 0 2rem;
 }
 
 
@@ -978,5 +978,11 @@ a:not([href]):not([tabindex]) {
     }
     .tag-details {
         width: 41vw;
+    }
+    .article-content ol,
+    .article-content ul,
+    .article-content dl {
+        /* Preserved spaces for list items with text direction different than the list. (#6249,#8049)*/
+        padding: 0 1.2rem;
     }
 }
