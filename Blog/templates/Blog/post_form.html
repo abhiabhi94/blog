@@ -1,4 +1,5 @@
 {% extends "Blog/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <div class="content-section">
@@ -7,7 +8,7 @@
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Blog Post</legend>
             {{ form.media }}
-            {{ form.as_p }}
+            {{ form|crispy }}
         </fieldset>
         <div class="form-group">
             {% if request.resolver_match.url_name == 'post-update' %}
