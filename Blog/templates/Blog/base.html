@@ -34,26 +34,6 @@
         <meta name="msapplication-TileColor" content="#FFFFFF">
         <meta name="msapplication-TileImage" content={% static "favicon-144.png" %}>
         <meta name="msapplication-config" content={% static "browserconfig.xml" %}>
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script
-			  src="https://code.jquery.com/jquery-3.4.1.min.js"
-			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-			  crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script src="{% static 'Blog/main.js' %}"></script>
-        <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156068094-1"></script>
-        <script>
-            if (document.location.hostname.search("hackadda.com") !== -1) {
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-
-                gtag('config', 'UA-156068094-1');
-            }
-        </script>
         {% block extrahead %}
         {% endblock extrahead %}
     </head>
@@ -79,7 +59,7 @@
                             {% if user.is_authenticated %}
                             <div id="dropdown" class="dropdown">
                                 {% comment %} <button class="dropbtn">{{user.first_name}}</button> {% endcomment %}
-                                <a href="#" class="dropdown-toggle" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-3"><span class="caret"></span></a>
+                                <a href="#" title="Profile Options" data-toggle="dropdown"><img src="{{user.profile.image.url}}" alt="{{user.first_name}}" class="user-image ml-3"></a>
                                 {% comment %} <i class="fa fa-caret-down"></i> {% endcomment %}
                                 <div class="dropdown-menu">
                                     <p class="ml-3 mb-0">Signed in as <strong>{{user.username}}</strong><p>
@@ -143,6 +123,26 @@
             </div>
         </main>
         {% include "./footer.html" %}
+                <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script
+			  src="https://code.jquery.com/jquery-3.4.1.min.js"
+			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			  crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="{% static 'Blog/main.js' %}"></script>
+        <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156068094-1"></script>
+        <script>
+            if (document.location.hostname.search("hackadda.com") !== -1) {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'UA-156068094-1');
+            }
+        </script>
     </body>
 {% block extrabottom %}
 {% endblock extrabottom %}
