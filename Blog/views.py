@@ -527,14 +527,15 @@ def preview(request, slug):
     post = Post.objects.get(slug=slug)
     if request.method == 'POST':
         """Submit post for review"""
-        if request.user == post.author:
+        if request.user == post.author or request.user.is_superuser:
             if request.user.is_superuser:  # publish directly for superuser
                 post.state = 1  # state -> published
-                messages.success(request, 'Your article has been published')
+                messages.success(
+                    request, f'The article {post.title} has been published')
             else:
                 post.state = 0  # state -> queued
                 messages.success(
-                    request, 'Your article has been submitted for approval.')
+                    request, f'Your article {post.title} has been submitted for approval.')
 
             post.save()
         else:
