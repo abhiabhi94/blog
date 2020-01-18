@@ -6,15 +6,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 import sys
 
-# Integrating sentry sdk inside django
-sentry_sdk.init(
-    dsn="https://782c4ab18f3645bcb343911c744fbb86@sentry.io/1868228",
-    integrations=[DjangoIntegration()],
-
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True
-)
+# This part should only be commented when testing
 
 # global ALLOWED_HOSTS
 # DEBUG = True
@@ -61,6 +53,9 @@ sentry_sdk.init(
 #     pass
 
 # add_ip_to_host()
+###############################
+
+# Uncomment code below this line when in production
 
 DEBUG = False
 ALLOWED_HOSTS = ['hackadda.com', '142.93.221.60', 'www.hackadda.com', ]
@@ -82,3 +77,13 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+# Integrating sentry sdk inside django
+sentry_sdk.init(
+    dsn="https://782c4ab18f3645bcb343911c744fbb86@sentry.io/1868228",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
