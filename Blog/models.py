@@ -12,6 +12,7 @@ from django.core.files import File
 from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.html import strip_tags, strip_spaces_between_tags
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -93,7 +94,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     _metadata = {
         'title': 'title',
-        # 'description': 'content',
+        'description': '_get_meta_description',
         'keywords': 'get_tags_list',
         'og_author': '_get_meta_author',
         'image': '_get_meta_image',
@@ -108,6 +109,11 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def _get_meta_author(self):
         """Returns full name of author for meta"""
         return self.author.get_full_name()
+
+    def _get_meta_description(self):
+        """Return a short description for meta by removing tags"""
+        description = strip_tags(strip_spaces_between_tags(self.content[:200]))
+        return description[:150]
 
     def clean(self):
         """provides custom validation for images before uploading"""
