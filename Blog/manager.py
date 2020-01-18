@@ -120,7 +120,7 @@ def group(group_name='editor'):
                 return view_func(request, *args, **kwargs)
 
             messages.warning(
-                'You are not allowed to enter into this part of the world of hackers')
+                request, 'You are not allowed to enter into this part of the world of hackers')
 
             return redirect('login')
 
