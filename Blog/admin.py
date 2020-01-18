@@ -113,7 +113,7 @@ class PostAdmin(admin.ModelAdmin):
     autocomplete_fields = ('category', )
     search_fields = ['author__username', 'slug']
 
-    actions = ['make_published']
+    actions = ['make_published', 'make_featured']
 
     def view_on_site(self, obj):
         """
@@ -137,6 +137,19 @@ class PostAdmin(admin.ModelAdmin):
             request, f'{message_bit} were successfully marked as published')
 
     make_published.short_description = 'Mark selected articles as published'
+
+    def make_featured(self, request, queryset):
+        """Add action to set article as featured for many articles in 1 go"""
+        rows_updated = queryset.update(featured=True)
+        if rows_updated == 1:
+            message_bit = '1 article was'
+        else:
+            message_bit = f'{rows_updated} articles were'
+
+        self.message_user(
+            request, f'{message_bit} were successfully marked as featured')
+
+    make_featured.short_description = 'Mark selected articles as featured'
 
     # tags_list = [post.get_tags_list()
     #              for post in Post.objects.filter(publish=True)]
