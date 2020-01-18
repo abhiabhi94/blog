@@ -122,7 +122,7 @@ class PostAdmin(admin.ModelAdmin):
         """
         url = reverse('Blog:post-preview', kwargs={'slug': obj.slug})
         if settings.DEBUG:
-            return 'http://localhost' + url
+            return 'http://localhost:8000' + url
         return settings.META_SITE_DOMAIN + url
 
     def make_published(self, request, queryset):
