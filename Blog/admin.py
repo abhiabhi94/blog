@@ -118,12 +118,12 @@ class PostAdmin(admin.ModelAdmin):
     def view_on_site(self, obj):
         """
         This function is overriden because we don't have a get_absolute_url method in the model
-        It will open the preview url
+        It will return the preview url
         """
         url = reverse('Blog:post-preview', kwargs={'slug': obj.slug})
         if settings.DEBUG:
             return 'http://localhost:8000' + url
-        return settings.META_SITE_DOMAIN + url
+        return settings.META_SITE_PROTOCOL + '://' + settings.META_SITE_DOMAIN + url
 
     def make_published(self, request, queryset):
         """Add action to publish many articles in 1 go"""
