@@ -272,7 +272,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return self.queryset.filter(author=user, state=0).order_by('-date_created')
         elif tab == 'published':
             return self.queryset.filter(author=user, state=1).order_by('-date_published')
-        else:  # for drafts
+        else:  # for draft
             return self.queryset.filter(author=user, state=-1).order_by('-date_created')
 
     def get_context_data(self, **kwargs):
@@ -524,7 +524,7 @@ def about(request):
 @group(group_name='editor')
 @require_http_methods(['GET', 'POST'])
 def preview(request, slug):
-    post = Post.objects.get(slug=slug)
+    post = get_object_or_404(Post, slug=slug)
     if request.method == 'POST':
         """Submit post for review"""
         if request.user == post.author or request.user.is_superuser:
