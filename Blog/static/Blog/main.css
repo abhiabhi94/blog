@@ -274,6 +274,10 @@ a.article-title:hover {
     margin-bottom: 16px;
 }
 
+#post-detail {
+    padding: 1rem !important;
+}
+
 #post-detail .article-metadata {
     padding-bottom: 1px;
     margin-bottom: 4px;
@@ -982,6 +986,9 @@ a:not([href]):not([tabindex]) {
     }
     .tag-details {
         width: 41vw;
+    }
+    #post-detail {
+        padding: 10px !important;
     }
     .article-content ol,
     .article-content ul,
