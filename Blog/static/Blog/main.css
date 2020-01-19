@@ -42,6 +42,10 @@ ul {
     margin: 0;
 }
 
+pre {
+    margin-top: 1 rem;
+}
+
 .fa-heart {
     color: red;
 }
