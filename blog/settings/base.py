@@ -95,6 +95,14 @@ MEDIA_URL = '/media/'
 
 ############# CKEditor specifications #####################
 
+def get_plugin_meta(plugin, plugin_dir, plugin_file='plugin.js'):
+    """ format for specifying plugin resources:
+        (name of plugin,  
+        'specific path to directory containing plugin.js', 
+        'plugin.js')'"""
+    plugin_base_dir = '/static/Blog/ckeditor_plugins/'        
+    return (plugin, os.path.join(plugin_base_dir, plugin_dir) + os.path.sep, plugin_file)
+
 # CKEditor needs to know where its assets are located because it loads them lazily only when needed
 CKEDITOR_BASEPATH = STATIC_URL + 'ckeditor/ckeditor/'
 # This setting specifies a relative path to your CKEditor media upload directory
@@ -150,6 +158,7 @@ CKEDITOR_CONFIGS = {
                 'Image',
                 'CodeSnippet',
                 'Youtube',
+                # 'Templates'
                 # put the name of your editor.ui.addButton here
                 # 'Maximize',
 
@@ -163,21 +172,20 @@ CKEDITOR_CONFIGS = {
             'codesnippet',
             'image2',
             'youtube',
+            # 'templates'
         ]),
-        'external_plugin_resources': [(
-            # format for specifying plugin resources
-            # 'someplugin', -> name of plugin
-            # '/static/.../path-to-someplugin/',
-            # 'plugin.js',
-            'youtube',
-            '/static/Blog/ckeditor_plugins/youtube/youtube/',
-            'plugin.js',
-        )],
+        'external_plugin_resources': 
+            [
+                get_plugin_meta('youtube', 'youtube/youtube'), 
+                # get_plugin_meta('templates', 'templates')
+            ]
+        ,
         'youtube_resposive': 'true',
         'youtube_related': 'true',
         'youtube_controls': 'true',
     }
 }
+
 ##########################
 
 #### HITCOUNT APP ######
