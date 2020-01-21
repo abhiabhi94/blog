@@ -27,7 +27,8 @@ class Category(models.Model, ModelMeta):
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     # author of this category.
-    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(User, null=True, limit_choices_to={
+                               'is_superuser': True}, on_delete=models.SET_NULL)
     _metadata = {
         'Category': 'name',
         'Info': 'info'
