@@ -3,6 +3,9 @@
 $(document).ready(function(event) {
     if (window.matchMedia('(max-width: 600px)').matches) {
         onMobile();
+    } else {
+        const pos = '1';
+        loadAccessibityMenu(pos);
     }
     $('.subForm').submit(subscribe);
     marginFirstHeading();
@@ -205,13 +208,18 @@ function addClassToAsideFeatured() {
  * This function is used to make changes to the layout for small screen devices
  */
 function onMobile() {
+    //move view more button to the bottom for home pages
     const viewbutton = $('.view-more');
     viewbutton.each(function() { $(this).parent().next().after($(this)) });
+
+    // load the accessibility menu
+    const pos = '8';
+    loadAccessibityMenu(pos);
 }
 
 /**
  * 
- * @param {event} event - The event that takes care 
+ * @param {event} event - The event that takes place 
  */
 function subscribe(event) {
     const responseDiv = $('#sub-response');
@@ -249,4 +257,29 @@ function marginFirstHeading() {
     } catch (TypeError) {
         return;
     }
+}
+/**
+ * Load the accessibility menu with the avatar at a specific position
+ * @param {string} pos - The position for the accessibility avatar
+ */
+function loadAccessibityMenu(pos = '1') {
+    window._userway_config = {
+        /* uncomment the following line to override default position*/
+        position: pos,
+        /* uncomment the following line to override default size (values: small, large)*/
+        /* size: 'small', */
+        /* uncomment the following line to override default language (e.g., fr, de, es, he, nl, etc.)*/
+        /* language: 'null', */
+        /* uncomment the following line to override color set via widget (e.g., #053f67)*/
+        /* color: '#1b1b1b', */
+        /* uncomment the following line to override type set via widget (1=person, 2=chair, 3=eye, 4=text)*/
+        /* type: '1', */
+        /* uncomment the following lines to override the accessibility statement*/
+        /* statement_text: "Our Accessibility Statement", */
+        /* statement_url: "hackadda.com/accessibility", */
+        /* uncomment the following line to override support on mobile devices*/
+        // mobile: true,
+        account: 'xj0VXatzMz'
+    };
+    $.getScript("https://cdn.userway.org/widget.js");
 }
