@@ -2,21 +2,21 @@
 {% endblock content %} {% endcomment %}
 
 {% if is_paginated %} 
-    <div class="pagination mt-2 ml-2">
+    <div class="pagination mt-2 ml-2" style="max-width:100%;">
         {% if page_obj.has_previous %}
-            <a class="btn btn-outline-info ml-3 mb-4" href="?page=1" title="Return to first page">First</a>
-            <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.previous_page_number }}" title="Previous Page">Previous</a> 
+            <a class="btn btn-outline-info ml-2 mb-4" href="?page=1" title="Return to first page">First</a>
+            <a class="btn btn-outline-info ml-2 mb-4" href="?page={{ page_obj.previous_page_number }}" title="Previous Page">Previous</a> 
         {% endif %} 
         {% for num in page_obj.paginator.page_range %} 
             {% if page_obj.number == num %}
-                <a class="btn btn-info ml-3 mb-4" href="?page={{num}}" title="{{num}}">{{num}}</a> 
+                <a class="btn btn-info ml-2 mb-4" href="?page={{num}}" title="{{num}}">{{num}}</a> 
             {% elif num > obj.page_obj.number|add:'-3' and num > obj.page_obj.number|add:'3' %}
-                <a class="btn btn-outline-info ml-3 mb-4" href="?page={{num}}" title="{{num}}">{{num}}</a> 
+                <a class="btn btn-outline-info ml-2 mb-4" href="?page={{num}}" title="{{num}}">{{num}}</a> 
             {% endif %} 
         {% endfor %} 
         {% if page_obj.has_next %}
-            <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.next_page_number }}" title="Next page">Next</a>
-            <a class="btn btn-outline-info ml-3 mb-4" href="?page={{ page_obj.paginator.num_pages }}" title="Last page">Last</a>
+            <a class="btn btn-outline-info ml-2 mb-4" href="?page={{ page_obj.next_page_number }}" title="Next page">Next</a>
+            <a class="btn btn-outline-info ml-2 mb-4" href="?page={{ page_obj.paginator.num_pages }}" title="Last page">Last</a>
         {% endif %}
     </div>
 {% endif %}
