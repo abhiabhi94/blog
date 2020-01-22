@@ -27,17 +27,18 @@ from collections import Counter
 from meta.views import Meta
 from datetime import datetime
 from django.db import IntegrityError
-from .models import Post, Category
+from Blog.models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
-from .manager import (published_posts,
-                      email_verification,
-                      get_font_cloud,
-                      trending,
-                      paginate_util,
-                      group
-                      )
+from Blog.manager import (published_posts,
+                          email_verification,
+                          get_font_cloud,
+                          trending,
+                          paginate_util,
+                          )
+from Blog.decorators.restrict_access import group
+
 """
 Use the name posts for backend purposes.
 Use the name articles for frontend purposes.
@@ -204,6 +205,7 @@ def subscribe(request):
 
         data['msg'] = ' is not a valid email'
         return JsonResponse(data)
+    return HttpResponseBadRequest
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
