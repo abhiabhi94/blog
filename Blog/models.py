@@ -77,7 +77,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                                'groups__name': 'editor'})
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
-    state = models.IntegerField(choices=state_choices, default=draft)
+    state = models.SmallIntegerField(choices=state_choices, default=draft)
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
