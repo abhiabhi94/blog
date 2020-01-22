@@ -22,11 +22,26 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from Users import views as user_views
-from Blog.manager import group
+from Blog.decorators.restrict_access import group, require_superuser
 import debug_toolbar
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
+
+def dec_patterns(patterns):
+    decorated_patterns = []
+    for pattern in patterns:
+        callback = pattern.callback
+        pattern.callback = require_superuser(callback)
+        pattern._callback = require_superuser(callback)
+        decorated_patterns.append(pattern)
+    return decorated_patterns
+
+
+url_patterns_admin = [
+    path('admin/', (dec_patterns(admin.site.urls[0]),) + admin.site.urls[1:]),
+]
+
+urlpatterns = url_patterns_admin + [
+    # path('admin/', admin.site.urls),
     path('', include('Blog.urls')),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
