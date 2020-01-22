@@ -1,12 +1,8 @@
 from validate_email import validate_email
-from .models import Post
+from Blog.models import Post
 from datetime import datetime, timedelta
 from hitcount.models import Hit
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User, Group
-from django.shortcuts import redirect
-from functools import wraps
-from django.contrib import messages
 
 
 def published_posts(order='-date_published'):
@@ -101,28 +97,3 @@ def paginate_util(request, objects, paginate_by, kwargs):
         kwargs['is_paginated'] = True
     kwargs['page_obj'] = objects
     return objects
-
-
-def group(group_name='editor'):
-    """
-    Returns
-        whether the current user belong to a group or not
-        in case they aren't, they are redirected to the login page
-        Returns True always for superusers
-
-    Params
-        group_name: name of the group to be matched(default:editor)
-    """
-    def decorator(view_func):
-        @wraps(view_func)
-        def wrapper(request, *args, **kwargs):
-            if request.user.is_superuser or User.objects.filter(id=request.user.id, groups__name=group_name).exists():
-                return view_func(request, *args, **kwargs)
-
-            messages.warning(
-                request, 'You are not allowed to enter into this part of the world of hackers')
-
-            return redirect('login')
-
-        return wrapper
-    return decorator
