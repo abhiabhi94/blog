@@ -9,7 +9,7 @@
         <div class="details col-md-9">
             <div class="media-body article-contents">
                 <div class="article-details">
-                    <h4><a class="article-title" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></h4>
+                    <h2><a class="article-title" href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></h2>
                     {% comment %} <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
                     <div class="article-short-des">
                         {{ post.content|truncatewords_html:'35'|safe }}&nbsp;
