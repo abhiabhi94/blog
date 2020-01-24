@@ -1,6 +1,6 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /profile/
-Disallow: /user/*/bookmarks
-Disallow: /user/*/posts/draft
-Disallow: /user/*/posts/queued
+Disallow: /user/*/bookmarks/
+Disallow: /user/*/posts/draft/
+Disallow: /user/*/posts/queued/
