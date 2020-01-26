@@ -50,7 +50,8 @@ pre {
 table {
     margin-bottom: 1rem;
     background-color: transparent;
-    width: auto;
+    width: auto !important; 
+    /* to override bootstrap property */
     overflow-x: auto;
     display: inline-block;
     position: relative;
