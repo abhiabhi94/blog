@@ -46,11 +46,13 @@ pre {
     margin-top: 1rem;
 }
 
+
 /* handles table on both small and large devices. */
+
 table {
     margin-bottom: 1rem;
     background-color: transparent;
-    width: auto !important; 
+    width: auto !important;
     /* to override bootstrap property */
     overflow-x: auto;
     display: inline-block;
@@ -58,6 +60,16 @@ table {
     left: 50%;
     transform: translate(-50%);
     /* max-width: 100%; */
+}
+
+table tbody tr:nth-of-type(2n+1) {
+    background-color: rgba(0, 0, 0, .05) !important;
+}
+
+table td,
+table th {
+    padding: 0.75rem !important;
+    border: 1px solid #dee2e6 !important;
 }
 
 .fa-heart {
