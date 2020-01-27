@@ -111,7 +111,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'views', 'date_created',
                     'date_published', 'state', 'featured')
     autocomplete_fields = ('category', )
-    search_fields = ['author__username', 'slug']
+    search_fields = ['author__username', 'slug', 'tags']
 
     actions = ['make_published', 'make_featured']
 
