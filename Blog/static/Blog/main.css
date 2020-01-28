@@ -46,6 +46,10 @@ pre {
     margin-top: 1rem;
 }
 
+code {
+    background-color: #edf2f7;
+    padding: 0.25rem;
+}
 
 /* handles table on both small and large devices. */
 
