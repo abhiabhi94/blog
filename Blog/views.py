@@ -27,6 +27,7 @@ from collections import Counter
 from meta.views import Meta
 from datetime import datetime
 from django.db import IntegrityError
+from django.contrib.syndication.views import Feed
 from Blog.models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
@@ -791,3 +792,24 @@ def get_trending_posts(request):
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
+
+
+class LatestPostRSSFeed(Feed):
+    title = 'Latest posts from HackAdda'
+    link = 'hackadda.com'
+    description = meta_home.description
+
+    def items(self, top_n=5):
+        return published_posts()[:top_n]
+
+    def item_title(self, item):
+        return item.title
+
+    def item_author_name(self, item):
+        return item.author.get_full_name()
+
+    def item_description(self, item):
+        return item._get_meta_description()
+
+    def item_link(self, item):
+        return item.get_detail_url()

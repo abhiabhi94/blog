@@ -22,6 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from Users import views as user_views
+from Blog.views import LatestPostRSSFeed as rss_feed
 from Blog.decorators.restrict_access import group, require_superuser
 import debug_toolbar
 
@@ -72,6 +73,7 @@ urlpatterns = url_patterns_admin + [
              template_name='Users/password_reset_complete.html'),
          name='password_reset_complete'
          ),
+    path('latest/feed', rss_feed(), name='rss-feed'),
 ]
 
 # Adds ckeditor urls
