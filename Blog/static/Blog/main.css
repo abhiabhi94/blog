@@ -496,7 +496,7 @@ a.article-title:hover {
     height: 200px;
 }
 
-.article-card>.article-thumbnail>img {
+.article-card>.article-thumbnail>a>img {
     /* max-width: 100%; */
     width: 100%;
     height: 100%;
