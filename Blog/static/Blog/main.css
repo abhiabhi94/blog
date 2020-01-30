@@ -42,43 +42,6 @@ ul {
     margin: 0;
 }
 
-pre {
-    margin-top: 1rem;
-}
-
-code {
-    background-color: #edf2f7;
-    padding: 0.25rem;
-}
-
-
-/* handles table on both small and large devices. */
-
-table {
-    margin-bottom: 1rem;
-    border-collapse: collapse;
-    border: medium none;
-    background-color: transparent;
-    width: auto !important;
-    /* to override bootstrap property */
-    overflow-x: auto;
-    display: inline-block;
-    position: relative;
-    left: 50%;
-    transform: translate(-50%);
-    /* max-width: 100%; */
-}
-
-table tbody tr:nth-of-type(2n+1) {
-    background-color: rgba(0, 0, 0, .05) !important;
-}
-
-table td,
-table th {
-    padding: 0.75rem !important;
-    border: 1px solid #dee2e6 !important;
-}
-
 .fa-heart {
     color: red;
 }
@@ -848,6 +811,43 @@ a.article-title:hover {
     margin: 1px;
     border: none;
     outline: 1px solid #0782c1;
+}
+
+.article-content pre {
+    margin-top: 1rem;
+}
+
+.article-content code {
+    background-color: #edf2f7;
+    padding: 0.25rem;
+}
+
+
+/* handles table on both small and large devices. */
+
+.article-content table {
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+    border: medium none;
+    background-color: transparent;
+    width: auto !important;
+    /* to override bootstrap property */
+    overflow-x: auto;
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    /* max-width: 100%; */
+}
+
+.article-content table tbody tr:nth-of-type(2n+1) {
+    background-color: rgba(0, 0, 0, .05) !important;
+}
+
+.article-content table td,
+.article-content table th {
+    padding: 0.75rem !important;
+    border: 1px solid #dee2e6 !important;
 }
 
 
