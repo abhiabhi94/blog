@@ -796,7 +796,6 @@ def get_trending_posts(request):
 
 class LatestPostRSSFeed(Feed):
     title = 'Latest posts from HackAdda'
-    link = 'hackadda.com'
     description = meta_home.description
 
     def items(self, top_n=5):
