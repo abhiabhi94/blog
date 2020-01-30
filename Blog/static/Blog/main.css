@@ -51,10 +51,13 @@ code {
     padding: 0.25rem;
 }
 
+
 /* handles table on both small and large devices. */
 
 table {
     margin-bottom: 1rem;
+    border-collapse: collapse;
+    border: medium none;
     background-color: transparent;
     width: auto !important;
     /* to override bootstrap property */
