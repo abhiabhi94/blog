@@ -36,6 +36,7 @@ h6 {
 
 img {
     max-width: 100%;
+    height: auto;
 }
 
 ul {
@@ -235,6 +236,7 @@ a.article-title:hover {
 .article-content img {
     display: block;
     max-width: 100% !important;
+    height: auto;
     margin: 5px auto;
 }
 
