@@ -551,30 +551,32 @@ def preview(request, slug):
         return render(request, template_name, {'post': post})
 
 
-@login_required
 @require_http_methods(['POST'])
 def bookmark_post(request):
     if request.method == 'POST' and request.is_ajax():
-        data = {'message': '', 'status': 1}
-        # print('POST request for bookmark made')
-        slug = json.loads(request.body.decode('utf-8'))['data']
-        pk = Post.objects.get(slug=slug).id
-        b_post = Profile.objects.filter(user=request.user, bookmarked_posts=pk)
-        # print(b_post)
-        if not b_post:
-            request.user.profile.bookmarked_posts.add(pk)
-            data['message'] = 'Post bookmarked'
-            data['status'] = 0
-            # messages.success(request, 'Post bookmarked')
-        else:
-            request.user.profile.bookmarked_posts.remove(pk)
-            data['message'] = 'Post removed from bookmarks'
-            # messages.warning(request, 'Post already bookmarked')
-        # print (data)
-        return JsonResponse(data)
+        if request.user.is_authenticated:
+            data = {'message': '', 'status': 1}
+            # print('POST request for bookmark made')
+            slug = json.loads(request.body.decode('utf-8'))['data']
+            pk = Post.objects.get(slug=slug).id
+            b_post = Profile.objects.filter(
+                user=request.user, bookmarked_posts=pk)
+            # print(b_post)
+            if not b_post:
+                request.user.profile.bookmarked_posts.add(pk)
+                data['message'] = 'Post bookmarked'
+                data['status'] = 0
+                # messages.success(request, 'Post bookmarked')
+            else:
+                request.user.profile.bookmarked_posts.remove(pk)
+                data['message'] = 'Post removed from bookmarks'
+                # messages.warning(request, 'Post already bookmarked')
+            # print (data)
+            return JsonResponse(data)
 
-    else:
-        return redirect('Blog:home')
+        # redirect with a message
+        messages.info(
+            request, 'You need to be logged in to bookmark a post')
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
