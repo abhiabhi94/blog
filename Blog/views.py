@@ -301,7 +301,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         if user == self.request.user:
-            return user.profile.bookmarked_posts.all()
+            return user.profile.bookmarked_posts.order_by('-date_published')
         ### Return HTTP Error: "You should be logged in as the user" ###
         raise Http404(
             f'You should be signed in as {user} to view this page')
@@ -553,9 +553,19 @@ def preview(request, slug):
 
 @require_http_methods(['POST'])
 def bookmark_post(request):
+    """
+    Returns
+        A JSON response
+            data:   message: str
+                        The message
+                    status: int
+                        -1 -> user not logged in
+                        0 -> post successfully addes as bookmark
+                        1 -> post successfully removed from bookmark
+    """
     if request.method == 'POST' and request.is_ajax():
+        data = {'message': '', 'status': 1}
         if request.user.is_authenticated:
-            data = {'message': '', 'status': 1}
             # print('POST request for bookmark made')
             slug = json.loads(request.body.decode('utf-8'))['data']
             pk = Post.objects.get(slug=slug).id
@@ -575,8 +585,10 @@ def bookmark_post(request):
             return JsonResponse(data)
 
         # redirect with a message
+        data['status'] = -1
         messages.info(
             request, 'You need to be logged in to bookmark a post')
+        return JsonResponse(data)
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')

@@ -110,10 +110,13 @@ function sendAjax(link, args) {
                 //     const state = 'warning';
                 // }
                 const state = data.responseJSON['status'];
+                if (state == -1) {
+                    top.location.href = '/login';
+                }
                 const msg = data.responseJSON['message'];
                 createResponse(state, msg);
             } catch (e) {
-                top.location.href = '/login';
+                console.log(e);
                 // console.log(data);
                 // console.log(e);
             }
