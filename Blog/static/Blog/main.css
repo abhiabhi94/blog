@@ -824,6 +824,9 @@ a.article-title:hover {
     padding: 0.25rem;
 }
 
+.article-content pre code {
+    background: #eee;
+}
 
 /* handles table on both small and large devices. */
 
