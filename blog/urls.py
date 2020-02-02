@@ -25,6 +25,8 @@ from Users import views as user_views
 from Blog.views import LatestPostRSSFeed as rss_feed
 from Blog.decorators.restrict_access import group, require_superuser
 import debug_toolbar
+from django.views.decorators.http import condition
+from Blog.manager import latest_entry
 
 
 def dec_patterns(patterns):
@@ -73,7 +75,10 @@ urlpatterns = url_patterns_admin + [
              template_name='Users/password_reset_complete.html'),
          name='password_reset_complete'
          ),
-    path('latest/feed', rss_feed(), name='rss-feed'),
+    path('latest/feed',
+         condition(last_modified_func=latest_entry)(rss_feed()),
+         name='rss-feed'
+         ),
 ]
 
 # Adds ckeditor urls

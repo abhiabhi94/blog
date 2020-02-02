@@ -5,6 +5,15 @@ from hitcount.models import Hit
 from django.core.paginator import Paginator
 
 
+def latest_entry(request):
+    """
+    Returns
+        date: date-time
+            The date of the latest post published.
+    """
+    return Post.objects.filter(state=1).latest('date_published').date_published
+
+
 def published_posts(order='-date_published'):
     """
     TODO: support multiple filters.
