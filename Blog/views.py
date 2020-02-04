@@ -48,7 +48,7 @@ Use the name articles for frontend purposes.
 
 global meta_home
 meta_home = Meta(title='HackAdda | Never stop hacking!',
-                 description='Stay updated with latest technology news, articles and tutorials.',
+                 description='Stay updated with the latest technology news, articles, and tutorials.',
                  keywords=[
                      'Hack', 'Robotics', 'Coding',
                      'STEM', 'STEAM', 'Education',
