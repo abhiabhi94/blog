@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from meta.views import Meta
+from django.views.decorators.http import require_http_methods
 
 # Create your views here.
 global meta_home
@@ -25,6 +26,7 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
                  )
 
 
+@require_http_methods(['GET'])
 def register(request):
     # Redirect to the homepage in case user is logged in.
     if request.user.is_authenticated:
@@ -52,6 +54,7 @@ def register(request):
     return render(request, template_name, context)
 
 
+@require_http_methods(['GET'])
 @login_required
 def profile(request):
     template_name = 'Users/profile.html'
@@ -75,4 +78,14 @@ def profile(request):
     context['meta'] = Meta(title=f'Profile | HackAdda',
                            description=f'Profile of {request.user.get_full_name().title()} on HackAdda',
                            )
+    return render(request, template_name, context)
+
+
+@require_http_methods(['GET'])
+def privacy_policy(request):
+    context = {}
+    template_name = 'Blog/privacy_policy.html'
+    context['meta'] = Meta(title=f'Privacy Policy | HackAdda',
+                           description=f'Privacy Policy by HackAdda',
+                           keywords=meta_home.keywords + ['privacy policy'])
     return render(request, template_name, context)
