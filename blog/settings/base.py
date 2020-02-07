@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'hitcount',
+    'taggit'
 ]
 
 MIDDLEWARE = [
@@ -216,3 +217,6 @@ META_USE_OG_PROPERTIES = True
 META_SITE_DOMAIN = 'hackadda.com'
 META_SITE_PROTOCOL = 'https'
 ##########################################
+
+### Django-taggit 
+TAGGIT_CASE_INSENSITIVE = True
