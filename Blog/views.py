@@ -39,6 +39,7 @@ from Blog.manager import (published_posts,
                           paginate_util,
                           )
 from Blog.decorators.restrict_access import group
+from taggit.models import Tag
 
 """
 Use the name posts for backend purposes.
@@ -599,7 +600,7 @@ class TaggedPostListView(ListView):
 
     def get_queryset(self):
         post_list = published_posts().filter(
-            tags__contains=self.kwargs.get('tag').lower())
+            tags__name__in=[self.kwargs.get('tag').lower()])
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -660,15 +661,13 @@ def get_tags(request):
             flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
             context['ajax'] = True
-
-    tags_list = [post.get_tags_list()
-                 for post in published_posts()]
+    tags_list = [tag.name for tag in Tag.objects.all()] 
     if flag:    # for post request
         top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common(top_n)
+            [item for item in tags_list]).most_common(top_n)
     else:   # for get request
         top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common()
+            [item for item in tags_list]).most_common()
 
     top_tags_list = {tag: count for (tag, count) in top_tags}
 
