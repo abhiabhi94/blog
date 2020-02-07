@@ -121,7 +121,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
         if self.__original_img_path != self.image.path:
 
-            MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
+            MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (200, 200)
             MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 7680)
 
             img = self.image
@@ -162,24 +162,28 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
         if self.__original_img_path != self.image.path:
             ext = self.image.name.split('.')[-1]
-            # JPG isn't allowed in Pillow
-            extension = 'JPEG' if ext.lower() == 'jpg' else ext.upper()
+            if ext.lower() == 'gif':  # do not compress GIF images
+                self.thumbnail.save(
+                    self.image.name, File(self.image), save=False)
+            else:
+                # JPG isn't allowed in Pillow
+                extension = 'JPEG' if ext.lower() == 'jpg' else ext.upper()
 
-            with Image.open(self.image.path) as img:
-                thumbnail_size, full_view_size = (350, 350), (800, 800)
-                img_thumbnail = img.copy()  # thumbnail changes in place
+                with Image.open(self.image.path) as img:
+                    thumbnail_size, full_view_size = (350, 350), (800, 800)
+                    img_thumbnail = img.copy()  # thumbnail changes in place
 
-                # for list and card view
-                img_thumbnail.thumbnail(thumbnail_size, Image.ANTIALIAS)
-                thumbnail_name = self._image_name('_thumbnail')
-                blob = BytesIO()
-                img_thumbnail.save(blob, format=extension,
-                                   quality=75, optimize=True)
-                self.thumbnail.save(thumbnail_name, File(blob), save=False)
+                    # for list and card view
+                    img_thumbnail.thumbnail(thumbnail_size, Image.ANTIALIAS)
+                    thumbnail_name = self._image_name('_thumbnail')
+                    blob = BytesIO()
+                    img_thumbnail.save(blob, format=extension,
+                                       quality=75, optimize=True)
+                    self.thumbnail.save(thumbnail_name, File(blob), save=False)
 
-                # for detail view
-                img.thumbnail(full_view_size, Image.ANTIALIAS)
-                img.save(self.image.path, quality=75, optimize=True)
+                    # for detail view
+                    img.thumbnail(full_view_size, Image.ANTIALIAS)
+                    img.save(self.image.path, quality=75, optimize=True)
 
         super(Post, self).save(*args, **kwargs)
 
