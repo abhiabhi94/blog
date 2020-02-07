@@ -89,3 +89,13 @@ def privacy_policy(request):
                            description=f'Privacy Policy by HackAdda',
                            keywords=meta_home.keywords + ['privacy policy'])
     return render(request, template_name, context)
+
+
+@require_http_methods(['GET'])
+def image_license(request):
+    context = {}
+    template_name = 'Blog/image_license.html'
+    context['meta'] = Meta(title=f'Image License | HackAdda',
+                           description=f'Image License by HackAdda',
+                           keywords=meta_home.keywords + ['image license'])
+    return render(request, template_name, context)

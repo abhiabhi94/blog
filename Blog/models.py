@@ -121,7 +121,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
         if self.__original_img_path != self.image.path:
 
-            MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (200, 200)
+            MIN_IMG_WIDTH, MIN_IMG_HEIGHT = (700, 400)
             MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 7680)
 
             img = self.image

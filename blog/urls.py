@@ -79,7 +79,8 @@ urlpatterns = url_patterns_admin + [
          condition(last_modified_func=latest_entry)(rss_feed()),
          name='rss-feed'
          ),
-    path('privacy-policy', user_views.privacy_policy, name='privacy-policy')
+    path('privacy-policy', user_views.privacy_policy, name='privacy-policy'),
+    path('image-license', user_views.image_license, name='image-license'),
 ]
 
 # Adds ckeditor urls
