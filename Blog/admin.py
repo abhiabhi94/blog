@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
-
+from taggit.models import Tag
 
 class TagListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -25,10 +25,10 @@ class TagListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        tags_list = [post.get_tags_list()
-                     for post in published_posts()]
+
+        tags_list = Tag.objects.all() 
         all_tags = tuple({(item, item)
-                          for outer in tags_list for item in outer})
+                          for item in tags_list})
         return all_tags
 
     def queryset(self, request, queryset):
@@ -40,7 +40,7 @@ class TagListFilter(admin.SimpleListFilter):
         # print (self.value())
         if self.value():
             post_list = Post.objects.filter(
-                tags__contains=self.value()).order_by('-date_published')
+                tags__name__in=[self.value()]).order_by('-date_published')
             return post_list
         else:
             return queryset.filter()
@@ -111,7 +111,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'views', 'date_created',
                     'date_published', 'state', 'featured')
     autocomplete_fields = ('category', )
-    search_fields = ['author__username', 'slug', 'tags']
+    search_fields = ['author__username', 'slug'] # removed tags. not a text field.
 
     actions = ['make_published', 'make_featured']
 
@@ -151,9 +151,6 @@ class PostAdmin(admin.ModelAdmin):
 
     make_featured.short_description = 'Mark selected articles as featured'
 
-    # tags_list = [post.get_tags_list()
-    #              for post in Post.objects.filter(publish=True)]
-    # all_tags = list({item for outer in tags_list for item in outer})
     list_filter = [AuthorListFilter, 'state', 'featured',
                    TagListFilter, CategoryListFilter]
 
