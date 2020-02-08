@@ -23,7 +23,6 @@ from django.http import (JsonResponse,
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from collections import Counter
 from meta.views import Meta
 from datetime import datetime
 from django.db import IntegrityError
@@ -770,22 +769,19 @@ def get_category(request):
             flag = 1
             context['ajax'] = True
 
-    categories = Category.objects.filter(
-        post__in=published_posts())
+    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+    top_categories_list = Category.objects.filter(
+        post__in=published_posts()).values('name', 'slug', count=Count('name')).order_by('-count')
 
     if flag:  # POST request
-        top_categories = Counter(categories).most_common(top_n)
+        top_categories = top_categories_list[:top_n]
     else:
-        top_categories = Counter(categories).most_common()
+        top_categories = top_categories_list
 
-    top_categories_list = {
-        category: count for (category, count) in top_categories}
-    top_categories_list_str = [str(category)
-                               for category in top_categories_list]
-    context['categories'] = top_categories_list
+    context['categories'] = top_categories
     context['meta'] = Meta(title=f'Categories | HackAdda',
                            description=f'List of all Categories on HackAdda',
-                           keywords=meta_home.keywords + top_categories_list_str)
+                           keywords=meta_home.keywords + list(top_categories.values_list('name', flat=True)))
 
     return render(request, template_name, context)
 

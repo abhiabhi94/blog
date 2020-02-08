@@ -3,16 +3,16 @@
 {% load cool_view %}
 <legend class="heading"> All categories </legend>
 <div class="all-tags">
-    {% for category, count in categories.items %}
+    {% for category in categories %}
     <div class="tag-details m-2">
         <div class="article-tags tag-name truncate-string">
-            <a class="{{category}}" title="Articles under the category {{category}}" href="{% url 'Blog:categorised' category.slug %}">{{category|title}}</a>
+            <a class="{{category.name}}" title="Articles under the category {{category.name}}" href="{% url 'Blog:categorised' category.slug %}">{{category.name|title}}</a>
         </div>
         <div class="tag-count">
         {% if count == 1 %}
-            <h6>{{ count }} article<h6>
+            <h6>{{ category.count }} article<h6>
         {% else %}
-            <h6>{{ count|cool_view }} articles<h6>
+            <h6>{{ category.count|cool_view }} articles<h6>
         {% endif %}
         </div>
     </div>
