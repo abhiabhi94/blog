@@ -9,13 +9,16 @@ register = template.Library()
 @register.filter(name='cool_timesince', is_safe=False)
 def cool_timesince(val, now=1):
     """
-    Args:
-        val: a datetime object
-        now: a constraint in ***minutes*** that decides for upto what values 'Just now' will be returned. 
+    Converts the time into a more human readable format.
+    It makes uses of django's {timesince} template and removes the extra information from it.
 
     Returns:
-        Converts the time into a more human readable format.
-        It makes uses of django's {timesince} template and removes the extra information from it.
+      str: time in a more human readable format.
+
+    Params:
+        val: a datetime object
+        now: int 
+            a constraint in ***minutes*** that decides for upto what values 'Just now' will be returned. 
     """
     if not val:
         return ''

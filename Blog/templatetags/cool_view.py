@@ -7,7 +7,7 @@ register = template.Library()
 def cool_view(val, precision=2):
     """
     Convert numbers to a cool format e.g: 1K, 123.4K, 111.42M.
-    Return
+    Returns:
         str
             e.g: 1K, 123.4K, 111.42M
 
