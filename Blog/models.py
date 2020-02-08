@@ -13,8 +13,9 @@ from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import strip_tags, strip_spaces_between_tags
-from taggit.managers import TaggableManager
-from taggit.models import Tag
+# from taggit.managers import TaggableManager
+# from taggit.models import Tag
+from taggit_autosuggest.managers import TaggableManager
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'

@@ -828,6 +828,7 @@ a.article-title:hover {
     background: #eee;
 }
 
+
 /* handles table on both small and large devices. */
 
 .article-content table {
@@ -918,6 +919,13 @@ a.article-title:hover {
     max-width: 1920px;
     max-height: 1080px;
     margin: 0 auto;
+}
+
+
+/* For adjusting the size of the auto suggestion input */
+
+#id_tags__tagautosuggest {
+    height: auto!important;
 }
 
 
