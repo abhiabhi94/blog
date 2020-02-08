@@ -37,7 +37,7 @@ urlpatterns = [
          name='recommended-posts'),
     path('post/bookmark/', views.bookmark_post, name='bookmark-post'),
     path('post/tag', views.get_tags, name='all-tags'),
-    path('post/tag/<str:tag>', views.TaggedPostListView.as_view(), name='tagged'),
+    path('post/tag/<slug:slug>', views.TaggedPostListView.as_view(), name='tagged'),
     path('post/featured-posts/',
          views.FeaturedPostListView.as_view(), name='featured-posts'),
     path('post/latest-posts/', views.get_latest_posts, name='latest-posts'),

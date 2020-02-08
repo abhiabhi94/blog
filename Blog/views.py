@@ -32,6 +32,7 @@ from Blog.models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
+from django.db.models import Count
 from Blog.manager import (published_posts,
                           email_verification,
                           get_font_cloud,
@@ -600,7 +601,7 @@ class TaggedPostListView(ListView):
 
     def get_queryset(self):
         post_list = published_posts().filter(
-            tags__name__in=[self.kwargs.get('tag').lower()])
+            tags__slug=self.kwargs.get('slug').lower())
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -610,7 +611,8 @@ class TaggedPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tag = self.kwargs.get('tag').lower()
+        slug = self.kwargs.get('slug').lower()
+        tag = get_object_or_404(Tag, slug=slug).name
         context['meta'] = Meta(title=f'{tag.title()} | HackAdda',
                                description=f'Read articles with the tag {tag} on Hackadda',
                                keywords=meta_home.keywords + [tag])
@@ -661,24 +663,24 @@ def get_tags(request):
             flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
             context['ajax'] = True
-    tags_list = [tag.name for tag in Tag.objects.all()] 
+
+    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+    top_tags_count_list = Tag.objects.filter(post__in=published_posts()).values(
+        'name', 'slug', count=Count('name')).order_by('-count')
+
     if flag:    # for post request
-        top_tags = Counter(
-            [item for item in tags_list]).most_common(top_n)
+        top_tags = top_tags_count_list[:top_n]
     else:   # for get request
-        top_tags = Counter(
-            [item for item in tags_list]).most_common()
+        top_tags = top_tags_count_list
 
-    top_tags_list = {tag: count for (tag, count) in top_tags}
-
-    context['tags'] = top_tags_list
+    context['tags'] = top_tags
 
     # Tag clouds will be probably implemented in a better way
     # in a future release.
     # context['tags'] = get_font_cloud(top_tags_list)
     context['meta'] = Meta(title=f'Tags | HackAdda',
                            description=f'List of all Tags on HackAdda',
-                           keywords=meta_home.keywords + list(top_tags_list.keys()))
+                           keywords=meta_home.keywords + list(top_tags.values_list('name', flat=True)))
     return render(request, template_name, context)
 
 
