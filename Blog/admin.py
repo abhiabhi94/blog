@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.conf import settings
 from taggit.models import Tag
 
+
 class TagListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -26,9 +27,8 @@ class TagListFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
 
-        tags_list = Tag.objects.all() 
-        all_tags = tuple({(item, item)
-                          for item in tags_list})
+        tags_list = Tag.objects.values_list('slug', flat=True)
+        all_tags = [(tag, tag) for tag in tags_list]
         return all_tags
 
     def queryset(self, request, queryset):
@@ -37,10 +37,9 @@ class TagListFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        # print (self.value())
         if self.value():
             post_list = Post.objects.filter(
-                tags__name__in=[self.value()]).order_by('-date_published')
+                tags__slug=self.value()).order_by('-date_published')
             return post_list
         else:
             return queryset.filter()
@@ -109,9 +108,9 @@ class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
                        'date_published', 'thumbnail')
     list_display = ('title', 'author', 'views', 'date_created',
-                    'date_published', 'state', 'featured')
-    autocomplete_fields = ('category', )
-    search_fields = ['author__username', 'slug'] # removed tags. not a text field.
+                    'date_published', 'state', 'featured', 'tag_list')
+    autocomplete_fields = ('category',)
+    search_fields = ['author__username', 'slug', 'tags__name']
 
     actions = ['make_published', 'make_featured']
 
@@ -150,6 +149,12 @@ class PostAdmin(admin.ModelAdmin):
             request, f'{message_bit} were successfully marked as featured')
 
     make_featured.short_description = 'Mark selected articles as featured'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('tags')
+
+    def tag_list(self, obj):
+        return ", ".join(o.name for o in obj.tags.all())
 
     list_filter = [AuthorListFilter, 'state', 'featured',
                    TagListFilter, CategoryListFilter]
