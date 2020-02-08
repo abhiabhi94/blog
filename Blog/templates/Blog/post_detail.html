@@ -56,8 +56,8 @@
     const id ='#recommended-posts';
     const data = {slug:'{{post.slug}}', top_n:3};
     url = "{% url 'Blog:recommended-posts' %}";
-    $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
-        $(id).append(response);
+    jq.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+        jq(id).append(response);
     });
 </script>
 {% endblock extrabottom %}

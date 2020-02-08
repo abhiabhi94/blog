@@ -44,26 +44,26 @@
 {% endblock content %}
 {% block extrabottom %}
 <script>
-$(document).ready(function(){
+jq(document).ready(function(){
     const paths = window.location.pathname.split('/');
     const lastPath = paths[paths.length-1];
     if (lastPath === "queued"){
-        $('#queued-tab').addClass('active');
-        $('#queued').addClass('show active');
+        jq('#queued-tab').addClass('active');
+        jq('#queued').addClass('show active');
     }else{
         if(lastPath === "published"){
-            $('#published-tab').addClass('active');
-            $('#published').addClass('show active');
+            jq('#published-tab').addClass('active');
+            jq('#published').addClass('show active');
         }
         else{
-            $('#draft-tab').addClass('active');
-            $('#draft').addClass('show active');
+            jq('#draft-tab').addClass('active');
+            jq('#draft').addClass('show active');
         }
     }
-    $('#postTab a').click(function(e) {
+    jq('#postTab a').click(function(e) {
     e.preventDefault();
-    const tab = $(this).id;
-    const url = $(this).data('url');
+    const tab = jq(this).id;
+    const url = jq(this).data('url');
     window.location.replace(url);
     });
 });
