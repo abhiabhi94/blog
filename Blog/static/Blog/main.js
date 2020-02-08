@@ -1,32 +1,32 @@
 'use strict';
 
-$(document).ready(function(event) {
+jq(document).ready(function(event) {
     if (window.matchMedia('(max-width: 600px)').matches) {
         onMobile();
     } else {
         const pos = '1';
         loadAccessibityMenu(pos);
     }
-    $('.subForm').submit(subscribe);
+    jq('.subForm').submit(subscribe);
     marginFirstHeading();
     loadSidebar();
     addClassToAsideFeatured();
-    $('.dropdown').on('click focus', function(event) {
-        $('.dropdown-menu').toggleClass('visible');
-        $('.dropdown').find('.dropdown-toggle').css('outline', 'none');
+    jq('.dropdown').on('click focus', function(event) {
+        jq('.dropdown-menu').toggleClass('visible');
+        jq('.dropdown').find('.dropdown-toggle').css('outline', 'none');
     });
-    $('.copy').on('click', function(event) {
+    jq('.copy').on('click', function(event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
         let text;
-        if ($(this).data) {
-            text = $(this).data('text');
+        if (jq(this).data) {
+            text = jq(this).data('text');
         } else {
             text = window.location.href;
         }
         // console.log('link:', text);
         const dummy = document.createElement('input');
-        $('body').append(dummy);
+        jq('body').append(dummy);
         dummy.value = text;
         dummy.select();
         //For IE
@@ -35,15 +35,15 @@ $(document).ready(function(event) {
         } else {
             document.execCommand('copy');
         }
-        $(dummy).remove();
+        jq(dummy).remove();
         createResponse('info', 'Link Copied Successfully');
     });
-    $('.bookmark').on('click', function(event) {
+    jq('.bookmark').on('click', function(event) {
         const parent = event.currentTarget;
         event.preventDefault();
         // console.log(event.currentTarget);
-        const post = $(this).data('post');
-        const url = $(this).data('url');
+        const post = jq(this).data('post');
+        const url = jq(this).data('url');
         if (parent.id === 'unbookmark') {
             // console.log('Removing');
             parent.children[0].style.color = 'darkgrey';
@@ -55,7 +55,7 @@ $(document).ready(function(event) {
             parent.id = 'unbookmark';
             parent.title = 'Remove bookmark';
         }
-        // $('#unbookmark').css('color', 'white');
+        // jq('#unbookmark').css('color', 'white');
         sendAjax(url, { data: post });
     });
 });
@@ -87,7 +87,7 @@ function sendAjax(link, args) {
         responseType = args.responseType;
     }
     // console.log(type, data, responseType, link);
-    $.ajax({
+    jq.ajax({
         type: type,
         headers: { 'X-CSRFToken': window.CSRF_TOKEN },
         url: link,
@@ -142,8 +142,8 @@ function createResponse(status, msg, time = 2000) {
             status = "warning";
     }
     const cls = 'alert alert-' + status;
-    const response = $('#response');
-    const temp = $('<div/>')
+    const response = jq('#response');
+    const temp = jq('<div/>')
         .addClass(cls)
         .html('<div>' + msg + '</div>');
     // console.log(temp);
@@ -176,25 +176,25 @@ function fixToTop(div) {
  */
 function loadSidebar() {
     const latestPosts = { id: '#latest-posts', top_n: 5 };
-    latestPosts.url = $(latestPosts.id).data('url');
+    latestPosts.url = jq(latestPosts.id).data('url');
     sendPost(latestPosts.url, latestPosts.id, { 'top_n': latestPosts.top_n });
 
     const trendingPosts = { id: '#trending-posts', top_n: 5 };
-    trendingPosts.url = $(trendingPosts.id).data('url');
+    trendingPosts.url = jq(trendingPosts.id).data('url');
     sendPost(trendingPosts.url, trendingPosts.id, { 'top_n': trendingPosts.top_n });
 
     const popTagsEle = { id: '#popular-tags', top_n: 5 };
-    popTagsEle.url = $(popTagsEle.id).data('url');
+    popTagsEle.url = jq(popTagsEle.id).data('url');
     sendPost(popTagsEle.url, popTagsEle.id, { 'top_n': popTagsEle.top_n });
 
     const popCategoriesEle = { id: '#popular-categories', top_n: 3 };
-    popCategoriesEle.url = $(popCategoriesEle.id).data('url');
+    popCategoriesEle.url = jq(popCategoriesEle.id).data('url');
     sendPost(popCategoriesEle.url, popCategoriesEle.id, { 'top_n': popCategoriesEle.top_n });
 }
 
 function sendPost(url, responseEle, data) {
-    $.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
-        $(responseEle).append(response);
+    jq.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+        jq(responseEle).append(response);
     });
 }
 /**
@@ -205,15 +205,15 @@ function sendPost(url, responseEle, data) {
 function addClassToAsideFeatured() {
     const div = document.createElement('div');
     div.className = 'aside';
-    $('.aside-featured').wrapAll(div);
+    jq('.aside-featured').wrapAll(div);
 }
 /**
  * This function is used to make changes to the layout for small screen devices
  */
 function onMobile() {
     //move view more button to the bottom for home pages
-    const viewbutton = $('.view-more');
-    viewbutton.each(function() { $(this).parent().next().after($(this)) });
+    const viewbutton = jq('.view-more');
+    viewbutton.each(function() { jq(this).parent().next().after(jq(this)) });
 
     // load the accessibility menu
     const pos = '8';
@@ -225,15 +225,15 @@ function onMobile() {
  * @param {event} event - The event that takes place 
  */
 function subscribe(event) {
-    const responseDiv = $('#sub-response');
-    const email = $('#email').val();
+    const responseDiv = jq('#sub-response');
+    const email = jq('#email').val();
     responseDiv.html('Registering ' + email + ' with HackAdda!');
-    const url = $(this)[0].action;
-    const data = $(this).serialize;
-    $.ajax({
+    const url = jq(this)[0].action;
+    const data = jq(this).serialize;
+    jq.ajax({
         url: url,
         type: 'POST',
-        data: $(this).serialize(),
+        data: jq(this).serialize(),
         dataType: 'json',
         // error: function(jqXhr, textStatus, errorMessage) {
         // console.log('Error Message:' + errorMessage);
@@ -255,7 +255,7 @@ function subscribe(event) {
  */
 function marginFirstHeading() {
     try {
-        const ele = $('.heading')[0]
+        const ele = jq('.heading')[0]
         ele.style.setProperty('margin-top', 0.1 + 'rem', 'important');
     } catch (TypeError) {
         return;
@@ -284,5 +284,5 @@ function loadAccessibityMenu(pos = '1') {
         // mobile: true,
         account: 'xj0VXatzMz'
     };
-    $.getScript("https://cdn.userway.org/widget.js");
+    jq.getScript("https://cdn.userway.org/widget.js");
 }

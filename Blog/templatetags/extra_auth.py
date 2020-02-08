@@ -8,13 +8,17 @@ register = template.Library()
 def has_group(user, group_name='editor'):
     """
     Returns
-        Whether the given group has the current user or not. 
+        bool
+            Whether the given group has the current user or not. 
 
     Params
-        user - current user
-        group - group name to be searched for
+        user: obj
+            current user
+        group: str
+            group name to be searched for
 
-    {% request.user|has_group:"Editor" %} -> This will return True if the current user is part of the group Editor, otherwise False.
+    {% request.user|has_group:"Editor" %} -> This will return True if the current user is part of the group Editor,\
+    otherwise False.
     """
     # try:
     #     group = Group.objects.get(name=group_name)

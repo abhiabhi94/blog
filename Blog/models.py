@@ -13,6 +13,9 @@ from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import strip_tags, strip_spaces_between_tags
+# from taggit.managers import TaggableManager
+# from taggit.models import Tag
+from taggit_autosuggest.managers import TaggableManager
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -52,7 +55,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         self.__original_title = self.title
-        self.__original_tags = self.tags
         self.__original_img_path = self.image.path
 
     draft = -1
@@ -69,8 +71,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
     content = RichTextUploadingField()
-    tags = models.CharField(
-        help_text='Enter tags separated by spaces. Do not enter more than 5 tags', max_length=80, default='', blank=True)
+    tags = TaggableManager()
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, limit_choices_to={
@@ -144,15 +145,12 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def save(self, *args, **kwargs):
         """
         1. slugify the title
-        2. save the tags in lower case
-        3. Sets the date_publish when the publish flag is set for the first time.
-        4. compress and resize images to make thumbnails and full size images
+        2. Sets the date_publish when the publish flag is set for the first time.
+        3. compress and resize images to make thumbnails and full size images
         """
 
         if self.__original_title != self.title:
             self.slug = slugify(self.title)
-        if self.__original_tags != self.tags:
-            self.tags = self.tags.lower()
 
         super(Post, self).save(*args, **kwargs)
 
@@ -208,7 +206,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         })
 
     def get_tags_list(self):
-        return self.tags.split()
+        return self.tags.all()
 
     def get_detail_url(self):
         return reverse_lazy('Blog:post-detail', kwargs={

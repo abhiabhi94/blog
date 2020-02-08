@@ -23,7 +23,6 @@ from django.http import (JsonResponse,
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from collections import Counter
 from meta.views import Meta
 from datetime import datetime
 from django.db import IntegrityError
@@ -32,6 +31,7 @@ from Blog.models import Post, Category
 from Subscribers.models import Subscriber
 from hitcount.views import HitCountDetailView
 from django.utils import timezone
+from django.db.models import Count
 from Blog.manager import (published_posts,
                           email_verification,
                           get_font_cloud,
@@ -39,6 +39,7 @@ from Blog.manager import (published_posts,
                           paginate_util,
                           )
 from Blog.decorators.restrict_access import group
+from taggit.models import Tag
 
 """
 Use the name posts for backend purposes.
@@ -599,7 +600,7 @@ class TaggedPostListView(ListView):
 
     def get_queryset(self):
         post_list = published_posts().filter(
-            tags__contains=self.kwargs.get('tag').lower())
+            tags__slug=self.kwargs.get('slug').lower())
         if post_list:
             return post_list
         raise Http404('Tag not present')
@@ -609,7 +610,8 @@ class TaggedPostListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tag = self.kwargs.get('tag').lower()
+        slug = self.kwargs.get('slug').lower()
+        tag = get_object_or_404(Tag, slug=slug).name
         context['meta'] = Meta(title=f'{tag.title()} | HackAdda',
                                description=f'Read articles with the tag {tag} on Hackadda',
                                keywords=meta_home.keywords + [tag])
@@ -661,25 +663,23 @@ def get_tags(request):
             # For showing option of view more on sidebar
             context['ajax'] = True
 
-    tags_list = [post.get_tags_list()
-                 for post in published_posts()]
+    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+    top_tags_count_list = Tag.objects.filter(post__in=published_posts()).values(
+        'name', 'slug', count=Count('name')).order_by('-count')
+
     if flag:    # for post request
-        top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common(top_n)
+        top_tags = top_tags_count_list[:top_n]
     else:   # for get request
-        top_tags = Counter(
-            [item for outer in tags_list for item in outer]).most_common()
+        top_tags = top_tags_count_list
 
-    top_tags_list = {tag: count for (tag, count) in top_tags}
-
-    context['tags'] = top_tags_list
+    context['tags'] = top_tags
 
     # Tag clouds will be probably implemented in a better way
     # in a future release.
     # context['tags'] = get_font_cloud(top_tags_list)
     context['meta'] = Meta(title=f'Tags | HackAdda',
                            description=f'List of all Tags on HackAdda',
-                           keywords=meta_home.keywords + list(top_tags_list.keys()))
+                           keywords=meta_home.keywords + list(top_tags.values_list('name', flat=True)))
     return render(request, template_name, context)
 
 
@@ -769,22 +769,19 @@ def get_category(request):
             flag = 1
             context['ajax'] = True
 
-    categories = Category.objects.filter(
-        post__in=published_posts())
+    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+    top_categories_list = Category.objects.filter(
+        post__in=published_posts()).values('name', 'slug', count=Count('name')).order_by('-count')
 
     if flag:  # POST request
-        top_categories = Counter(categories).most_common(top_n)
+        top_categories = top_categories_list[:top_n]
     else:
-        top_categories = Counter(categories).most_common()
+        top_categories = top_categories_list
 
-    top_categories_list = {
-        category: count for (category, count) in top_categories}
-    top_categories_list_str = [str(category)
-                               for category in top_categories_list]
-    context['categories'] = top_categories_list
+    context['categories'] = top_categories
     context['meta'] = Meta(title=f'Categories | HackAdda',
                            description=f'List of all Categories on HackAdda',
-                           keywords=meta_home.keywords + top_categories_list_str)
+                           keywords=meta_home.keywords + list(top_categories.values_list('name', flat=True)))
 
     return render(request, template_name, context)
 
