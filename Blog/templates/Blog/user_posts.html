@@ -14,30 +14,30 @@
 </ul>
 <div class="tab-content list-group-item list-group-item-light">
     <li id="draft" class="tab-pane fade" role="tabpanel" aria-labelledby="draft-tab">
-        {% if page_obj.paginator.count %}
-        <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-        {% include "Blog/draft_post_list.html" %}
-        {% include "paginate.html" %}
+        {% if page_obj.paginator.count and tab_type == "draft" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "Blog/draft_post_list.html" %}
+            {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
     <li id="queued" class="tab-pane fade" role="tabpanel" aria-labelledby="queued-tab">
-        {% if page_obj.paginator.count %}
-        <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-        {% include "Blog/draft_post_list.html" %}
-        {% include "paginate.html" %}
+        {% if page_obj.paginator.count and tab_type == "queued" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "Blog/draft_post_list.html" %}
+            {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
     <li id="published" class="tab-pane fade" role="tabpanel" aria-labelledby="published-tab">
-        {% if page_obj.paginator.count %}
-        <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
-        {% include "post_list_home.html" %}
-        {% include "paginate.html" %}
+        {% if page_obj.paginator.count and tab_type == "published" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "post_list_home.html" %}
+            {% include "paginate.html" %}
         {% else %}
-        <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'Blog:post-create' %}" title="Write an article">writing</a> some.</h5>
         {% endif %}
     </li>
 </div>
