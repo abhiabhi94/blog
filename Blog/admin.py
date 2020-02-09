@@ -112,7 +112,10 @@ class PostAdmin(admin.ModelAdmin):
     autocomplete_fields = ('category',)
     search_fields = ['author__username', 'slug', 'tags__name']
 
-    actions = ['make_published', 'make_featured']
+    actions = [
+        # 'make_published',
+        'make_featured'
+    ]
 
     def view_on_site(self, obj):
         """
@@ -124,18 +127,27 @@ class PostAdmin(admin.ModelAdmin):
             return 'http://localhost:8000' + url
         return settings.META_SITE_PROTOCOL + '://' + settings.META_SITE_DOMAIN + url
 
-    def make_published(self, request, queryset):
-        """Add action to publish many articles in 1 go"""
-        rows_updated = queryset.update(state=1)
-        if rows_updated == 1:
-            message_bit = '1 article was'
-        else:
-            message_bit = f'{rows_updated} articles were'
+    # This function {make_published} is commented as:
+    # -> This can be misused hence you want the admins to publish\
+    #     articles after they have read
+    # -> The implementation is tough. When an article is set to Publish\
+    #     i.e its state is set to 1, a couple of stuff has to be done and and insured\
+    #         which even applied to n number of articles would also raise issue about raising\
+    #             appropriate errors for corresponding articles.
+    # -> Even you want to use this function, use it only in cases of emergency.
 
-        self.message_user(
-            request, f'{message_bit} were successfully marked as published')
+    # def make_published(self, request, queryset):
+    #     """Add action to publish many articles in 1 go"""
+    #     rows_updated = queryset.update(state=1)
+    #     if rows_updated == 1:
+    #         message_bit = '1 article was'
+    #     else:
+    #         message_bit = f'{rows_updated} articles were'
 
-    make_published.short_description = 'Mark selected articles as published'
+    #     self.message_user(
+    #         request, f'{message_bit} were successfully marked as published')
+
+    # make_published.short_description = 'Mark selected articles as published'
 
     def make_featured(self, request, queryset):
         """Add action to set article as featured for many articles in 1 go"""
