@@ -11,7 +11,7 @@ def cool_view(val, precision=2):
         str
             e.g: 1K, 123.4K, 111.42M
 
-    Parmas:
+    Params:
         val: int
             The value of view
         precision: int
