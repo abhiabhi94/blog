@@ -284,6 +284,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
         user = get_object_or_404(User, username=self.request.user)
         name = user.get_full_name()
+        context['tab_type'] = self.kwargs.get('tab', 'draft')
         context['meta'] = Meta(title=f'{name} | HackAdda',
                                description=f'Articles authored by {name}',
                                og_author=f'{name}',
