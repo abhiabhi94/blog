@@ -233,7 +233,8 @@ a.article-title:hover {
 
 /* forcing any image passed from the backend to stay inside the container */
 
-.article-content img {
+.article-content img,
+.article-short-des img {
     display: block;
     max-width: 100% !important;
     height: auto;
