@@ -43,23 +43,25 @@
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>
         </article>
+        {% include "Blog/advertisement.html" with type="horizontal" %}
     </div>
 </div>
-{% include "Blog/advertisement.html" with type="horizontal" %}
 <div id="recommended-posts" class="article-contents content-section">
+    <div id="ad-after-recommended-posts">
+    {% include "Blog/advertisement.html" with type="horizontal" %}
+    </div>
 </div>
-{% include "Blog/advertisement.html" with type="horizontal" %}
 {% endblock content %}
 {% comment %} For requesting recommended posts {% endcomment %}
 {% block extrabottom %}
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 <script>
-    const id ='#recommended-posts';
+    const id ='#ad-after-recommended-posts';
     const data = {slug:'{{post.slug}}', top_n:3};
     url = "{% url 'Blog:recommended-posts' %}";
     jq.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
-        jq(id).append(response);
+        jq(id).before(response);
     });
 </script>
 {% endblock extrabottom %}
