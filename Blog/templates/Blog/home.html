@@ -8,6 +8,7 @@
     {% include "heading.html" with heading=category_name view_more_url=category_url %}
     <div class="category-articles article-list">
     {% include "post_list_home.html" with posts=category_posts %}
+    {% include "Blog/advertisement.html" with type="horizontal"  %}
     </div>
 {% endfor %}
 {% comment %} {% include "paginate.html" %} {% endcomment %}

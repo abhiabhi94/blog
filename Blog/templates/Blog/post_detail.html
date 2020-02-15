@@ -45,8 +45,10 @@
         </article>
     </div>
 </div>
+{% include "Blog/advertisement.html" with type="horizontal" %}
 <div id="recommended-posts" class="article-contents content-section">
 </div>
+{% include "Blog/advertisement.html" with type="horizontal" %}
 {% endblock content %}
 {% comment %} For requesting recommended posts {% endcomment %}
 {% block extrabottom %}

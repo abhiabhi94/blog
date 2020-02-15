@@ -46,12 +46,15 @@ Use the name posts for backend purposes.
 Use the name articles for frontend purposes.
 """
 
+global paginate_by
+# For pages this pagination values will be used
+paginate_by = 10
 
 global meta_home
 meta_home = Meta(title='HackAdda | Never stop hacking!',
                  description='Stay updated with the latest technology news, articles, and tutorials.',
                  keywords=[
-                     'Hack', 'Robotics', 'Coding',
+                       'Hack', 'Robotics', 'Coding',
                      'STEM', 'STEAM', 'Education',
                      'Blog', 'Tinker', 'Kids',
                      'Technology', 'Curiousity'
@@ -75,7 +78,7 @@ class HomeView(ListView):
 
     template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
     # context_object_name = 'posts'
-    # paginate_by = 5
+    # paginate_by
     # posts_unique = {}
 
     def __init__(self):
@@ -216,7 +219,7 @@ class FeaturedPostListView(ListView):
 
     template_name = 'Blog/post_list_featured.html'
     context_object_name = 'posts'
-    paginate_by = 5
+    paginate_by
 
     def get_queryset(self):
         return published_posts().filter(featured=True)
@@ -234,7 +237,7 @@ class AuthorPostListView(ListView):
     # model = Post
     template_name = 'Blog/author_posts.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
-    paginate_by = 5
+    paginate_by
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -262,7 +265,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
     queryset = Post.objects.all()
     context_object_name = 'posts'
-    paginate_by = 5
+    paginate_by = 10
 
     def test_func(self):
         """Check if the logged in user is viewing their post"""
@@ -297,7 +300,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     model = User
     context_object_name = 'posts'
     template_name = 'Blog/user_bookmarks.html'
-    paginate_by = 5
+    paginate_by = 10
     # queryset = User.objects.get_bookmarked_posts
 
     def get_queryset(self):
@@ -607,7 +610,7 @@ class TaggedPostListView(ListView):
         raise Http404('Tag not present')
 
     ordering = ['-date_published']
-    paginate_by = 5
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -635,7 +638,7 @@ def get_latest_posts(request, **kwargs):
 
     elif request.method == 'GET':
         template_name = 'Blog/post_list_latest.html'
-        paginate_by = 5
+        paginate_by = 10
         posts = published_posts()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         kwargs['meta'] = Meta(title=f'Latest Articles| HackAdda',
@@ -698,7 +701,7 @@ class CategoryPostListView(ListView):
         raise Http404('Category not present')
 
     ordering = ['-date_published']
-    paginate_by = 5
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -716,7 +719,7 @@ class CategoryPostListView(ListView):
 def get_timewise_list(request, *args, **kwargs):
 
     template_name = 'Blog/post_list_time.html'
-    paginate_by = 5
+    paginate_by = 10
 
     if request.method == 'GET':
         dummy = datetime.now()  # to use formatting on template layer.
@@ -811,6 +814,9 @@ class LatestPostRSSFeed(Feed):
     link = ''
     description = meta_home.description
 
+    # def feed_extra_kwargs(self, obj):
+    #     return {}
+
     def items(self, top_n=5):
         return published_posts()[:top_n]
 
@@ -825,3 +831,6 @@ class LatestPostRSSFeed(Feed):
 
     def item_link(self, item):
         return item.get_detail_url()
+
+    # def item_extra_kwargs(self, item):
+    #     return {'hashtags': item.get_tags_list()}
