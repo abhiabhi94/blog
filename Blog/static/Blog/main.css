@@ -719,6 +719,16 @@ a.article-title:hover {
 
 /* partly copied from ckeditor/contents.css */
 
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    margin-top: 1.5rem!important;
+    margin-bottom: 1rem!important;
+}
+
 .article-content blockquote {
     font-style: italic;
     font-family: Georgia, Times, "Times New Roman", serif;
