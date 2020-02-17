@@ -158,8 +158,11 @@ class HomeView(ListView):
         format: all small-case and in slugified form
         """
         home_categories = [
-            'kids',
+            # Use news only when you are updating it regularly.
+            # 'news',
             'coding',
+            'operating-system',
+            'kids',
         ]
 
         # All category objects will be appended in this list
