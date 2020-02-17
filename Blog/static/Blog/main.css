@@ -725,6 +725,7 @@ a.article-title:hover {
 .article-content h4,
 .article-content h5,
 .article-content h6 {
+    font-weight: bold;
     margin-top: 1.5rem!important;
     margin-bottom: 1rem!important;
 }
