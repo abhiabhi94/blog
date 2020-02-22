@@ -43,12 +43,12 @@
                 {% include "tags.html" with tags=post.get_tags_list %}
             </div>
         </article>
-        {% include "Blog/advertisement.html" with type="horizontal" %}
+        {% comment %} {% include "Blog/advertisement.html" with type="horizontal" %} {% endcomment %}
     </div>
 </div>
 <div id="recommended-posts" class="article-contents content-section">
     <div id="ad-after-recommended-posts">
-    {% include "Blog/advertisement.html" with type="horizontal" %}
+    {% comment %} {% include "Blog/advertisement.html" with type="horizontal" %} {% endcomment %}
     </div>
 </div>
 {% endblock content %}
