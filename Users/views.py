@@ -54,7 +54,7 @@ def register(request):
     return render(request, template_name, context)
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 @login_required
 def profile(request):
     template_name = 'Users/profile.html'
