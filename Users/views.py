@@ -26,7 +26,7 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
                  )
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def register(request):
     # Redirect to the homepage in case user is logged in.
     if request.user.is_authenticated:
