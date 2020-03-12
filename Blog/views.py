@@ -71,6 +71,16 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
 # conditional og property - og_author_url, published_time, modified_time, image,
 # consider adding other property in future. TODO
 
+# Categories to displayed on the homepage
+global home_categories
+home_categories = [
+    # Use news only when you are updating it regularly.
+    # 'news',
+    'coding',
+    'operating-system',
+    'kids',
+]
+
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
 class HomeView(ListView):
@@ -153,17 +163,8 @@ class HomeView(ListView):
         context['latest_posts'], posts_unique = self.remove_duplicates(
             latest_posts, posts_unique, self.NO_LATEST_POSTS)
 
-        """
-        Categories to displayed on the homepage
-        format: all small-case and in slugified form
-        """
-        home_categories = [
-            # Use news only when you are updating it regularly.
-            # 'news',
-            'coding',
-            'operating-system',
-            'kids',
-        ]
+        # Categories to displayed on the homepage
+        home_categories
 
         # All category objects will be appended in this list
         categories = []

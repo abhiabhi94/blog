@@ -55,6 +55,7 @@ urlpatterns = url_patterns_admin + [
         template_name='Users/logout.html'),
         name='logout'
     ),
+    path('password-change/', user_views.password_change, name='password-change'),
     path('password-reset/',
          auth_views.PasswordResetView.as_view(
              template_name='Users/password_reset.html'),
