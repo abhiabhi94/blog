@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
-from meta.views import Meta
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.forms import PasswordChangeForm
+from meta.views import Meta
+from Users.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from Users.manager import log_in_user
 
 # Create your views here.
 global meta_home
@@ -40,10 +42,12 @@ def register(request):
     if(request.method == 'POST'):
         context['form'] = form = UserRegisterForm(request.POST)
         if(form.is_valid()):
-            form.save()
+            user = form.save()
             username = form.cleaned_data.get('username')
+            log_in_user(request, user)
             messages.success(
                 request, f'Account created for {username}. You will now be able to Log In!')
+
             return redirect('Blog:home')
     else:  # On GET request return a new form
         context['form'] = UserRegisterForm()
@@ -66,11 +70,11 @@ def profile(request):
             u_form.save()
             p_form.save()
             messages.success(request, f'Your profile has been updated!')
-            return redirect('profile')
 
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
+
     context = {
         'u_form': u_form,
         'p_form': p_form
@@ -79,6 +83,32 @@ def profile(request):
                            description=f'Profile of {request.user.get_full_name().title()} on HackAdda',
                            )
     return render(request, template_name, context)
+
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def password_change(request):
+    """Change users password and log them back in"""
+    template_name = 'Users/profile.html'
+    if(request.method == 'POST'):
+        u_form = PasswordChangeForm(data=request.POST, user=request.user)
+        if u_form.is_valid():
+            user = u_form.save()
+            messages.success(
+                request, 'Password updated. You have now be logged out of all other sessions')
+            log_in_user(request, user)
+            return redirect('Blog:home')
+    else:
+        u_form = PasswordChangeForm(user=request.user)
+
+    context = {
+        'u_form': u_form
+    }
+    context['meta'] = Meta(title=f'Change Password | HackAdda',
+                           description=f"""Password change for {request.user.get_full_name().title()}
+                            on HackAdda""",
+                           )
+    return render(request, template_name, context=context)
 
 
 @require_http_methods(['GET'])

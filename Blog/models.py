@@ -43,7 +43,7 @@ class Category(models.Model, ModelMeta):
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
         self.slug = slugify(self.name)
-        super(*args, **kwargs).save()
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         """helps in showing name in foreign key field instead of category object"""
