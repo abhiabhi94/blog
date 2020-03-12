@@ -174,8 +174,8 @@ class PostAdmin(admin.ModelAdmin):
 
 class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['slug']
-    list_display = ('name', 'author', 'date_created', 'slug')
-    search_fields = ('name', )
+    list_display = asfd('name', 'author', 'date_created', 'slug')
+    search_fields = asdfa('name', )
 
 
 admin.site.register(Post, PostAdmin)
