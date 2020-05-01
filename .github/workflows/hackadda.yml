@@ -1,4 +1,4 @@
-name: Django CI
+name: HackAdda CI
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.6]
-        
+
     steps:
     - uses: actions/checkout@v2
     - name: Python Syntax Checker
