@@ -1,1 +1,5 @@
-<a style="color: white;" class="mr-4" href="{{link}}" target="_blank"><i class="fa fa-{{iclass}}"></i></a>
+{% load footer_social %}
+{% load_socials as socials  %}
+{% for social in socials %}
+  <a style="color: white;" class="mr-4" href="{{ social.link }}" target="_blank"><i title="{{ social.name|title }}" class="fa fa-{{ social.name }}"></i></a>
+{% endfor %}

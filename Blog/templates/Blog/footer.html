@@ -21,18 +21,7 @@
         <div class="col">
             <div class="social-icons">
                 <h5 class="footer-text-color">Let's Connect</h5>
-                {% with "facebook twitter" as socials %}
-                {% for social in socials.split %}
-                {% with "https://"|add:social|add:".com/"|add:"thehackadda" as social_link %}
-                
-                {% include "./social_icons.html" with link=social_link  iclass=social %}
-                {% endwith %}
-                {% endfor %}
-                {% endwith %}
-                <a style="color: white;" class="mr-4" href="https://instagram.com/hackadda" target="_blank"><i class="fa fa-instagram"></i></a>
-                <a style="color: white;" class="mr-4" href="https://t.me/thehackadda" target="_blank"><i class="fa fa-telegram"></i></a>
-                <a style="color: white;" class="mr-4" href="https://linkedin.com/company/hackadda" target="_blank"><i class="fa fa-linkedin"></i></a>
-                <a style="color: white;" class="mr-4" href="{% url 'rss-feed' %}" target="_blank"><i class="fa fa-rss"></i></a>
+                {% include "./social_icons.html" %}
             </div>
         </div>
     </div>

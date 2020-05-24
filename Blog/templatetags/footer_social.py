@@ -1,27 +1,24 @@
 from collections import namedtuple
 
 from django import template
+from django.shortcuts import reverse
 
 register = template.Library()
 
 DEFAULT_USERNAME = 'thehackadda'
 
 
-@register.inclusion_tag('footer_social.html', takes_context=True)
-def footer_socials(context):
-    Socials = namedtuple('Social', ['name', 'link', 'username'])
+@register.simple_tag(name='load_socials')
+def load_socials():
+    Socials = namedtuple('Social', ['name', 'link'])
 
-    socials = (
-        ('Facebook', 'https://facebook.com', DEFAULT_USERNAME),
-        ('Twitter', 'https://twitter.com', DEFAULT_USERNAME),
-        ('Instagram', 'https://instagram.com', 'hackadda'),
-        ('Telegram', 'https://telegram.org', DEFAULT_USERNAME),
-        ('LinkedIn', 'https://linkedin.com/company', DEFAULT_USERNAME)
-        ('RSS Feed', 'http://hackadda.com/latest/feed')
+    social_info = (
+        ('facebook', f'https://facebook.com/{DEFAULT_USERNAME}'),
+        ('twitter', f'https://twitter.com/{DEFAULT_USERNAME}'),
+        ('instagram', f'https://instagram.com/hackadda'),
+        ('telegram', f'https://t.me/{DEFAULT_USERNAME}'),
+        ('linkedin', f'https://linkedin.com/company/{DEFAULT_USERNAME}'),
+        ('rss', reverse('rss-feed'))
     )
-    footers = [Socials(*social) for social in socials]
-    context = {
-        'footers': footers
-    }
-
-    return context
+    socials = [Socials(*info) for info in social_info]
+    return socials

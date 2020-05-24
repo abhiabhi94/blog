@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'hitcount',
     'taggit',
     'taggit_autosuggest',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -100,8 +101,8 @@ MEDIA_URL = '/media/'
 
 def get_plugin_meta(plugin, plugin_dir, plugin_file='plugin.js'):
     """ format for specifying plugin resources:
-        (name of plugin,  
-        'specific path to directory containing plugin.js', 
+        (name of plugin,
+        'specific path to directory containing plugin.js',
         'plugin.js')'"""
     plugin_base_dir = '/static/Blog/ckeditor_plugins/'
     return (plugin, os.path.join(plugin_base_dir, plugin_dir) + os.path.sep, plugin_file)
