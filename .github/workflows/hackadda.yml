@@ -24,8 +24,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: ESLint Action
-      uses: hallee/eslint-action@1.0.1
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
