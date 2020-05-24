@@ -22,7 +22,7 @@ def truncate_title(val, max_len):
     if len(val) > max_len:
         truncated_val = val[:max_len]
         # Check if the next character is a space(This means the word ends here)
-        if val[max_len] is not ' ':
+        if not val[max_len]:
             truncated_val = val[:val.rfind(' ')]
         return truncated_val + '...'
 
