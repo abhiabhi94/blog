@@ -1,9 +1,11 @@
-{% load cool_view %} {% load cool_timesince %} {% for post in posts %}
+{% load cool_view %}
+{% load cool_timesince %}
+{% for post in posts %}
 <div class="container-fluid">
     {% if forloop.counter|divisibleby:5 %}
-    <!-- {% include "Blog/advertisement.html" with type="horizontal" %} -->
+    {% comment %} {% include "Blog/advertisement.html" with type="horizontal" %} {% endcomment %}
     {% endif %}
-    <div class="row media content-section article-list">
+    <div class="row no-gutters media content-section article-list">
         <div class="article-thumbnail col-md-3">
             <a href="{{ post.get_detail_url }}" title="{{ post.title }}"><img src={{ post.thumbnail.url }} alt="{{ post.title }}"></a>
         </div>
@@ -11,8 +13,6 @@
             <div class="media-body article-contents">
                 <div class="article-details">
                     <h2><a class="article-title" href="{{ post.get_detail_url }}" title="{{post.title}}">{{ post.title }}</a></h2>
-                    {% comment %}
-                    <p class="article-short-des">{{ post.short_des|truncatewords_html:'50'|safe }}</p> {% endcomment %}
                     <div class="article-short-des">
                         {{ post.content|truncatewords_html:'35'|safe }}&nbsp;
                         <a style="display:inline-block" href="{{ post.get_detail_url }}" title="Read full article">Read more</a>

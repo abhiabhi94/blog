@@ -43,8 +43,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         {% comment %} to prevent conflict it with autocomplete jquery. {% endcomment %}
         <script>var jq = $.noConflict();</script>
-        {% comment %} google advertisements {% endcomment %}
-        {% comment %} <script data-ad-client="ca-pub-2992032334792000" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> {% endcomment %}
         {% block extrahead %}
         {% endblock extrahead %}
     </head>
@@ -94,10 +92,10 @@
             </nav>
         </header>
 
-        <main role="main" id="main">
+        <main role="main" id="main" style="{% block style_main %}{% endblock style_main %}">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-9">
+                <div class="row no-gutters">
+                    <div class="{% block cls_mainbar %}col-md-9{% endblock cls_mainbar %}">
                         {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-{{message.tags}}">
@@ -107,13 +105,15 @@
                         {% endif %}
                         {% if exception %}
                         <p>{{ exception }}</p>
-                        {% endif %}                        
+                        {% endif %}
                         <div id="response">
                         </div>
                         {% block content %}
                         {% endblock content %}
                     </div>
-                    {% include "./sidebar.html" %}
+                    {% block sidebar %}
+                    {% include "./base_sidebar.html" %}
+                    {% endblock sidebar %}
                 </div>
             </div>
         </main>

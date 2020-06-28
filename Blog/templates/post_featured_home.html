@@ -3,7 +3,7 @@
 {% url "Blog:featured-posts" as link %}
 {% include "heading.html" with heading="Featured" view_more_url=link %}
 <div class="container-fluid">
-    <div class="row featured-articles">
+    <div class="row no-gutters featured-articles">
         {% for post in posts %}
             {% if forloop.counter < 4 %}
                 {% if forloop.counter == 1 %}
@@ -17,18 +17,11 @@
                     {% define "aside" as label %}
                     {% define 0 as latest_featured%}
                 {% endif %}
-                {% comment %} {% if forloop.counter > 1 and flag == 0 %}
-                    <div class="{{label}}">
-                {% endif %} {% endcomment %}
                 <div class="{{label}}-featured">
                     <div class="col article-card">
                         {% include "post_card_home.html" with font=font latest_featured=latest_featured%}
                     </div>
                 </div>
-                {% comment %} {% if forloop.counter > 1 and flag == 0 %}
-                    </div>
-                    {% define 1 as flag %}
-                {% endif %} {% endcomment %}
             {% endif %}
         {% endfor %}
 

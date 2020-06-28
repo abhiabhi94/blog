@@ -1,8 +1,10 @@
-from validate_email import validate_email
-from Blog.models import Post
 from datetime import datetime, timedelta
+
+from validate_email import validate_email
 from hitcount.models import Hit
 from django.core.paginator import Paginator
+
+from Blog.models import Post
 
 
 def latest_entry(request):
@@ -11,7 +13,7 @@ def latest_entry(request):
         date: date-time
             The date of the latest post published.
     """
-    return Post.objects.filter(state=1).latest('date_published').date_published
+    return Post.objects.filter(state=Post.Status.PUBLISH).latest('date_published').date_published
 
 
 def published_posts(order='-date_published'):
@@ -21,7 +23,7 @@ def published_posts(order='-date_published'):
         a list of published posts.
         If no order is given, the posts are ordered by their post date.
     """
-    return Post.objects.filter(state=1).order_by(order)
+    return Post.objects.filter(state=Post.Status.PUBLISH).order_by(order)
 
 
 def email_verification(email):
