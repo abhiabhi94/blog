@@ -1,5 +1,8 @@
+from enum import IntEnum, unique
 import os
 from io import BytesIO
+
+
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -13,6 +16,7 @@ from django.core.exceptions import ValidationError
 from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import strip_tags, strip_spaces_between_tags
+from django.utils.translation import gettext_lazy as _
 # from taggit.managers import TaggableManager
 # from taggit.models import Tag
 from taggit_autosuggest.managers import TaggableManager
@@ -38,7 +42,7 @@ class Category(models.Model, ModelMeta):
     }
 
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = _('Categories')
 
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
@@ -57,18 +61,20 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         self.__original_title = self.title
         self.__original_img_path = self.image.path
 
-    draft = -1
-    queued = 0
-    publish = 1
+    @unique
+    class Status(IntEnum):
+        DRAFT = -1
+        QUEUE = 0
+        PUBLISH = 1
 
     state_choices = [
-        (draft, 'Draft'),
-        (queued, 'Queued'),
-        (publish, 'Published'),
+        (Status.DRAFT, _('Draft')),
+        (Status.QUEUE, _('Queue')),
+        (Status.PUBLISH, _('Publish')),
     ]
 
     title = models.CharField(
-        help_text='Try to keep the title short, within 80 characters.', max_length=80, unique=True)
+        help_text=_('Try to keep the title short, within 80 characters.'), max_length=80, unique=True)
     slug = models.SlugField(default='', max_length=80)
     content = RichTextUploadingField()
     tags = TaggableManager()
@@ -78,11 +84,12 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                                'groups__name': 'editor'})
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
-    state = models.SmallIntegerField(choices=state_choices, default=draft)
+    state = models.SmallIntegerField(
+        choices=state_choices, default=state_choices[0])
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
-    image = models.ImageField(help_text='Do not forget to change this before publishing',
+    image = models.ImageField(help_text=_('Do not forget to change this before publishing.'),
                               default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
     thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
     # adding a generic relationship makes sorting by Hits possible:
@@ -128,19 +135,19 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             img = self.image
             # print('width:', img.width, '\theight:', img.height)
             if img is None:
-                raise ValidationError(f'Image not present', code='invalid')
+                raise ValidationError(_(f'Image not present'), code='invalid')
             if img.width < MIN_IMG_WIDTH:
                 raise ValidationError(
-                    f'Image width should not be less than {MIN_IMG_WIDTH}, yours width was {img.width}', code='invalid')
+                    _(f'Image width should not be less than {MIN_IMG_WIDTH}, yours width was {img.width}'), code='invalid')
             if img.width > MAX_IMG_WIDTH:
                 raise ValidationError(
-                    f'Image width should not be greater than {MAX_IMG_WIDTH}, yours width was {img.width}', code='invalid')
+                    _(f'Image width should not be greater than {MAX_IMG_WIDTH}, yours width was {img.width}'), code='invalid')
             if img.height < MIN_IMG_HEIGHT:
                 raise ValidationError(
-                    f'Image height should not be less than {MIN_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
+                    _(f'Image height should not be less than {MIN_IMG_HEIGHT}, yours height was {img.height}'), code='invalid')
             if img.height > MAX_IMG_HEIGHT:
                 raise ValidationError(
-                    f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}', code='invalid')
+                    _(f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}'), code='invalid')
 
     def save(self, *args, **kwargs):
         """
@@ -219,6 +226,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     @property
     def views(self):
         # return views only if the view is published
-        if self.state == 1:
+        if self.state == self.Status.PUBLISH:
             return self.hit_count.hits
         return 0

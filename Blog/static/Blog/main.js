@@ -1,6 +1,6 @@
 'use strict';
 
-jq(document).ready(function(event) {
+jq(document).ready(function (event) {
     if (window.matchMedia('(max-width: 600px)').matches) {
         onMobile();
     } else {
@@ -11,11 +11,11 @@ jq(document).ready(function(event) {
     marginFirstHeading();
     loadSidebar();
     addClassToAsideFeatured();
-    jq('.dropdown').on('click focus', function(event) {
+    jq('.dropdown').on('click focus', function (event) {
         jq('.dropdown-menu').toggleClass('visible');
         jq('.dropdown').find('.dropdown-toggle').css('outline', 'none');
     });
-    jq('.copy').on('click', function(event) {
+    jq('.copy').on('click', function (event) {
         event.preventDefault();
         //Check if the request if for a blog or the window
         let text;
@@ -38,7 +38,7 @@ jq(document).ready(function(event) {
         jq(dummy).remove();
         createResponse('info', 'Link Copied Successfully');
     });
-    jq('.bookmark').on('click', function(event) {
+    jq('.bookmark').on('click', function (event) {
         const parent = event.currentTarget;
         event.preventDefault();
         // console.log(event.currentTarget);
@@ -61,12 +61,12 @@ jq(document).ready(function(event) {
 });
 /**
  * Sends an AJAX request and fixes the response to the top and is faded after sometime.
- * @param {string} link - Link where the AJAX request is to be sent 
+ * @param {string} link - Link where the AJAX request is to be sent
  * @param {object} args - The args object may contain the atttributes {type, data, responseType}
  * If not passed their default value will be :
  * type:POST
  * data:''
- * responseType:json  
+ * responseType:json
  */
 function sendAjax(link, args) {
     // const responseType = 'application/
@@ -94,14 +94,14 @@ function sendAjax(link, args) {
         contentType: 'application/' + responseType,
         // dataType: 'json',
         data: JSON.stringify({ 'data': data }),
-        error: function(jqXhr, textStatus, errorMessage) {
+        error: function (jqXhr, textStatus, errorMessage) {
             // console.log('Error Message:' + errorMessage);
         },
-        success: function(data, status, xhr) {
+        success: function (data, status, xhr) {
             // console.log('status:' + status + ', data:' + data);
             // return data;
         },
-        complete: function(data) {
+        complete: function (data) {
             try {
                 // console.log(data.responseJSON['message']);
                 // if (data.responseJSON['status'] === 0) {
@@ -127,10 +127,10 @@ function sendAjax(link, args) {
  * Create a temporary div, append it to the div'#response', fix it to the top and fade it.
  * @param {int} status - an integer based upon the response received for AJAX request.
  * (-1->'error'|0->'success'| 1->'warning')
- * @param {string} msg - a string depicting the message to be displayed in the response. 
+ * @param {string} msg - a string depicting the message to be displayed in the response.
  * @param {int} time - time after which the response fades away
  */
-function createResponse(status, msg, time = 2000) {
+function createResponse(status, msg, time = 5000) {
     switch (status) {
         case -1:
             status = "danger";
@@ -151,13 +151,13 @@ function createResponse(status, msg, time = 2000) {
     fixToTop(temp);
     temp.fadeIn(time);
     temp.fadeOut(2 * time);
-    setTimeout(function() {
+    setTimeout(function () {
         temp.remove();
     }, 2 * time + 10);
 }
 /**
  * Fixes an element to the top of the viewport.
- * @param {element} div - element that is to be fixed at the top of the viewport. 
+ * @param {element} div - element that is to be fixed at the top of the viewport.
  */
 function fixToTop(div) {
     const isfixed = div.css('position') == 'fixed';
@@ -193,7 +193,7 @@ function loadSidebar() {
 }
 
 function sendPost(url, responseEle, data) {
-    jq.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+    jq.post(url, { data: JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function (response) {
         jq(responseEle).append(response);
     });
 }
@@ -213,7 +213,7 @@ function addClassToAsideFeatured() {
 function onMobile() {
     //move view more button to the bottom for home pages
     const viewbutton = jq('.view-more');
-    viewbutton.each(function() { jq(this).parent().next().after(jq(this)) });
+    viewbutton.each(function () { jq(this).parent().next().after(jq(this)) });
 
     // load the accessibility menu
     const pos = '8';
@@ -221,8 +221,8 @@ function onMobile() {
 }
 
 /**
- * 
- * @param {event} event - The event that takes place 
+ *
+ * @param {event} event - The event that takes place
  */
 function subscribe(event) {
     const responseDiv = jq('#sub-response');
@@ -238,7 +238,7 @@ function subscribe(event) {
         // error: function(jqXhr, textStatus, errorMessage) {
         // console.log('Error Message:' + errorMessage);
         // },
-        complete: function(data) {
+        complete: function (data) {
             data = data.responseJSON;
             createResponse(data['status'], data['email'] + data['msg']);
             responseDiv.html('');
