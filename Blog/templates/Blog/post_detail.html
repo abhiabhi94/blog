@@ -6,14 +6,15 @@
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/foundation.min.css">
 {% endblock extrahead %}
+{# makes the side go down #}
+{% block sidebar %}{% include "./post_detail_sidebar.html" %}{% endblock sidebar %}
+{% block cls_mainbar %}col-md-12{% endblock cls_mainbar %}
+{% block style_main %}padding: 5px 15%;{% endblock style_main %}
 {% block content %}
-
 <div id="article-share-container">
     <div id="share">
         {% include "share.html" %}
     </div>
-
-
     <div class="article-contents">
         <article id="post-detail" class="content-section">
             <div class="media-body">

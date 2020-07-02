@@ -1,45 +1,46 @@
 import json
+from datetime import datetime
+
 from django.views.generic import (ListView,
                                   DetailView,
                                   CreateView,
                                   UpdateView,
                                   DeleteView
                                   )
-from django.contrib.auth.models import User
-from Users.models import Profile
 from django.contrib import messages
-from django.shortcuts import (render,
-                              redirect,
-                              get_object_or_404)
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.utils.decorators import method_decorator
-from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.syndication.views import Feed
+from django.core.exceptions import PermissionDenied
+from django.db.models import Count
 from django.http import (JsonResponse,
                          Http404,
                          HttpResponseBadRequest,
                          )
-from django.views.decorators.http import require_http_methods
-from django.core.exceptions import PermissionDenied
-from django.urls import reverse_lazy
-from meta.views import Meta
-from datetime import datetime
-from django.db import IntegrityError
-from django.contrib.syndication.views import Feed
-from Blog.models import Post, Category
-from Subscribers.models import Subscriber
-from hitcount.views import HitCountDetailView
 from django.utils import timezone
-from django.db.models import Count
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse_lazy
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import (render,
+                              redirect,
+                              get_object_or_404)
+from hitcount.views import HitCountDetailView
+from meta.views import Meta
+from taggit.models import Tag
+
+from Blog.decorators.restrict_access import group
 from Blog.manager import (published_posts,
                           email_verification,
-                          get_font_cloud,
                           trending,
                           paginate_util,
                           )
-from Blog.decorators.restrict_access import group
-from taggit.models import Tag
+from Blog.models import Post, Category
+from Subscribers.models import Subscriber
+from Users.models import Profile
 
 """
 Use the name posts for backend purposes.
@@ -52,9 +53,10 @@ paginate_by = 10
 
 global meta_home
 meta_home = Meta(title='HackAdda | Never stop hacking!',
-                 description='Stay updated with the latest technology news, articles, and tutorials.',
+                 description=_(
+                     'Stay updated with the latest technology news, articles, and tutorials.'),
                  keywords=[
-                       'Hack', 'Robotics', 'Coding',
+                     'Hack', 'Robotics', 'Coding',
                      'STEM', 'STEAM', 'Education',
                      'Blog', 'Tinker', 'Kids',
                      'Technology', 'Curiousity'
@@ -92,9 +94,9 @@ class HomeView(ListView):
     # posts_unique = {}
 
     def __init__(self):
-        self.NO_FEATURED_POSTS = 3
-        self.NO_LATEST_POSTS = 6
-        self.NO_CATEGORY_POSTS = 2
+        self.NUM_FEATURED_POSTS = 3
+        self.NUM_LATEST_POSTS = 6
+        self.NUM_CATEGORY_POSTS = 2
         super().__init__()
 
     def get_queryset(self):
@@ -123,33 +125,33 @@ class HomeView(ListView):
     def get_featured_posts(self):
         """
         Returns top_n featured posts
-        where top_n is self.NO_FEATURED_POSTS
+        where top_n is self.NUM_FEATURED_POSTS
         """
-        top_n = self.NO_FEATURED_POSTS
+        top_n = self.NUM_FEATURED_POSTS
 
         return published_posts().filter(featured=True)[:top_n]
 
     def get_latest_posts(self):
         """
         Returns top_n latest_posts
-        +self.NO_LATEST_POSTS latest posts for
-        +self.NO_FEATURED_POSTS is for checking duplicacy with featured articles
+        +self.NUM_LATEST_POSTS latest posts for
+        +self.NUM_FEATURED_POSTS is for checking duplicacy with featured articles
         """
-        top_n = self.NO_LATEST_POSTS + self.NO_FEATURED_POSTS
+        top_n = self.NUM_LATEST_POSTS + self.NUM_FEATURED_POSTS
 
         return published_posts()[:top_n]
 
     def get_category_posts(self, slug, index):
         """
         Returns top_n posts under a certain category.
-        for top_n = +self.NO_FEATURED_POSTS is for featured articles
-                    +self.NO_LATEST_POSTS is for latest articles
-                    +self.NO_CATEGORY_POSTS * (index+1) is for extra articles in case of duplicacy with the above categories.
+        for top_n = +self.NUM_FEATURED_POSTS is for featured articles
+                    +self.NUM_LATEST_POSTS is for latest articles
+                    +self.NUM_CATEGORY_POSTS * (index+1) is for extra articles in case of duplicacy with the above categories.
                     1 is added to index since it starts from 0.
         """
 
-        top_n = self.NO_FEATURED_POSTS + self.NO_LATEST_POSTS + \
-            self.NO_CATEGORY_POSTS * (index + 1)
+        top_n = self.NUM_FEATURED_POSTS + self.NUM_LATEST_POSTS + \
+            self.NUM_CATEGORY_POSTS * (index + 1)
         return published_posts().filter(category__slug=slug)[:top_n]
 
     def get_context_data(self, **kwargs):
@@ -161,7 +163,7 @@ class HomeView(ListView):
 
         latest_posts = list(self.get_latest_posts())
         context['latest_posts'], posts_unique = self.remove_duplicates(
-            latest_posts, posts_unique, self.NO_LATEST_POSTS)
+            latest_posts, posts_unique, self.NUM_LATEST_POSTS)
 
         # Categories to displayed on the homepage
         home_categories
@@ -177,7 +179,7 @@ class HomeView(ListView):
             category_posts = list(
                 self.get_category_posts(category.slug, index))
             category_posts_unique, posts_unique = self.remove_duplicates(
-                category_posts, posts_unique, self.NO_CATEGORY_POSTS)
+                category_posts, posts_unique, self.NUM_CATEGORY_POSTS)
             category_result[category] = category_posts_unique
 
         context['category'] = category_result
@@ -202,17 +204,20 @@ def subscribe(request):
         data['email'] = email
         if email_verification(email):
             try:
-                Subscriber.objects.create(email=email)
-                data['msg'] = ' is now registered successfully with us'
-                data['status'] = 0
-            except IntegrityError:
-                data['msg'] = ' is already registered with us'
+                __, created = Subscriber.objects.get_or_create(email=email)
+                if created:
+                    data['msg'] = ' is now registered successfully with us'
+                    data['status'] = 0
+                else:
+                    data['msg'] = ' is already registered with us'
             except:
                 data['status'] = 1
                 data['msg'] = 'There seems to be an issue on our side. Please retry.'
+
+            data['msg'] = _(data['msg'])
             return JsonResponse(data)
 
-        data['msg'] = ' is not a valid email'
+        data['msg'] = _(' is not a valid email')
         return JsonResponse(data)
     return HttpResponseBadRequest
 
@@ -280,7 +285,7 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         tab = self.kwargs.get('tab', 'draft')
 
         if tab == 'queued':
-            return self.queryset.filter(author=user, state=Post.Status.QUEUED).order_by('-date_created')
+            return self.queryset.filter(author=user, state=Post.Status.QUEUE).order_by('-date_created')
         elif tab == 'published':
             return self.queryset.filter(author=user, state=Post.Status.PUBLISH).order_by('-date_published')
         else:  # for draft
