@@ -1,5 +1,7 @@
 import os
 from io import BytesIO
+from enum import IntEnum, unique
+
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -57,14 +59,16 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         self.__original_title = self.title
         self.__original_img_path = self.image.path
 
-    draft = -1
-    queued = 0
-    publish = 1
+    @unique
+    class Status(IntEnum):
+        DRAFT = -1
+        QUEUED = 0
+        PUBLISH = 1
 
     state_choices = [
-        (draft, 'Draft'),
-        (queued, 'Queued'),
-        (publish, 'Published'),
+        (Status.DRAFT.value, _('Draft')),
+        (Status.QUEUE.value, _('Queue')),
+        (Status.PUBLISH.value, _('Publish')),
     ]
 
     title = models.CharField(
@@ -78,7 +82,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                                'groups__name': 'editor'})
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
-    state = models.SmallIntegerField(choices=state_choices, default=draft)
+    state = models.SmallIntegerField(
+        choices=state_choices, default=state_choices[0])
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)

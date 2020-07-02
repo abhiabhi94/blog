@@ -280,11 +280,11 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         tab = self.kwargs.get('tab', 'draft')
 
         if tab == 'queued':
-            return self.queryset.filter(author=user, state=0).order_by('-date_created')
+            return self.queryset.filter(author=user, state=Post.Status.QUEUED).order_by('-date_created')
         elif tab == 'published':
-            return self.queryset.filter(author=user, state=1).order_by('-date_published')
+            return self.queryset.filter(author=user, state=Post.Status.PUBLISH).order_by('-date_published')
         else:  # for draft
-            return self.queryset.filter(author=user, state=-1).order_by('-date_created')
+            return self.queryset.filter(author=user, state=Post.Status.DRAFT).order_by('-date_created')
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
@@ -378,7 +378,7 @@ class PostCreateView(CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         if self.request.method == 'POST':
-            form.instance.state = -1
+            form.instance.state = Post.Status.DRAFT.value
             messages.success(
                 self.request, 'Your article has been saved.')
         else:
@@ -462,16 +462,16 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
             if 'publish' in self.request.POST:
                 # publish for superuser and queued for others
                 if self.request.user.is_superuser:
-                    form.instance.state = 1  # state -> published
+                    form.instance.state = Post.Status.PUBLISH.value  # state -> published
                     messages.success(
                         self.request, 'Your article has been published.')
                 else:
-                    form.instance.state = 0  # state -> queued
+                    form.instance.state = Post.Status.QUEUE.value  # state -> queued
                     messages.success(
                         self.request, 'Your article has been submitted for approval.')
             # otherwise set the state to draft
             else:
-                form.instance.state = -1
+                form.instance.state = Post.Status.DRAFT.value
         else:
             messages.warning(
                 self.request, 'You are not allowed to update this post.')
@@ -541,11 +541,11 @@ def preview(request, slug):
         """Submit post for review"""
         if request.user == post.author or request.user.is_superuser:
             if request.user.is_superuser:  # publish directly for superuser
-                post.state = 1  # state -> published
+                post.state = Post.Status.PUBLISH.value  # state -> published
                 messages.success(
                     request, f'The article {post.title} has been published')
             else:
-                post.state = 0  # state -> queued
+                post.state = Post.Status.QUEUE.value  # state -> queued
                 messages.success(
                     request, f'Your article {post.title} has been submitted for approval.')
 

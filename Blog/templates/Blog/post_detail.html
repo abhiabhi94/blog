@@ -46,16 +46,15 @@
         {% comment %} {% include "Blog/advertisement.html" with type="horizontal" %} {% endcomment %}
     </div>
 </div>
+{% block post_status_form %}
+{% endblock post_status_form %}
+{% block recommended_posts %}
 <div id="recommended-posts" class="article-contents content-section">
     <div id="ad-after-recommended-posts">
     {% comment %} {% include "Blog/advertisement.html" with type="horizontal" %} {% endcomment %}
     </div>
 </div>
-{% endblock content %}
 {% comment %} For requesting recommended posts {% endcomment %}
-{% block extrabottom %}
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 <script>
     const id ='#ad-after-recommended-posts';
     const data = {slug:'{{post.slug}}', top_n:3};
@@ -64,5 +63,10 @@
         jq(id).before(response);
     });
 </script>
+{% endblock recommended_posts %}
+{% endblock content %}
+{% block extrabottom %}
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock extrabottom %}
 
