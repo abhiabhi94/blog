@@ -10,8 +10,9 @@
 <div class="col article-container">
     <h{{font|default:6}}><a class="article-title" href="{{post.get_detail_url}}" title="{{post.title}}">{{ post.title|truncatechars:'80' }}</a></h{{font|default:6}}>
 </div>
-<div class="article-metadata">
+{% comment %} <div class="article-metadata">
     <small class="text"><a class="mr-1" href="{% url 'Blog:author-posts' post.author.username %}" title="{{post.author.get_full_name|title}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
     <small class="mr-1 text-muted" title="{{ post.date_published|date:"j M Y" }}">{{ post.date_published|cool_timesince }}</small>
     <small class="ml-1 text-muted" title={{post.views}}>views:{{post.views|cool_view}}</small>
-</div>
+</div> {% endcomment %}
+{% include "post_metadata.html" %}

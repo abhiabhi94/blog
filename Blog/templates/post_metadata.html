@@ -1,0 +1,9 @@
+{% load cool_view %}
+{% load cool_timesince %}
+{% load comment_tags %}
+<div class="article-metadata">
+  <small><a class="mr-2" href="{% url 'Blog:author-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a></small>
+  <small class="mr-2 text-muted" title="{{ post.date_published|date:" j M Y " }}">{{ post.date_published|cool_timesince }}</small>
+  <small class="text-muted" title="{{ post.views }} views"><i class="fa fa-eye ml-1 mr-1" aria-hidden="true" title="views"></i>{{ post.views|cool_view }}</small>
+  <small class="text-muted" title="{% get_comments_count post user %} comments"><i class="fa fa-comments ml-1 mr-1" aria-hidden="true" title="comments"></i>{% get_comments_count post user %}</small>
+</div>
