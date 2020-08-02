@@ -25,6 +25,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import (render,
                               redirect,
                               get_object_or_404)
@@ -351,16 +352,14 @@ def get_recommended_posts(request):
         top_n: No. of recommended articles required
 
     Returns:
-        Currently this function just returns the latest {top_n} posts (excluding the requesting post).
-
-    TODO:
-        Improve this function for a better user experience
+        Return {n} posts with tags related to the current post.
+        if similar posts are lesser, most trending posts are returned in their position.
     """
     if request.method == 'POST' and request.is_ajax:
         try:
             data = json.loads(request.POST.get('data'))
             slug = data['slug']
-            top_n = int(data['top_n'])
+            num = int(data['top_n'])
 
         except Exception as _:
             return HttpResponseBadRequest(
@@ -368,8 +367,18 @@ def get_recommended_posts(request):
 
         template_name = 'post_latest_home.html'
         context = {}
-        # Exclude the current post
-        context['posts'] = published_posts().exclude(slug=slug)[:top_n]
+        current_post = get_object_or_404(Post, slug=slug)
+        recommended_posts_ids = [
+            post.id for post in current_post.tags.similar_objects()]
+        all_published_posts = published_posts()
+        recommended_posts = list(all_published_posts.filter(
+            id__in=recommended_posts_ids)[:num])
+        length = len(recommended_posts)
+        # add trending posts if similar posts are less.
+        if length < num:
+            recommended_posts.extend(
+                trending(objects=published_posts().exclude(slug=slug), top_n=num-length))
+        context['posts'] = recommended_posts
         context['recommend'] = True
         return render(request, template_name, context)
 
@@ -811,8 +820,7 @@ def get_trending_posts(request):
             # top_n = int(request.GET.get('top_n'))
         except Exception as _:
             return HttpResponseBadRequest("Wrong Request Format")
-        posts = published_posts()
-        trending_posts = trending(posts, top_n=top_n)
+        trending_posts = trending(top_n=top_n)
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})

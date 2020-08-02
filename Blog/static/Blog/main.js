@@ -17,7 +17,7 @@ jq(document).ready(function (event) {
     });
     jq('.copy').on('click', function (event) {
         event.preventDefault();
-        //Check if the request if for a blog or the window
+        //Check if the request is for a blog or the window
         let text;
         if (jq(this).data) {
             text = jq(this).data('text');

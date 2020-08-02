@@ -28,7 +28,8 @@ INSTALLED_APPS = [
     'hitcount',
     'taggit',
     'taggit_autosuggest',
-    'django_extensions'
+    'django_extensions',
+    'comment'
 ]
 
 MIDDLEWARE = [
@@ -46,7 +47,9 @@ ROOT_URLCONF = 'blog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -222,3 +225,8 @@ META_SITE_PROTOCOL = 'https'
 
 # Django-taggit
 TAGGIT_CASE_INSENSITIVE = True
+
+# django-comments-dab
+COMMENT_FLAGS_ALLOWED = 0
+PROFILE_APP_NAME = 'Users'
+PROFILE_MODEL_NAME = 'Profile'

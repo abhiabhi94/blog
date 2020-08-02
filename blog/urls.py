@@ -78,9 +78,10 @@ urlpatterns += [
          name='ckeditor_browse'),
 ]
 
-# Adds django-taggit-autosuggest urls
+# Adds third-party urls urls
 urlpatterns += [
     path('taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    path('comment/', include('comment.urls')),
 ]
 
 if settings.DEBUG:

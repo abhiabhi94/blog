@@ -50,9 +50,10 @@ def get_font_cloud(obj, F=5.0, f=1.0):
     # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
 
 
-def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
+def trending(objects=None, start=datetime.today(), interval={'days': 30}, top_n=5):
     """
     Args:
+        objects: the queryset to be used for calculation.(If skipped, all published posts are considered.)
         interval: the interval to be considered for calculation.
         top_n: no. of trending values required (default:).
         start: starting time (default:datetime.now()).
@@ -62,6 +63,9 @@ def trending(objects, start=datetime.today(), interval={'days': 30}, top_n=5):
         e.g. For a post with 24 views today(e.g. 24), 25 views on 23th, 220 views on 22nd..
         score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day)
     """
+    if objects is None:
+        objects = published_posts()
+    max_score = 0
     for obj in objects:
         # Initialising the score attribute with the view value of current day
         setattr(obj, 'score', Hit.objects.filter(

@@ -16,9 +16,8 @@ from hitcount.models import HitCountMixin, HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import strip_tags, strip_spaces_between_tags
 from django.utils.translation import gettext_lazy as _
-# from taggit.managers import TaggableManager
-# from taggit.models import Tag
 from taggit_autosuggest.managers import TaggableManager
+from comment.models import Comment
 
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
@@ -99,6 +98,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         content_type_field='content_type',
         related_query_name='hit_count_generic',
     )
+    comments = GenericRelation(Comment)
 
     _metadata = {
         'title': 'title',

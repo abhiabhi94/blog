@@ -43,6 +43,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         {% comment %} to prevent conflict it with autocomplete jquery. {% endcomment %}
         <script>var jq = $.noConflict();</script>
+        <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
         {% block extrahead %}
         {% endblock extrahead %}
     </head>
@@ -119,7 +120,6 @@
         </main>
         {% include "./footer.html" %}
         <script src="{% static 'Blog/main.js' %}"></script>
-        <script>window.CSRF_TOKEN="{{ csrf_token }}"</script>
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156068094-1"></script>
         <script>

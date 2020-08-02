@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
 from PIL import Image
+
 from Blog.models import Post
 # Create your models here.
 
@@ -28,6 +30,9 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.username} Profile'
+
+    def get_absolute_url(self):
+        return reverse("Blog:author-posts", kwargs={"username": self.user.username})
 
     def get_bookmarked_posts(self):
         return [post.id for post in self.bookmarked_posts.all()]
