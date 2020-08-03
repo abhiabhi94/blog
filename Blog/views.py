@@ -378,7 +378,8 @@ def get_recommended_posts(request):
         if length < num:
             # exclude the current and already obtained similar posts above
             recommended_posts.extend(
-                trending(objects=published_posts().exclude(slug=slug, id__in=recommended_posts_ids), top_n=num-length))
+                trending(objects=all_published_posts.exclude(
+                    slug=slug).exclude(id__in=recommended_posts_ids), top_n=num-length))
         context['posts'] = recommended_posts
         context['recommend'] = True
         return render(request, template_name, context)
