@@ -9,7 +9,10 @@ jq(document).ready(function (event) {
     }
     jq('.subForm').submit(subscribe);
     marginFirstHeading();
-    loadSidebar();
+    // don't load the sidebar for detail page
+    if (!isDetailPage()) {
+        loadSidebar();
+    }
     addClassToAsideFeatured();
     jq('.dropdown').on('click focus', function (event) {
         jq('.dropdown-menu').toggleClass('visible');
@@ -285,4 +288,9 @@ function loadAccessibityMenu(pos = '1') {
         account: 'xj0VXatzMz'
     };
     jq.getScript("https://cdn.userway.org/widget.js");
+}
+
+function isDetailPage() {
+    const detailPageRegEx = RegExp('\\d{4}/\\d{1,2}/\\d{1,2}/[-\\w]+');
+    return detailPageRegEx.test(window.location.pathname);
 }

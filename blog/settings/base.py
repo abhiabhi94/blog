@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_webp',
     'Blog.apps.BlogConfig',
     'Users.apps.UsersConfig',
     'Subscribers.apps.SubscribersConfig',
@@ -29,7 +30,7 @@ INSTALLED_APPS = [
     'taggit',
     'taggit_autosuggest',
     'django_extensions',
-    'comment'
+    'comment',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_webp.context_processors.webp',
             ],
         },
     },
@@ -230,3 +232,5 @@ TAGGIT_CASE_INSENSITIVE = True
 COMMENT_FLAGS_ALLOWED = 5
 PROFILE_APP_NAME = 'Users'
 PROFILE_MODEL_NAME = 'Profile'
+
+WEBP_CONVERT_MEDIA_FILES = True
