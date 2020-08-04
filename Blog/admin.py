@@ -55,7 +55,7 @@ class CategoryListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         category_list = [category[0]
-                         for category in Category.objects.values_list('name')]
+                         for category in Category.objects.values_list('name').order_by('name')]
         all_categories = tuple({(item, item) for item in category_list})
         return all_categories
 

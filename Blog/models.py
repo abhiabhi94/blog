@@ -25,10 +25,10 @@ IMG_DIR = 'blog'
 
 class Category(models.Model, ModelMeta):
     name = models.CharField(help_text=(
-        "Name of the category. ex-Coding, Robotics"), max_length=50, unique=True)
-    slug = models.SlugField(default=slugify(name), max_length=80)
+        _("Name of the category. ex-Coding, Robotics")), max_length=50, unique=True)
+    slug = models.SlugField(default=slugify(name), max_length=80, unique=True)
     info = models.TextField(help_text=(
-        "Description of the category."), max_length=5000)
+        _("Description of the category.")), max_length=5000)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     # author of this category.
@@ -73,7 +73,9 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     title = models.CharField(
         help_text=_('Try to keep the title short, within 80 characters.'), max_length=80, unique=True)
-    slug = models.SlugField(default='', max_length=80)
+    slug_change = models.BooleanField(
+        default=False, verbose_name=_('Change Slug'))
+    slug = models.SlugField(default='', max_length=80, unique=True)
     content = RichTextUploadingField()
     tags = TaggableManager()
     date_created = models.DateTimeField(default=timezone.now)
@@ -83,7 +85,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL)
     state = models.SmallIntegerField(
-        choices=state_choices, default=state_choices[0])
+        choices=state_choices, default=Status.DRAFT.value)
     date_published = models.DateTimeField(
         null=True, blank=True)
     featured = models.BooleanField(default=False)
@@ -137,16 +139,20 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                 raise ValidationError(_(f'Image not present'), code='invalid')
             if img.width < MIN_IMG_WIDTH:
                 raise ValidationError(
-                    _(f'Image width should not be less than {MIN_IMG_WIDTH}, yours width was {img.width}'), code='invalid')
+                    _(f'Image width should not be less than {MIN_IMG_WIDTH}, \
+                        yours width was {img.width}'), code='invalid')
             if img.width > MAX_IMG_WIDTH:
                 raise ValidationError(
-                    _(f'Image width should not be greater than {MAX_IMG_WIDTH}, yours width was {img.width}'), code='invalid')
+                    _(f'Image width should not be greater than {MAX_IMG_WIDTH}, \
+                        yours width was {img.width}'), code='invalid')
             if img.height < MIN_IMG_HEIGHT:
                 raise ValidationError(
-                    _(f'Image height should not be less than {MIN_IMG_HEIGHT}, yours height was {img.height}'), code='invalid')
+                    _(f'Image height should not be less than {MIN_IMG_HEIGHT}, \
+                        yours height was {img.height}'), code='invalid')
             if img.height > MAX_IMG_HEIGHT:
                 raise ValidationError(
-                    _(f'Image height should not be greater than {MAX_IMG_HEIGHT}, yours height was {img.height}'), code='invalid')
+                    _(f'Image height should not be greater than {MAX_IMG_HEIGHT}, \
+                        yours height was {img.height}'), code='invalid')
 
     def save(self, *args, **kwargs):
         """
@@ -155,13 +161,15 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         3. compress and resize images to make thumbnails and full size images
         """
 
-        if self.__original_title != self.title:
+        if self.slug_change or (not self.slug):
             self.slug = slugify(self.title)
+            # reset the field
+            self.slug_change = False
 
         super(Post, self).save(*args, **kwargs)
 
         # Save the publish date when the flag is set for the first time.
-        if self.state == 1 and self.date_published is None:
+        if self.state == self.Status.PUBLISH and self.date_published is None:
             self.date_published = timezone.now()
 
         if self.__original_img_path != self.image.path:
