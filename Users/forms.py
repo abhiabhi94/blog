@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from Blog.manager import email_verification
+
+from Blog.utils import email_verification
 from Users.models import Profile
 
 

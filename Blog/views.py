@@ -34,11 +34,10 @@ from meta.views import Meta
 from taggit.models import Tag
 
 from Blog.decorators.restrict_access import group
-from Blog.manager import (published_posts,
-                          email_verification,
-                          trending,
-                          paginate_util,
-                          )
+from Blog.utils import (email_verification,
+                        trending,
+                        paginate_util,
+                        )
 from Blog.models import Post, Category
 from Subscribers.models import Subscriber
 from Users.models import Profile
@@ -101,7 +100,7 @@ class HomeView(ListView):
         super().__init__()
 
     def get_queryset(self):
-        return published_posts()
+        return Post.objects.get_published()
 
     def remove_duplicates(self, current, unique, top_n):
         """
@@ -130,7 +129,7 @@ class HomeView(ListView):
         """
         top_n = self.NUM_FEATURED_POSTS
 
-        return published_posts().filter(featured=True)[:top_n]
+        return Post.objects.get_published().filter(featured=True)[:top_n]
 
     def get_latest_posts(self):
         """
@@ -140,7 +139,7 @@ class HomeView(ListView):
         """
         top_n = self.NUM_LATEST_POSTS + self.NUM_FEATURED_POSTS
 
-        return published_posts()[:top_n]
+        return Post.objects.get_published()[:top_n]
 
     def get_category_posts(self, slug, index):
         """
@@ -153,7 +152,7 @@ class HomeView(ListView):
 
         top_n = self.NUM_FEATURED_POSTS + self.NUM_LATEST_POSTS + \
             self.NUM_CATEGORY_POSTS * (index + 1)
-        return published_posts().filter(category__slug=slug)[:top_n]
+        return Post.objects.get_published().filter(category__slug=slug)[:top_n]
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
@@ -232,7 +231,7 @@ class FeaturedPostListView(ListView):
     paginate_by
 
     def get_queryset(self):
-        return published_posts().filter(featured=True)
+        return Post.objects.get_published().filter(featured=True)
 
     def get_context_data(self, **kwargs):
         context = super(FeaturedPostListView, self).get_context_data(**kwargs)
@@ -251,19 +250,18 @@ class AuthorPostListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return published_posts().filter(author=user)
+        return Post.objects.get_published().filter(author=user)
 
     def get_context_data(self, **kwargs):
         context = super(AuthorPostListView, self).get_context_data(**kwargs)
-        context['author'] = get_object_or_404(User,
-                                              username=self.kwargs.get(
-                                                  'username')
-                                              )
-        context['meta'] = Meta(title=f'{context["author"].get_full_name().title()} | HackAdda',
-                               description=f'Articles authored by {context["author"].get_full_name()}',
-                               og_author=f'{context["author"].get_full_name()}',
+        author = get_object_or_404(User, username=self.kwargs.get('username'))
+        context['author'] = author
+        name = author.get_full_name()
+        context['meta'] = Meta(title=f'{name.title()} | HackAdda',
+                               description=f'Articles authored by {name}',
+                               og_author=f'{name}',
                                keywords=meta_home.keywords)
-        context['profile'] = context['author'].profile
+        context['profile'] = author.profile
         # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
 
@@ -283,14 +281,15 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user)
+        queryset = super().get_queryset().filter(author=user)
         tab = self.kwargs.get('tab', 'draft')
 
         if tab == 'queued':
-            return self.queryset.filter(author=user, state=Post.Status.QUEUE).order_by('-date_created')
+            return queryset.filter.get_queued()
         elif tab == 'published':
-            return self.queryset.filter(author=user, state=Post.Status.PUBLISH).order_by('-date_published')
+            return queryset.filter.get_published()
         else:  # for draft
-            return self.queryset.filter(author=user, state=Post.Status.DRAFT).order_by('-date_created')
+            return queryset.filter.get_draft()
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
@@ -329,7 +328,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
 class PostDetailView(HitCountDetailView, DetailView):
-    queryset = published_posts()
+    queryset = Post.objects.get_published()
     context_object_name = 'post'
     count_hit = True
 
@@ -357,9 +356,9 @@ def get_recommended_posts(request):
     """
     if request.method == 'POST' and request.is_ajax:
         try:
-            data = json.loads(request.POST.get('data'))
-            slug = data['slug']
-            num = int(data['top_n'])
+            data = json.loads(request.POST.get('data', None))
+            slug = data.get('slug', None)
+            num = int(data.get('top_n', None))
 
         except Exception as _:
             return HttpResponseBadRequest(
@@ -370,7 +369,7 @@ def get_recommended_posts(request):
         current_post = get_object_or_404(Post, slug=slug)
         recommended_posts_ids = [
             post.id for post in current_post.tags.similar_objects()]
-        all_published_posts = published_posts()
+        all_published_posts = Post.objects.get_published()
         recommended_posts = list(all_published_posts.filter(
             id__in=recommended_posts_ids)[:num])
         length = len(recommended_posts)
@@ -403,11 +402,11 @@ class PostCreateView(CreateView):
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
-
+        slug = self.object.slug
         if 'draft' in self.request.POST:  # draft option was selected
-            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': slug})
         elif 'preview' in self.request.POST:
-            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': slug})
         else:
             return HttpResponseBadRequest('Wrong request!!!')
 
@@ -445,11 +444,12 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
+        slug = self.object.slug
 
         if 'draft' in self.request.POST:  # draft option was selected
-            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:draft-post-update', kwargs={'slug': slug})
         elif 'preview' in self.request.POST:
-            return reverse_lazy('Blog:post-preview', kwargs={'slug': self.object.slug})
+            return reverse_lazy('Blog:post-preview', kwargs={'slug': slug})
         else:
             return HttpResponseBadRequest('Wrong request!!!')
 
@@ -591,12 +591,14 @@ def bookmark_post(request):
     if request.method == 'POST' and request.is_ajax():
         data = {'message': '', 'status': 1}
         if request.user.is_authenticated:
-            # print('POST request for bookmark made')
-            slug = json.loads(request.body.decode('utf-8'))['data']
-            pk = Post.objects.get(slug=slug).id
+            try:
+                slug = json.loads(request.body.decode('utf-8'))['data']
+            except Exception as e:
+                return HttpResponseBadRequest(
+                    'Wrong Request Format for post request')
+            pk = get_object_or_404(Post, slug=slug).id
             b_post = Profile.objects.filter(
                 user=request.user, bookmarked_posts=pk)
-            # print(b_post)
             if not b_post:
                 request.user.profile.bookmarked_posts.add(pk)
                 data['message'] = 'Post bookmarked'
@@ -623,7 +625,7 @@ class TaggedPostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        post_list = published_posts().filter(
+        post_list = Post.objects.get_published().filter(
             tags__slug=self.kwargs.get('slug').lower())
         if post_list:
             return post_list
@@ -653,13 +655,13 @@ def get_latest_posts(request, **kwargs):
         except Exception as e:
             return HttpResponseBadRequest(
                 'Wrong Request Format for post request')
-        posts = published_posts()[:top_n]
+        posts = Post.objects.get_published()[:top_n]
         return render(request, template_name, {'posts': posts})
 
     elif request.method == 'GET':
         template_name = 'Blog/post_list_latest.html'
         paginate_by = 10
-        posts = published_posts()
+        posts = Post.objects.get_published()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         kwargs['meta'] = Meta(title=f'Latest Articles| HackAdda',
                               description=f'Read latest articles on HackAdda',
@@ -688,7 +690,7 @@ def get_tags(request):
             context['ajax'] = True
 
     # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
-    top_tags_count_list = Tag.objects.filter(post__in=published_posts()).values(
+    top_tags_count_list = Tag.objects.filter(post__in=Post.objects.get_published()).values(
         'name', 'slug', count=Count('name')).order_by('-count')
 
     if flag:    # for post request
@@ -714,7 +716,7 @@ class CategoryPostListView(ListView):
     context_object_name = 'posts'
 
     def get_queryset(self):
-        post_list = published_posts().filter(
+        post_list = Post.objects.get_published().filter(
             category__slug=self.kwargs.get('slug').lower())
         if post_list:
             return post_list
@@ -764,7 +766,7 @@ def get_timewise_list(request, *args, **kwargs):
         if flag_month:
             args_dict['date_published__month'] = kwargs['month']
 
-        posts = published_posts().filter(**args_dict)
+        posts = Post.objects.get_published().filter(**args_dict)
 
         kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
@@ -795,7 +797,7 @@ def get_category(request):
 
     # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
     top_categories_list = Category.objects.filter(
-        post__in=published_posts()).values('name', 'slug', count=Count('name')).order_by('-count')
+        post__in=Post.objects.get_published()).values('name', 'slug', count=Count('name')).order_by('-count')
 
     if flag:  # POST request
         top_categories = top_categories_list[:top_n]
@@ -837,7 +839,7 @@ class LatestPostRSSFeed(Feed):
     #     return {}
 
     def items(self, top_n=5):
-        return published_posts()[:top_n]
+        return Post.objects.get_published()[:top_n]
 
     def item_title(self, item):
         return item.title
