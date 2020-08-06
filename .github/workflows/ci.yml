@@ -33,6 +33,8 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         EMAIL_USER: ${{ secrets.EMAIL_USER }}
         EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
+        TEST: ${{ secrets.TEST }}
       run: |
         python manage.py test
         python manage.py validate_templates
