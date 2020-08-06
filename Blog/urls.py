@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.contrib.auth import views as auth_views
+
+from Blog import views
 from Users import views as user_views
-from .import views
 
 app_name = 'Blog'
 

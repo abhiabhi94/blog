@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .models import Post, Category
-from .manager import published_posts
 from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +6,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
 from taggit.models import Tag
+
+from Blog.models import Post, Category
 
 
 class TagListFilter(admin.SimpleListFilter):

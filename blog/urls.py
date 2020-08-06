@@ -8,10 +8,10 @@ from django.urls import path, include
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import condition
 
-from Users import views as user_views
-from Blog.views import LatestPostRSSFeed as rss_feed
 from Blog.decorators.restrict_access import group, require_superuser
-from Blog.manager import latest_entry
+from Blog.models import Post
+from Blog.views import LatestPostRSSFeed as rss_feed
+from Users import views as user_views
 
 
 def dec_patterns(patterns):
@@ -62,7 +62,7 @@ urlpatterns = url_patterns_admin + [
          name='password_reset_complete'
          ),
     path('latest/feed',
-         condition(last_modified_func=latest_entry)(rss_feed()),
+         condition(last_modified_func=Post.objects.latest_entry)(rss_feed()),
          name='rss-feed'
          ),
     path('privacy-policy', user_views.privacy_policy, name='privacy-policy'),

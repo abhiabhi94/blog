@@ -7,25 +7,6 @@ from validate_email import validate_email
 from Blog.models import Post
 
 
-def latest_entry(request):
-    """
-    Returns
-        date: date-time
-            The date of the latest post published.
-    """
-    return Post.objects.filter(state=Post.Status.PUBLISH).latest('date_published').date_published
-
-
-def published_posts(order='-date_published'):
-    """
-    TODO: support multiple filters.
-    Returns
-        a list of published posts.
-        If no order is given, the posts are ordered by their post date.
-    """
-    return Post.objects.filter(state=Post.Status.PUBLISH).order_by(order)
-
-
 def email_verification(email):
     """Verify whether an email is legit or not"""
     return validate_email(email_address=email, check_regex=True, check_mx=True)
@@ -64,7 +45,7 @@ def trending(objects=None, start=datetime.today(), interval={'days': 30}, top_n=
         score = 24/1 + 25/2 + 220/3 + ...(views on the day)/(difference b/w today and that day)
     """
     if objects is None:
-        objects = published_posts()
+        objects = Post.objects.get_published()
     max_score = 0
     for obj in objects:
         # Initialising the score attribute with the view value of current day

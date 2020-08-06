@@ -19,6 +19,8 @@ from django.utils.translation import gettext_lazy as _
 from taggit_autosuggest.managers import TaggableManager
 from comment.models import Comment
 
+from Blog.managers import PostManager
+
 DEFAULT_IMG = 'default.jpg'
 IMG_DIR = 'blog'
 
@@ -102,6 +104,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     )
     comments = GenericRelation(Comment)
 
+    objects = PostManager()
+
     _metadata = {
         'title': 'title',
         'description': '_get_meta_description',
@@ -166,11 +170,11 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             # reset the field
             self.slug_change = False
 
-        super(Post, self).save(*args, **kwargs)
-
         # Save the publish date when the flag is set for the first time.
         if self.state == self.Status.PUBLISH and self.date_published is None:
             self.date_published = timezone.now()
+
+        super(Post, self).save(*args, **kwargs)
 
         if self.__original_img_path != self.image.path:
             ext = self.image.name.split('.')[-1]
@@ -197,7 +201,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                     img.thumbnail(full_view_size, Image.ANTIALIAS)
                     img.save(self.image.path, quality=75, optimize=True)
 
-        super(Post, self).save(*args, **kwargs)
+            super(Post, self).save(*args, **kwargs)
 
     def _image_name(self, modifier):
         """
@@ -211,8 +215,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     def __str__(self):
         return self.title
 
-    def get_preview_url(self):
-        url = reverse_lazy('Blog:post-preview', kwargs={
+    def get_preview_url(self) -> str:
+        return reverse_lazy('Blog:post-preview', kwargs={
             # 'year': self.date_published.year,
             # 'month': self.date_published.month,
             # 'day': self.date_published.day,
