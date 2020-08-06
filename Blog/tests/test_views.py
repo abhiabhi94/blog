@@ -149,13 +149,13 @@ class TestBookmarkPosts(TestPostBase, TestAJAXView):
         self.assertEqual(False, post in user.profile.get_bookmarked_posts())
 
 
-class TestUserPost(TestPostBase, TestBaseView):
+class TestUserPostView(TestPostBase, TestBaseView):
     def get_url(self, user=None, tab=None):
         if not user:
             user = self.user
         if not tab:
             tab = 'draft'
-        reverse('Blog:author-posts', kwargs={'user': user, 'draft': draft})
+        reverse('Blog:author-posts', kwargs={'user': user, 'draft': 'draft'})
 
     def test_draft_tab(self):
         pass
