@@ -1,11 +1,12 @@
 from subprocess import getoutput
-import urllib.request
-from urllib.error import URLError
-from .base import *
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 import sys
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+import urllib.request
+from urllib.error import URLError
+
+from .base import *
 # This part should only be commented when testing
 
 # global ALLOWED_HOSTS
@@ -76,7 +77,7 @@ SECURE_HSTS_SECONDS = 3600  # 1 hour. Refuses to connect over HTTP
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Integrating sentry sdk inside django
 sentry_sdk.init(
