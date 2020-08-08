@@ -1,19 +1,19 @@
+import json
 import os
 
-import django
-from django.core.handlers.wsgi import WSGIHandler
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog.settings')
+
+CONFIG_FILE = '/etc/config.json'
+
+with (CONFIG_FILE) as f:
+    config = json.load(f)
 
 
-class WSGIEnvironment(WSGIHandler):
-
-    def __call__(self, environ, start_response):
-
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "blog.settings")
-        os.environ['EMAIL_USER'] = environ['EMAIL_USER']
-        os.environ['EMAIL_PASS'] = environ['EMAIL_PASS']
-        os.environ['SECRET_KEY'] = environ['SECRET_KEY']
-        django.setup()
-        return super(WSGIEnvironment, self).__call__(environ, start_response)
+SECRET_KEY = config['SECRET_KEY']
+EMAIL_HOST_USER = config['EMAIL_USER']
+EMAIL_HOST_PASSWORD = config['EMAIL_PASS']
 
 
-application = WSGIEnvironment()
+application = get_wsgi_application()
