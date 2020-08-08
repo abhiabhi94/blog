@@ -271,7 +271,6 @@ class AuthorPostListView(ListView):
 class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
-    queryset = Post.objects.all()
     context_object_name = 'posts'
     paginate_by = 10
 
@@ -281,15 +280,14 @@ class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user)
-        queryset = super().get_queryset().filter(author=user)
         tab = self.kwargs.get('tab', 'draft')
 
         if tab == 'queued':
-            return queryset.filter.get_queued()
+            return Post.objects.get_queued(author=user)
         elif tab == 'published':
-            return queryset.filter.get_published()
+            return Post.objects.get_published(author=user)
         else:  # for draft
-            return queryset.filter.get_draft()
+            return Post.objects.get_draft(author=user)
 
     def get_context_data(self, **kwargs):
         context = super(UserPostListView, self).get_context_data(**kwargs)
@@ -315,7 +313,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         if user == self.request.user:
-            return user.profile.bookmarked_posts.order_by('-date_published')
+            return user.profile.bookmarked_posts.all().order_by('-date_published')
         ### Return HTTP Error: "You should be logged in as the user" ###
         raise Http404(
             f'You should be signed in as {user} to view this page')

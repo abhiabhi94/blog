@@ -46,7 +46,7 @@
 <script>
 jq(document).ready(function(){
     const paths = window.location.pathname.split('/');
-    const lastPath = paths[paths.length-1];
+    const lastPath = paths[paths.length-2];
     if (lastPath === "queued"){
         jq('#queued-tab').addClass('active');
         jq('#queued').addClass('show active');

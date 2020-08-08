@@ -18,7 +18,7 @@ urlpatterns = [
          views.AuthorPostListView.as_view(), name='author-posts'),
     path('user/<str:username>/bookmarks/',
          views.UserPostBookmark.as_view(), name='user-bookmarks'),
-    path('user/<str:username>/posts/<str:tab>',
+    path('user/<str:username>/posts/<str:tab>/',
          views.UserPostListView.as_view(), name='my-posts'),
     path('about/', views.about, name='about'),
     path('post/new/', views.PostCreateView.as_view(), name='post-create'),
