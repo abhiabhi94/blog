@@ -8,6 +8,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
+config = {'PROD': None}
+
 if os.path.isfile(CONFIG_FILE):
     with open(CONFIG_FILE) as f:
         config = json.load(f)

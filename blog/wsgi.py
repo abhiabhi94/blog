@@ -7,7 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog.settings')
 
 CONFIG_FILE = '/etc/config.json'
 
-with (CONFIG_FILE) as f:
+with open(CONFIG_FILE) as f:
     config = json.load(f)
 
 
