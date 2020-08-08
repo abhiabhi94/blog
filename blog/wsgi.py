@@ -1,16 +1,19 @@
-"""
-WSGI config for blog project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
-"""
-
 import os
 
-from django.core.wsgi import get_wsgi_application
+import django
+from django.core.handlers.wsgi import WSGIHandler
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog.settings')
 
-application = get_wsgi_application()
+class WSGIEnvironment(WSGIHandler):
+
+    def __call__(self, environ, start_response):
+
+        os.environ['EMAIL_USER'] = environ['EMAIL_USER']
+        os.environ['EMAIL_PASS'] = environ['EMAIL_PASS']
+        os.environ['SECRET_KEY'] = environ['SECRET_KEY']
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "blog.settings")
+        django.setup()
+        return super(WSGIEnvironment, self).__call__(environ, start_response)
+
+
+application = WSGIEnvironment()
