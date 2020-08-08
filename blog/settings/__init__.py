@@ -8,6 +8,11 @@ SECRET_KEY = os.environ['SECRET_KEY']
 EMAIL_HOST_USER = os.environ['EMAIL_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASS']
 
+if os.environ.get('PROD'):
+    from .prod import *
+else:
+    from .dev import *
+
 # used for testing environment(allows passing throughCI)
 if not os.environ.get('TEST'):
     DATABASES = {
@@ -25,8 +30,3 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-
-if os.environ.get('PROD'):
-    from .prod import *
-else:
-    from .dev import *
