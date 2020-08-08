@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.contrib.auth.models import User, Group
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.contrib import messages
 from functools import wraps
 from django.contrib.auth.decorators import user_passes_test
@@ -25,7 +25,7 @@ def group(group_name='editor'):
             messages.warning(
                 request, 'You are not allowed to enter into this part of the world of hackers')
 
-            return redirect('login')
+            return redirect(reverse('login'))
 
         return wrapper
     return decorator

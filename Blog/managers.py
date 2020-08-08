@@ -2,10 +2,7 @@ from django.db.models import Manager
 
 
 class PostManager(Manager):
-    def get_queryset(self):
-        return super().get_queryset()
-
-    def get_published(self, order='-date_published'):
+    def get_published(self, order='-date_published', *args, **kwargs):
         """
         Returns
             QuerySet
@@ -14,9 +11,9 @@ class PostManager(Manager):
             order: str
                 The field according to which the list will be sorted
         """
-        return self.filter(state=self.model.Status.PUBLISH).order_by(order)
+        return self.filter(state=self.model.Status.PUBLISH, *args, **kwargs).order_by(order)
 
-    def get_queued(self, order='-date_created'):
+    def get_queued(self, order='-date_created', *args, **kwargs):
         """
         Returns
             QuerySet
@@ -25,10 +22,10 @@ class PostManager(Manager):
             order: str
                 The field according to which the list will be sorted
         """
-        return self.filter(state=self.model.Status.QUEUE).order_by(order)
+        return self.filter(state=self.model.Status.QUEUE, *args, **kwargs).order_by(order)
 
-    def get_draft(self, order='-date_created'):
-        return self.filter(state=self.model.Status.DRAFT).order_by(order)
+    def get_draft(self, order='-date_created', *args, **kwargs):
+        return self.filter(state=self.model.Status.DRAFT, *args, **kwargs).order_by(order)
 
     def latest_entry(self):
         """

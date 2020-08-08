@@ -21,13 +21,11 @@ TEST_DATABASE = {
 
 @override_settings(DATABASES=TEST_DATABASE)
 class TestBase(TestCase):
+    maxDiff = None
 
     def get_unique_email(self) -> str:
         """
         Get a valid email
-
-        Args:
-            unique (bool, optional): If a unique email is required. Defaults to False.
 
         Returns:
             str
@@ -71,6 +69,10 @@ class TestBase(TestCase):
             'last_name': 'Karta'
         }
         cls.user = cls.create_user(**cls.user_data)
+        cls.user_1_data = cls.user_data.copy()
+        cls.user_1_data.update(
+            {'username': 'tester_1', 'email': 'a@a.com'})
+        cls.user_1 = cls.create_user(**cls.user_1_data)
         cls.posts = 0
         cls.categories = 0
 
@@ -94,6 +96,14 @@ class TestBase(TestCase):
         category = Category.objects.create(name=name)
         cls.categories += 1
         return category
+
+    def assertQuerysetEqual(self, qs, values, transform=None, *args, **kwargs):
+        attr = 'transform'
+        if (not transform) and (not kwargs.get(attr, None)) and (transform not in args):
+            kwargs.pop(attr, None)
+            if attr in args:
+                args.remove(attr)
+        return super().assertQuerysetEqual(qs, values, transform=lambda x: x, *args, **kwargs)
 
 
 class TestBaseView(TestBase):

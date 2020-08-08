@@ -95,8 +95,7 @@ class TestLatestArticles(TestPostBase, TestAJAXView):
 
         self.assertTemplateUsed(response, 'post_title.html')
         self.assertEqual(len(result), num)
-        self.assertQuerysetEqual(result, Post.objects.get_published()[
-                                 :num], transform=lambda x: x)
+        self.assertQuerysetEqual(result, Post.objects.get_published()[:num])
 
     def test_bad_request(self):
         response = self.request(self.get_url(), data={'a': 'a'})
@@ -150,18 +149,165 @@ class TestBookmarkPosts(TestPostBase, TestAJAXView):
 
 
 class TestUserPostView(TestPostBase, TestBaseView):
-    def get_url(self, user=None, tab=None):
-        if not user:
-            user = self.user
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        from django.contrib.auth.models import Group
+        cls.user.groups.add(Group.objects.create(name='editor'))
+
+    def get_url(self, username=None, tab=None):
+        if not username:
+            username = self.user.username
         if not tab:
             tab = 'draft'
-        reverse('Blog:author-posts', kwargs={'user': user, 'draft': 'draft'})
+        return reverse('Blog:my-posts', kwargs={'username': username, 'tab': tab})
+
+    def test_unauthenticated_user(self):
+        self.client.logout()
+        response = self.client.get(self.get_url())
+        self.assertRedirects(response, expected_url=reverse('login'))
+
+    def test_user_who_is_not_an_editor(self):
+        user = self.user_1
+        self.client.force_login(user)
+        response = self.client.get(self.get_url(username=user.username))
+        self.assertEqual(response.status_code, 302)
+
+    def test_seeing_some_other_users_posts(self):
+        response = self.client.get(self.get_url(username=self.user_1.username))
+        self.assertEqual(response.status_code, 403)
 
     def test_draft_tab(self):
-        pass
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, 200)
+        result = response.context
+
+        self.assertEqual(result['tab_type'], 'draft')
+        self.assertIsNotNone(result['meta'])
+        self.assertQuerysetEqual(
+            result['posts'], Post.objects.get_draft(author=self.user))
 
     def test_queued_tab(self):
-        pass
+        tab = 'queued'
+        response = self.client.get(self.get_url(tab=tab))
+
+        self.assertEqual(response.status_code, 200)
+        result = response.context
+
+        self.assertEqual(result['tab_type'], tab)
+        self.assertIsNotNone(result['meta'])
+        self.assertQuerysetEqual(
+            result['posts'], Post.objects.get_queued(author=self.user))
 
     def test_published_tab(self):
-        pass
+        tab = 'published'
+        response = self.client.get(self.get_url(tab=tab))
+
+        self.assertEqual(response.status_code, 200)
+        result = response.context
+
+        self.assertEqual(result['tab_type'], tab)
+        self.assertIsNotNone(result['meta'])
+        self.assertEqual(result['is_paginated'], True)
+        self.assertQuerysetEqual(
+            result['posts'], Post.objects.get_published(author=self.user)[:result['paginator'].per_page])
+
+
+class TestAuthorPostView(TestPostBase, TestBaseView):
+    def get_url(self, username=None):
+        if not username:
+            username = self.user.username
+        return reverse('Blog:author-posts', kwargs={'username': username})
+
+    def test_view(self):
+        user = self.user
+        self.client.logout()
+        response = self.client.get(self.get_url(user.username))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'Blog/author_posts.html')
+        result = response.context
+
+        self.assertEqual(result['is_paginated'], True)
+        self.assertQuerysetEqual(
+            result['posts'], Post.objects.get_published().filter(author=user)[:result['paginator'].per_page])
+
+        self.assertEqual(result['author'], user)
+        self.assertEqual(result['profile'], user.profile)
+        self.assertIsNotNone(result['meta'])
+
+    def test_wrong_username(self):
+        response = self.client.get(self.get_url('h'))
+        self.assertEqual(response.status_code, 404)
+
+
+class TestUserBookmarkView(TestPostBase, TestBaseView):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.user.profile.bookmarked_posts.add(cls.post.pk)
+
+    def get_url(self, username=None):
+        if not username:
+            username = self.user.username
+        return reverse('Blog:user-bookmarks', kwargs={'username': username})
+
+    def test_unauthenticated_users(self):
+        self.client.logout()
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_viewing_other_user_bookmarks(self):
+        user = self.user_1
+        response = self.client.get(self.get_url(user.username))
+
+        self.assertEqual(response.status_code, 404,
+                         msg=f'You should be logged in as {user} to view this page')
+
+    def test_viewing_bookmark(self):
+        user = self.user
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, 200)
+        result = response.context
+
+        self.assertQuerysetEqual(
+            result['posts'], user.profile.bookmarked_posts.all().order_by('-date_published'))
+        self.assertEqual(result['profile'], user.profile)
+
+
+class TestPostDetailView(TestPostBase, TestBaseView):
+    def get_url(self, post=None):
+        if not post:
+            post = self.post
+
+        return reverse('Blog:post-detail', kwargs={
+            'slug': post.slug,
+            'year': post.date_published.year,
+            'month': post.date_published.month,
+            'day': post.date_published.day
+        })
+
+    def test_detail_for_unauthenticated_users(self):
+        self.client.logout()
+        post = self.post
+        initial_views = post.views
+        response = self.client.get(self.get_url())
+        result = response.context
+
+        self.assertEqual(Post.objects.get(slug=post.slug), result['post'])
+        self.assertEqual(result['post'].views, initial_views + 1)
+        self.assertIsNotNone(result['meta'])
+
+    def test_detail_for_authenticated_users(self):
+        post = self.post
+        initial_views = post.views
+        response = self.client.get(self.get_url())
+        result = response.context
+
+        self.assertEqual(Post.objects.get(slug=post.slug), result['post'])
+        self.assertEqual(result['post'].views, initial_views + 1)
+        self.assertIsNotNone(result['meta'])
+        self.assertEqual(result['profile'], self.user.profile)
