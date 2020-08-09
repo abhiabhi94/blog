@@ -1,4 +1,4 @@
-name: HackAdda CI
+name: build
 
 on:
   push:
