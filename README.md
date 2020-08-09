@@ -1,5 +1,3 @@
 #blog
 
-run following command to push to server directly.
-
-`git push instantdeploy master`
+![](https://github.com/abhiabhi94/blog/workflows/build/badge.svg)
