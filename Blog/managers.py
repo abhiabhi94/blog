@@ -27,7 +27,7 @@ class PostManager(Manager):
     def get_draft(self, order='-date_created', *args, **kwargs):
         return self.filter(state=self.model.Status.DRAFT, *args, **kwargs).order_by(order)
 
-    def latest_entry(self):
+    def latest_entry(self, *args, **kwargs):
         """
         Returns
             date: date-time
