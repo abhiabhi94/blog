@@ -459,7 +459,6 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
     fields = ['title', 'content', 'image', 'tags', 'category']
 
     def form_valid(self, form):
-        # print("------->", 'form_valid')
         """
         Checks whether the user logged in is the one updating the post.
         Checks whether the user is authorised to update the article(only members of the group editors are allowed)
