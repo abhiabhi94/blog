@@ -1,0 +1,61 @@
+exclude: 'docs|node_modules|migrations|.git|.tox'
+default_stages: [commit]
+fail_fast: true
+default_language_version:
+    python: python3.8
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: master
+    hooks:
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+        name: check for merge conflict
+        description: Prevent accidentally commiting files with merge conflicts.
+    -   id: end-of-file-fixer
+        name: fix end of files.
+        description: Ensures that a file is either empty, or ends with one newline.
+    -   id: debug-statements
+        name: check for python debug statements
+        description: Check for debugger imports and py37+ `breakpoint()` calls in python source.
+    -   id: check-yaml
+        name: check for yaml files
+        description: Check configurations for yaml files
+    -   id: detect-private-key
+        name: check for private key
+        description: Check for preventing pushing private keys to the version control
+
+
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+    -   id: flake8
+        name: flake8
+        language: python
+        types: [python]
+        args: ['--config=setup.cfg']
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.5.2
+    hooks:
+      - id: isort
+        args: ['--settings-path=setup.cfg']
+
+-   repo: local
+    hooks:
+    -   id: pre-commit-django-migrations
+        name: Check django migrations
+        # TODO: fix this later
+        entry: python manage.py makemigrations --dry-run
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
+
+    -   id: pre-commit-django-tests
+        name: Running django tests
+        entry: docker exec review-backend pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
