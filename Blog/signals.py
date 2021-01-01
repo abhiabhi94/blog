@@ -9,4 +9,4 @@ from Blog.models import Post
 def adjust_trending_score(sender, instance, created, raw, using, update_fields, **kwargs):
     if created and isinstance(instance, Post):
         instance.trending_score = F('trending_score') + 1
-        instanace.save(update_fields=['trending_score'])
+        instance.save(update_fields=['trending_score'])
