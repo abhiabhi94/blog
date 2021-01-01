@@ -1,6 +1,7 @@
 from enum import IntEnum, unique
 import os
 from io import BytesIO
+from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone
@@ -18,6 +19,7 @@ from django.utils.html import strip_tags, strip_spaces_between_tags
 from django.utils.translation import gettext_lazy as _
 from taggit_autosuggest.managers import TaggableManager
 from comment.models import Comment
+from hitcount.models import Hit
 
 from Blog.managers import PostManager
 
@@ -103,6 +105,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         related_query_name='hit_count_generic',
     )
     comments = GenericRelation(Comment)
+    trending_score = models.FloatField(default=0.0)
 
     objects = PostManager()
 
@@ -177,7 +180,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         super(Post, self).save(*args, **kwargs)
 
         if self.__original_img_path != self.image.path:
-            ext = self.image.name.split('.')[-1]
+            # remove '.' form the string(e.g '.gif')
+            ext = os.path.splitext(self.image.name)[-1][1:]
             if ext.lower() == 'gif':  # do not compress GIF images
                 self.thumbnail.save(
                     self.image.name, File(self.image), save=False)
@@ -208,9 +212,8 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
         """
-        new_name = self.image.name.split('.')
-        new_name.insert(-1, modifier + '.')  # dont forget extension
-        return ''.join(new_name)
+        name, extension = os.path.splitext(self.image.name)
+        return name + modifier + extension
 
     def __str__(self):
         return self.title
@@ -240,3 +243,31 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         if self.state == self.Status.PUBLISH.value:
             return self.hit_count.hits
         return 0
+
+    def _get_last_n_day_view_per_day(self, n=30):
+        """
+        Returns a dictionary of views for the last n days.
+        e.g {
+            1: 20,
+            2: 30,
+            ...
+            31: 200
+        }
+        """
+        if self.date_published is not None:
+            diff = 0
+            now = timezone.now()
+            hitcount = HitCount.objects.get_for_object(self)
+            dt_diff = now - timedelta(days=diff)
+            hits = {}
+            while(self.date_published <= dt_diff and diff < n):
+                hits[dt_diff.day] = hitcount.hit_set.filter(created__date=dt_diff.date()).count()
+                diff += 1
+                dt_diff -= timedelta(diff)
+            return hits
+
+    def set_trending_score(self):
+        last_month_hits = self._get_last_n_day_view_per_day()
+        if last_month_hits:
+            self.trending_score = sum([v/k for k, v in last_month_hits.items()])
+            self.save(update_fields=['trending_score'])

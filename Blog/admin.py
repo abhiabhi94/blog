@@ -106,9 +106,10 @@ class AuthorListFilter(admin.SimpleListFilter):
 
 class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'last_updated', 'views',
-                       'date_published', 'thumbnail')
+                       'date_published', 'thumbnail', 'trending_score')
     list_display = ('title', 'author', 'views', 'date_created',
-                    'date_published', 'state', 'featured', 'tag_list')
+                    'date_published', 'state', 'featured', 'tag_list',
+                    'trending_score')
     autocomplete_fields = ('category',)
     search_fields = ['author__username', 'slug', 'tags__name']
 

@@ -35,7 +35,6 @@ from taggit.models import Tag
 
 from Blog.decorators.restrict_access import group
 from Blog.utils import (email_verification,
-                        trending,
                         paginate_util,
                         )
 from Blog.models import Post, Category
@@ -375,8 +374,10 @@ def get_recommended_posts(request):
         if length < num:
             # exclude the current and already obtained similar posts above
             recommended_posts.extend(
-                trending(objects=all_published_posts.exclude(
-                    slug=slug).exclude(id__in=recommended_posts_ids), top_n=num-length))
+                all_published_posts.exclude(slug=slug)
+                    .exclude(id__in=recommended_posts_ids)
+                    .order_by('-trending_score')[:num-length]
+                )
         context['posts'] = recommended_posts
         context['recommend'] = True
         return render(request, template_name, context)
@@ -821,7 +822,7 @@ def get_trending_posts(request):
             # top_n = int(request.GET.get('top_n'))
         except Exception as _:
             return HttpResponseBadRequest("Wrong Request Format")
-        trending_posts = trending(top_n=top_n)
+        trending_posts = Post.objects.all().order_by('-trending_score')[:top_n]
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
