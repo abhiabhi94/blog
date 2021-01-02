@@ -1,7 +1,6 @@
-from django.contrib.auth.models import User
 from django.shortcuts import reverse
 
-from Blog.tests.base import TestPostBase, Post
+from Blog.tests.base import Post, TestPostBase
 
 
 class TestPostModel(TestPostBase):
@@ -154,3 +153,14 @@ class TestPostManager(TestPostBase):
     def test_latest_entry(self):
         self.assertEqual(Post.objects.get_published().first(
         ).date_published, Post.objects.latest_entry())
+
+
+class TestPostSignals(TestPostBase):
+    def test_trending_score_updates_when_hit_is_created(self):
+        post = self.post
+        old_trending_score = post.trending_score
+
+        self.client.get(post.get_detail_url())
+        post.refresh_from_db()
+
+        self.assertEqual(post.trending_score, old_trending_score + 1)

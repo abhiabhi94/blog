@@ -53,8 +53,8 @@ repos:
         require_serial: true
 
     -   id: pre-commit-django-tests
-        name: Running django tests
-        entry: docker exec review-backend pytest
+        name: Check django tests
+        entry: python manage.py test --keepdb
         language: system
         types: [python]
         pass_filenames: false
