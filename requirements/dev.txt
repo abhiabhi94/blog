@@ -1,3 +1,2 @@
 -r ./base.txt
 pre-commit==2.9.3
-sentry-sdk==0.13.5
