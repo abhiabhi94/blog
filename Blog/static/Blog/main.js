@@ -9,8 +9,8 @@ jq(document).ready(function (event) {
     }
     jq('.subForm').submit(subscribe);
     marginFirstHeading();
-    // don't load the sidebar for detail page
-    if (!isDetailPage()) {
+    // don't load the sidebar for detail or preview pages
+    if (!isPreviewPage() && !isDetailPage()) {
         loadSidebar();
     }
     addClassToAsideFeatured();
@@ -293,4 +293,8 @@ function loadAccessibityMenu(pos = '1') {
 function isDetailPage() {
     const detailPageRegEx = RegExp('\\d{4}/\\d{1,2}/\\d{1,2}/[-\\w]+');
     return detailPageRegEx.test(window.location.pathname);
+}
+
+function isPreviewPage() {
+    return window.location.pathname.split('/')[2] === "preview"
 }

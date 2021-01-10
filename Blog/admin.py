@@ -1,13 +1,10 @@
-from django.contrib import admin
-from datetime import date
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
-from django.urls import reverse
 from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from taggit.models import Tag
 
-from Blog.models import Post, Category
+from Blog.models import Category, Post
 
 
 class TagListFilter(admin.SimpleListFilter):
@@ -123,7 +120,7 @@ class PostAdmin(admin.ModelAdmin):
         This function is overriden because we don't have a get_absolute_url method in the model
         It will return the preview url
         """
-        url = reverse('Blog:post-preview', kwargs={'slug': obj.slug})
+        url = str(obj.get_preview_url())
         if settings.DEBUG:
             return 'http://localhost:8000' + url
         return settings.META_SITE_PROTOCOL + '://' + settings.META_SITE_DOMAIN + url

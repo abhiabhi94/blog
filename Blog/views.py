@@ -1,43 +1,28 @@
 import json
 from datetime import datetime
 
-from django.views.generic import (ListView,
-                                  DetailView,
-                                  CreateView,
-                                  UpdateView,
-                                  DeleteView
-                                  )
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.syndication.views import Feed
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
-from django.http import (JsonResponse,
-                         Http404,
-                         HttpResponseBadRequest,
-                         )
-from django.utils import timezone
+from django.http import Http404, HttpResponseBadRequest, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import (render,
-                              redirect,
-                              get_object_or_404)
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
 from hitcount.views import HitCountDetailView
 from meta.views import Meta
 from taggit.models import Tag
 
 from Blog.decorators.restrict_access import group
-from Blog.utils import (email_verification,
-                        paginate_util,
-                        )
-from Blog.models import Post, Category
+from Blog.models import Category, Post
+from Blog.utils import email_verification, paginate_util
 from Subscribers.models import Subscriber
 from Users.models import Profile
 
@@ -143,9 +128,10 @@ class HomeView(ListView):
     def get_category_posts(self, slug, index):
         """
         Returns top_n posts under a certain category.
-        for top_n = +self.NUM_FEATURED_POSTS is for featured articles
-                    +self.NUM_LATEST_POSTS is for latest articles
-                    +self.NUM_CATEGORY_POSTS * (index+1) is for extra articles in case of duplicacy with the above categories.
+        for top_n = + self.NUM_FEATURED_POSTS is for featured articles
+                    + self.NUM_LATEST_POSTS is for latest articles
+                    + self.NUM_CATEGORY_POSTS * (index+1) is for extra articles in case of duplicacy with the
+                    above categories.
                     1 is added to index since it starts from 0.
         """
 
@@ -209,7 +195,7 @@ def subscribe(request):
                     data['status'] = 0
                 else:
                     data['msg'] = ' is already registered with us'
-            except:
+            except Exception:
                 data['status'] = 1
                 data['msg'] = 'There seems to be an issue on our side. Please retry.'
 
@@ -313,7 +299,7 @@ class UserPostBookmark(LoginRequiredMixin, ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         if user == self.request.user:
             return user.profile.bookmarked_posts.all().order_by('-date_published')
-        ### Return HTTP Error: "You should be logged in as the user" ###
+        #  Return HTTP Error: "You should be logged in as the user" ###
         raise Http404(
             f'You should be signed in as {user} to view this page')
 
@@ -351,13 +337,13 @@ def get_recommended_posts(request):
         Return {n} posts with tags related to the current post.
         if similar posts are lesser, most trending posts are returned in their position.
     """
-    if request.method == 'POST' and request.is_ajax:
+    if request.method == 'POST' and request.is_ajax():
         try:
             data = json.loads(request.POST.get('data', None))
             slug = data.get('slug', None)
             num = int(data.get('top_n', None))
 
-        except Exception as _:
+        except Exception:
             return HttpResponseBadRequest(
                 'Wrong Request Format for post request')
 
@@ -375,8 +361,8 @@ def get_recommended_posts(request):
             # exclude the current and already obtained similar posts above
             recommended_posts.extend(
                 all_published_posts.exclude(slug=slug)
-                    .exclude(id__in=recommended_posts_ids)
-                    .order_by('-trending_score')[:num-length]
+                .exclude(id__in=recommended_posts_ids)
+                .order_by('-trending_score')[:num-length]
                 )
         context['posts'] = recommended_posts
         context['recommend'] = True
@@ -469,7 +455,8 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
         if self.request.user == post.author:
             # Currently we can't keep more than 1 version of a Post
             # Hence when the preview option is selected, the state is changed to draft, and the post is unpublished
-            # I(Abhyudai), currently expect the author to make review the changes soon in the next view and queue(editor) or publish them(superuser)
+            # I(Abhyudai), currently expect the author to make review the changes soon
+            # in the next view and queue(editor) or publish them(superuser)
             # I know this is a dangerous.
 
             # if publish option is choosen
@@ -541,8 +528,8 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
 def about(request):
     context = {}
     template_name = 'Blog/about.html'
-    context['meta'] = Meta(title=f'About | HackAdda',
-                           description=f'A glance at the stuff HackAdda offers',
+    context['meta'] = Meta(title='About | HackAdda',
+                           description='A glance at the stuff HackAdda offers',
                            keywords=meta_home.keywords)
     return render(request, template_name, context)
 
@@ -551,10 +538,12 @@ def about(request):
 @require_http_methods(['GET', 'POST'])
 def preview(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    if request.method == 'POST':
+    # ajax requests are coming here for some weird reason
+    if request.method == 'POST' and not request.is_ajax():
         """Submit post for review"""
-        if request.user == post.author or request.user.is_superuser:
-            if request.user.is_superuser:  # publish directly for superuser
+        is_superuser = request.user.is_superuser
+        if request.user == post.author or is_superuser:
+            if is_superuser:  # publish directly for superuser
                 post.state = Post.Status.PUBLISH.value  # state -> published
                 messages.success(
                     request, f'The article {post.title} has been published')
@@ -591,7 +580,7 @@ def bookmark_post(request):
         if request.user.is_authenticated:
             try:
                 slug = json.loads(request.body.decode('utf-8'))['data']
-            except Exception as e:
+            except Exception:
                 return HttpResponseBadRequest(
                     'Wrong Request Format for post request')
             pk = get_object_or_404(Post, slug=slug).id
@@ -650,7 +639,7 @@ def get_latest_posts(request, **kwargs):
         # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception as e:
+        except Exception:
             return HttpResponseBadRequest(
                 'Wrong Request Format for post request')
         posts = Post.objects.get_published()[:top_n]
@@ -661,8 +650,8 @@ def get_latest_posts(request, **kwargs):
         paginate_by = 10
         posts = Post.objects.get_published()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
-        kwargs['meta'] = Meta(title=f'Latest Articles| HackAdda',
-                              description=f'Read latest articles on HackAdda',
+        kwargs['meta'] = Meta(title='Latest Articles| HackAdda',
+                              description='Read latest articles on HackAdda',
                               keywords=meta_home.keywords + ['latest'])
         return render(request, template_name, kwargs)
 
@@ -680,7 +669,7 @@ def get_tags(request):
         template_name = 'tags.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception as _:
+        except Exception:
             return HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1    # Tells whether post request was executed or get
@@ -701,8 +690,8 @@ def get_tags(request):
     # Tag clouds will be probably implemented in a better way
     # in a future release.
     # context['tags'] = get_font_cloud(top_tags_list)
-    context['meta'] = Meta(title=f'Tags | HackAdda',
-                           description=f'List of all Tags on HackAdda',
+    context['meta'] = Meta(title='Tags | HackAdda',
+                           description='List of all Tags on HackAdda',
                            keywords=meta_home.keywords + list(top_tags.values_list('name', flat=True)))
     return render(request, template_name, context)
 
@@ -787,7 +776,7 @@ def get_category(request):
         template_name = 'Blog/categories.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception as _:
+        except Exception:
             return HttpResponseBadRequest("Wrong Request Format")
         finally:
             flag = 1
@@ -803,8 +792,8 @@ def get_category(request):
         top_categories = top_categories_list
 
     context['categories'] = top_categories
-    context['meta'] = Meta(title=f'Categories | HackAdda',
-                           description=f'List of all Categories on HackAdda',
+    context['meta'] = Meta(title='Categories | HackAdda',
+                           description='List of all Categories on HackAdda',
                            keywords=meta_home.keywords + list(top_categories.values_list('name', flat=True)))
 
     return render(request, template_name, context)
@@ -820,9 +809,9 @@ def get_trending_posts(request):
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
             # top_n = int(request.GET.get('top_n'))
-        except Exception as _:
+        except Exception:
             return HttpResponseBadRequest("Wrong Request Format")
-        trending_posts = Post.objects.all().order_by('-trending_score')[:top_n]
+        trending_posts = Post.objects.get_published().order_by('-trending_score')[:top_n]
         # print('\nTotal time taken:', time.time() - start_time)
         # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
