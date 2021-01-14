@@ -32,7 +32,7 @@ class TestPostBase(TestBase):
         for post_id in range(1, num_posts):
             title = f'Draft Post: post number {post_id}'
             category = cls.create_category(name=f'category {post_id}')
-            tags = f'tag_{post_id}, tag_{post_id+1}'
+            tags = [f'tag_{post_id}, tag_{post_id+1}']
             if post_id % 4 == 0:
                 cls.create_post(
                     title=title,

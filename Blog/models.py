@@ -1,25 +1,24 @@
-from enum import IntEnum, unique
 import os
-from io import BytesIO
 from datetime import timedelta
+from enum import IntEnum, unique
+from io import BytesIO
 
-from django.db import models
-from django.utils import timezone
-from django.contrib.auth.models import User
-from django.urls import reverse_lazy
-from django.template.defaultfilters import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
+from comment.models import Comment
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ValidationError
+from django.core.files import File
+from django.db import models
+from django.template.defaultfilters import slugify
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.html import strip_spaces_between_tags, strip_tags
+from django.utils.translation import gettext_lazy as _
+from hitcount.models import HitCount, HitCountMixin
 from meta.models import ModelMeta
 from PIL import Image
-from django.core.files import File
-from django.core.exceptions import ValidationError
-from hitcount.models import HitCountMixin, HitCount
-from django.contrib.contenttypes.fields import GenericRelation
-from django.utils.html import strip_tags, strip_spaces_between_tags
-from django.utils.translation import gettext_lazy as _
 from taggit_autosuggest.managers import TaggableManager
-from comment.models import Comment
-from hitcount.models import Hit
 
 from Blog.managers import PostManager
 
@@ -81,7 +80,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         default=False, verbose_name=_('Change Slug'))
     slug = models.SlugField(default='', max_length=80, unique=True)
     content = RichTextUploadingField()
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, limit_choices_to={
@@ -143,7 +142,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             img = self.image
             # print('width:', img.width, '\theight:', img.height)
             if img is None:
-                raise ValidationError(_(f'Image not present'), code='invalid')
+                raise ValidationError(_('Image not present'), code='invalid')
             if img.width < MIN_IMG_WIDTH:
                 raise ValidationError(
                     _(f'Image width should not be less than {MIN_IMG_WIDTH}, \

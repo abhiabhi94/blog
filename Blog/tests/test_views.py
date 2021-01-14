@@ -1,4 +1,5 @@
 import json
+import unittest
 
 import feedparser
 from django.shortcuts import reverse
@@ -379,3 +380,11 @@ class TestLatestIdeaRSSFeed(TestPostBase):
         feed = feedparser.parse(response.content)
         link = feed['items'][0].link
         self.assertNotEqual(link, '')
+
+    @unittest.skip('This is because tags as of now cannot be directly passed to models')
+    def test_latest_post_rss_feed_item_categories(self):
+        """Test each item contains link"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        tags = feed['items'][0].categories
+        self.assertNotEqual(tags, '')

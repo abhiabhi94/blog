@@ -840,5 +840,8 @@ class LatestPostRSSFeed(Feed):
     def item_link(self, item):
         return item.get_detail_url()
 
+    def item_categories(self, item):
+        return item.get_tags_list()
+
     # def item_extra_kwargs(self, item):
     #     return {'hashtags': item.get_tags_list()}
