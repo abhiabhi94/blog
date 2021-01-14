@@ -835,7 +835,7 @@ class LatestPostRSSFeed(Feed):
         return item.author.get_full_name()
 
     def item_description(self, item):
-        return item._get_meta_description()
+        return item.content
 
     def item_link(self, item):
         return item.get_detail_url()

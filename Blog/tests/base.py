@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from tests.base import TestBase, Post
+from tests.base import Post, TestBase
 
 
 class TestPostBase(TestBase):
@@ -28,7 +28,7 @@ class TestPostBase(TestBase):
             email='jach.kar.ta@gmail.com',
             password='user123#'
         )
-        cls.category = cls.create_category(name=f'category')
+        cls.category = cls.create_category(name='category')
         for post_id in range(1, num_posts):
             title = f'Draft Post: post number {post_id}'
             category = cls.create_category(name=f'category {post_id}')
@@ -38,6 +38,7 @@ class TestPostBase(TestBase):
                     title=title,
                     category=category,
                     tags=tags,
+                    content=title
                 )
                 cls.num_drafts += 1
             else:
@@ -55,6 +56,7 @@ class TestPostBase(TestBase):
                     category=category,
                     tags=tags,
                     state=state,
+                    content=title
                 )
 
             cls.post = Post.objects.filter(

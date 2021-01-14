@@ -1,9 +1,10 @@
 import json
 
+import feedparser
 from django.shortcuts import reverse
 
-from tests.base import TestBaseView, TestAJAXView
-from Blog.tests.base import TestPostBase, Post
+from Blog.tests.base import Post, TestPostBase
+from tests.base import TestAJAXView, TestBaseView
 
 
 class TestAboutPage(TestBaseView):
@@ -139,7 +140,6 @@ class TestBookmarkPosts(TestPostBase, TestAJAXView):
         response = self.request(self.get_url(), data=data,
                                 content_type='application/json', format='json')
         self.assertEqual(response.status_code, 200)
-        response_data = response.json()
         self.assertDictEqual(response.json(), {
             'status': 1,
             'message': 'Post removed from bookmarks'
@@ -311,3 +311,71 @@ class TestPostDetailView(TestPostBase, TestBaseView):
         self.assertEqual(result['post'].views, initial_views + 1)
         self.assertIsNotNone(result['meta'])
         self.assertEqual(result['profile'], self.user.profile)
+
+
+class TestLatestIdeaRSSFeed(TestPostBase):
+    """
+    For LatestIdeaRSSFeed, test
+        - url is accessible by name
+        - feed is in correct format
+        - feed uses the last_modified functionality(used for caching)
+        - each item contains
+            - title
+            - description
+            - author's name
+            - link
+    """
+    def get_url(self):
+        return reverse('rss-feed')
+
+    def test_latest_post_rss_feed_url_by_name(self):
+        """Test the url by name"""
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_latest_post_rss_feed_format(self):
+        """Test the format of the feed"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        # 1 indicates feed is not in a correct format
+        self.assertEqual(feed['bozo'], 0)
+
+    def test_latest_post_rss_feed_last_modified(self):
+        """Test the last_modified property of the feed"""
+        response = self.client.get(self.get_url())
+        last_modified = response._headers.get('last-modified', None)
+        self.assertNotEqual(last_modified, None)
+
+    def test_latest_post_rss_feed_item_number(self):
+        """Test all the published posts are present"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        self.assertEqual(len(feed['items']), Post.objects.get_published().count())
+
+    def test_latest_post_rss_feed_item_title(self):
+        """Test each item contains title"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        title = feed['items'][0].title
+        self.assertNotEqual(title, '')
+
+    def test_latest_post_rss_feed_item_description(self):
+        """Test each item contains description"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        description = feed['items'][0].description
+        self.assertNotEqual(description, '')
+
+    def test_latest_post_rss_feed_item_author_name(self):
+        """Test each item contains author name"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        author = feed['items'][0].author
+        self.assertNotEqual(author, '')
+
+    def test_latest_post_rss_feed_item_link(self):
+        """Test each item contains link"""
+        response = self.client.get(self.get_url())
+        feed = feedparser.parse(response.content)
+        link = feed['items'][0].link
+        self.assertNotEqual(link, '')
