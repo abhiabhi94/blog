@@ -13,10 +13,11 @@ def load_socials():
     Socials = namedtuple('Social', ['name', 'link'])
 
     social_info = (
-        ('facebook', f'https://facebook.com/{DEFAULT_USERNAME}'),
+        ('medium', f'https://medium.com/@{DEFAULT_USERNAME}'),
         ('twitter', f'https://twitter.com/{DEFAULT_USERNAME}'),
-        ('instagram', f'https://instagram.com/hackadda'),
         ('telegram', f'https://t.me/{DEFAULT_USERNAME}'),
+        ('facebook', f'https://facebook.com/{DEFAULT_USERNAME}'),
+        ('instagram', 'https://instagram.com/hackadda'),
         ('linkedin', f'https://linkedin.com/company/{DEFAULT_USERNAME}'),
         ('rss', reverse('rss-feed'))
     )
