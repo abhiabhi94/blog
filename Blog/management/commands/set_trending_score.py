@@ -1,6 +1,7 @@
 import sys
 
 from django.core.management import BaseCommand
+from django.utils import timezone
 
 from Blog.models import Post
 
@@ -13,4 +14,4 @@ class Command(BaseCommand):
         for post in posts:
             post.set_trending_score()
         sys.stdout.write(self.style.SUCCESS(
-            f'Successfully updated trending score for {len(posts)} posts'))
+            f'{timezone.now()}: Successfully updated trending score for {len(posts)} posts\n'))

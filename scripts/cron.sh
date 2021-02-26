@@ -5,8 +5,8 @@
 # exit if any command fails
 set -e
 
-# this function redirects and prints error when an error is encountered
-exit_on_error(){
+clean_up(){
+        deactivate
         exit_code=$1
         last_command=$2
         if [ $exit_code -ne 0 ]; then
@@ -15,15 +15,13 @@ exit_on_error(){
         fi
 }
 
-trap 'exit_on_error $? $BASH_COMMAND' EXIT
+trap 'clean_up $? $BASH_COMMAND' EXIT
 
 # Set these variables before executing this file
-project_dir=~/blog/
-virtual_env_dir=~/.virtualenvs/hackadda
+PROJECT_DIR=~/blog/
+VIRTUAL_ENV_DIR=~/.virtualenvs/hackadda
 
-cd $project_dir
-source $virtual_env_dir/bin/activate
+cd $PROJECT_DIR
+source $VIRTUAL_ENV_DIR/bin/activate
 
 python manage.py runjobs daily
-
-deactivate

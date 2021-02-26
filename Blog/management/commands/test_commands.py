@@ -17,9 +17,9 @@ class TestSetTrendingScore(TestPostBase):
 
     def test_standard_output(self, mock_out):
         call_command(self.command_name, stdout=mock_out)
-        self.assertEqual(
-            f'Successfully updated trending score for {self.posts} posts',
-            mock_out.getvalue()
+        self.assertIs(
+            f'Successfully updated trending score for {self.posts} posts' in mock_out.getvalue(),
+            True
         )
 
     def test_score_update(self, mock_out):
