@@ -54,7 +54,7 @@ repos:
 
     -   id: pre-commit-django-tests
         name: Check django tests
-        entry: python manage.py test --keepdb
+        entry: pytest
         language: system
         types: [python]
         pass_filenames: false

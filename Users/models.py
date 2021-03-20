@@ -1,9 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.shortcuts import reverse
 from PIL import Image
 
 from Blog.models import Post
+
 # Create your models here.
 
 DEFAULT_IMG = 'profile_pics/default.jpg'
@@ -28,6 +29,10 @@ class Profile(models.Model):
     linkedin = models.URLField(
         max_length=200, null=True, blank=True, default='')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_img_path = self.image.path
+
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -40,8 +45,9 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        with Image.open(self.image.path) as img:
-            if(img.height > 300 or img.width > 300):
-                output_size = (300, 300)
-                img.thumbnail(output_size)
-                img.save(self.image.path)
+        if self.image.path != self.__original_img_path:
+            with Image.open(self.image.path) as img:
+                if(img.height > 300 or img.width > 300):
+                    output_size = (300, 300)
+                    img.thumbnail(output_size)
+                    img.save(self.image.path)
