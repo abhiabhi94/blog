@@ -27,7 +27,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements/dev.txt
+        pip install -r requirements/test.txt
     - name: Run Tests
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -36,5 +36,5 @@ jobs:
         VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
         TEST: ${{ secrets.TEST }}
       run: |
-        python manage.py test
+        pytest
         python manage.py validate_templates

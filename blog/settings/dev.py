@@ -1,18 +1,12 @@
-import os
-from subprocess import getoutput
 import sys
-
-from urllib.error import URLError
 import urllib.request
+from subprocess import getoutput
+from urllib.error import URLError
 
-from .base import *
+from .base import *  # noqa: F403, F401
 
 global ALLOWED_HOSTS
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-# Add debug_toolbar
-INSTALLED_APPS += ['debug_toolbar']
-MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # noqa: F405
 INTERNAL_IPS = ALLOWED_HOSTS
 
 

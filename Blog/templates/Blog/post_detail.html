@@ -71,7 +71,6 @@
 </script>
 {% endblock recommended_posts %}
 {% block comments %}
-{% include_static_jquery %}
 <div class="article-comments col-md-12 content-section">
   {% render_comments post request %}
 </div>
@@ -82,4 +81,3 @@
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 {% endblock extrabottom %}
-
