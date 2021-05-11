@@ -3,6 +3,14 @@
 # VS Code Directory #
 ########################
 *.vscode
+*.swp
+
+# venv
+venv/
+.venv/
+
+# coverage
+.coverage
 
 # Cached Python Files #
 ########################

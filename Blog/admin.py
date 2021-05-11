@@ -57,9 +57,7 @@ class CategoryListFilter(admin.SimpleListFilter):
         return all_categories
 
     def queryset(self, request, queryset):
-        # print(self.value())
         if self.value():
-            # print(">>>>>>", Post.objects.all())
             post_list = Post.objects.filter(
                 category__name=self.value()).order_by('-date_published')
             return post_list
@@ -163,7 +161,8 @@ class PostAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('tags')
 
-    def tag_list(self, obj):
+    @staticmethod
+    def tag_list(obj):
         return ", ".join(o.name for o in obj.tags.all())
 
     list_filter = [AuthorListFilter, 'state', 'featured',

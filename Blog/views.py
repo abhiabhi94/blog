@@ -20,7 +20,7 @@ from hitcount.views import HitCountDetailView
 from meta.views import Meta
 from taggit.models import Tag
 
-from Blog.decorators.restrict_access import group
+from Blog.decorators.restrict_access import require_ajax, require_group
 from Blog.models import Category, Post
 from Blog.utils import email_verification, paginate_util
 from Subscribers.models import Subscriber
@@ -57,53 +57,37 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
 # conditional og property - og_author_url, published_time, modified_time, image,
 # consider adding other property in future. TODO
 
-# Categories to displayed on the homepage
-global home_categories
-home_categories = [
-    # Use news only when you are updating it regularly.
-    # 'news',
-    'coding',
-    'operating-system',
-    'kids',
-]
-
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
 class HomeView(ListView):
     """Return featured, latest, and categories wise articles for the front-page"""
 
     template_name = 'Blog/home.html'   # <app>/<model>_<viewtype>.html
-    # context_object_name = 'posts'
-    # paginate_by
-    # posts_unique = {}
-
-    def __init__(self):
-        self.NUM_FEATURED_POSTS = 3
-        self.NUM_LATEST_POSTS = 6
-        self.NUM_CATEGORY_POSTS = 2
-        super().__init__()
+    NUM_FEATURED_POSTS = 3
+    NUM_LATEST_POSTS = 6
+    NUM_CATEGORY_POSTS = 2
+    # Categories to displayed on the homepage
+    HOME_CATEGORIES = [
+        # Use news only when you are updating it regularly.
+        # 'news',
+        'coding',
+        'operating-system',
+        'kids',
+    ]
 
     def get_queryset(self):
         return Post.objects.get_published()
 
-    def remove_duplicates(self, current, unique, top_n):
+    @staticmethod
+    def remove_duplicates(current, unique, top_n):
         """
         Returns unique posts in current after removing duplicate objects from it.
         Set difference is calculated here as a part of list comphrehension in order to maintain order.
         """
-        # print('values>>>', len(current))
-        # print('unique>>>', unique, len(unique), '\n')
-
-        # Find values from current list that aren't inside unique
         current_unique = [i for i in current if i not in unique][:top_n]
-        # print('current-unique', current_unique, len(current_unique), '\n')
 
-        """
-        Add current_unique and unique
-        No need to use sets: both are unique and non-intersecting(current unique is just calculated above))
-        """
+        # No need to use sets: both are unique and non-intersectino
         unique = current_unique + unique
-        # print('unique after union>>>', unique, len(unique), '\n')
         return current_unique, unique
 
     def get_featured_posts(self):
@@ -142,27 +126,18 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['meta'] = meta_home
-        posts_unique = context['featured_posts'] = list(
-            self.get_featured_posts())
-        # posts_unique = context['featured_posts']
+        posts_unique = context['featured_posts'] = list(self.get_featured_posts())
 
         latest_posts = list(self.get_latest_posts())
         context['latest_posts'], posts_unique = self.remove_duplicates(
             latest_posts, posts_unique, self.NUM_LATEST_POSTS)
 
-        # Categories to displayed on the homepage
-        home_categories
-
         # All category objects will be appended in this list
-        categories = []
-
-        [categories.append(Category.objects.get(
-            slug=category)) for category in home_categories]
+        categories = Category.objects.filter(slug__in=self.HOME_CATEGORIES)
 
         category_result = {}
         for index, category in enumerate(categories):
-            category_posts = list(
-                self.get_category_posts(category.slug, index))
+            category_posts = list(self.get_category_posts(category.slug, index))
             category_posts_unique, posts_unique = self.remove_duplicates(
                 category_posts, posts_unique, self.NUM_CATEGORY_POSTS)
             category_result[category] = category_posts_unique
@@ -170,21 +145,19 @@ class HomeView(ListView):
         context['category'] = category_result
         if self.request.user.is_authenticated:
             context['profile'] = self.request.user.profile
-        # print("Featured>>>", context['featured_posts'])
-        # print("Latest>>>", context['latest_posts'])
-        # print("Categories>>>", context['category'])
 
         return context
 
 
 @require_http_methods(['POST'])
+@require_ajax()
 def subscribe(request):
     """
     adds emails to the model Subscribers after verifying legit emails only on POST requests.
     Returns Jsonresponse with properties response and status.
     """
     data = {'msg': '', 'email': '', 'status': -1}
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         email = request.POST['email']
         data['email'] = email
         if email_verification(email):
@@ -252,7 +225,7 @@ class AuthorPostListView(ListView):
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
-@method_decorator(group(group_name='editor'), name='dispatch')
+@method_decorator(require_group(group_name='editor'), name='dispatch')
 class UserPostListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Post
     template_name = 'Blog/user_posts.html'   # <app>/<model>_<viewtype>.html
@@ -324,6 +297,7 @@ class PostDetailView(HitCountDetailView, DetailView):
 
 
 @require_http_methods(['POST'])
+@require_ajax()
 def get_recommended_posts(request):
     """
     Condition:
@@ -337,7 +311,7 @@ def get_recommended_posts(request):
         Return {n} posts with tags related to the current post.
         if similar posts are lesser, most trending posts are returned in their position.
     """
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         try:
             data = json.loads(request.POST.get('data', None))
             slug = data.get('slug', None)
@@ -348,21 +322,22 @@ def get_recommended_posts(request):
                 'Wrong Request Format for post request')
 
         template_name = 'post_latest_home.html'
+        order = '-trending_score'
         context = {}
         current_post = get_object_or_404(Post, slug=slug)
         recommended_posts_ids = [
             post.id for post in current_post.tags.similar_objects()]
         all_published_posts = Post.objects.get_published()
-        recommended_posts = list(all_published_posts.filter(
-            id__in=recommended_posts_ids)[:num])
+        recommended_posts = all_published_posts.filter(
+            id__in=recommended_posts_ids).order_by(order)[:num]
         length = len(recommended_posts)
         # add trending posts if similar posts are less.
         if length < num:
             # exclude the current and already obtained similar posts above
-            recommended_posts.extend(
+            recommended_posts = recommended_posts.union(
                 all_published_posts.exclude(slug=slug)
                 .exclude(id__in=recommended_posts_ids)
-                .order_by('-trending_score')[:num-length]
+                .order_by(order)[:num-length]
                 )
         context['posts'] = recommended_posts
         context['recommend'] = True
@@ -370,7 +345,7 @@ def get_recommended_posts(request):
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
-@method_decorator(group(group_name='editor'), name='dispatch')
+@method_decorator(require_group(group_name='editor'), name='dispatch')
 class PostCreateView(CreateView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
@@ -402,10 +377,9 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     fields = ['title', 'content', 'image', 'tags', 'category']
 
     def form_valid(self, form):
-        # print("------->", 'form_valid')
         """
         Checks whether the user logged in is the one updating the post.
-        Checks whether the user is authorised to update the article(only members of the group editors are allowed)
+        Checks whether the user is authorised to update the article(only members of the group `editor` are allowed)
         It then reverses the published state so that admin's approval is required before publishing the updated post.
         """
         post = self.get_object()
@@ -440,7 +414,7 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
-@method_decorator(group(group_name='editor'), name='dispatch')
+@method_decorator(require_group(group_name='editor'), name='dispatch')
 class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
@@ -448,7 +422,7 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         """
         Checks whether the user logged in is the one updating the post.
-        Checks whether the user is authorised to update the article(only members of the group editors are allowed)
+        Checks whether the user is authorised to update the article(only members of the group `editor` are allowed)
         It then reverses the published state so that admin's approval is required before publishing the updated post.
         """
         post = self.get_object()
@@ -499,7 +473,7 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
-@method_decorator(group(group_name='editor'), name='dispatch')
+@method_decorator(require_group(group_name='editor'), name='dispatch')
 class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
@@ -534,12 +508,13 @@ def about(request):
     return render(request, template_name, context)
 
 
-@group(group_name='editor')
+@require_group(group_name='editor')
 @require_http_methods(['GET', 'POST'])
+@require_ajax()
 def preview(request, slug):
     post = get_object_or_404(Post, slug=slug)
     # ajax requests are coming here for some weird reason
-    if request.method == 'POST' and not request.is_ajax():
+    if request.method == 'POST':
         """Submit post for review"""
         is_superuser = request.user.is_superuser
         if request.user == post.author or is_superuser:
@@ -564,6 +539,7 @@ def preview(request, slug):
 
 
 @require_http_methods(['POST'])
+@require_ajax()
 def bookmark_post(request):
     """
     Returns
@@ -575,7 +551,7 @@ def bookmark_post(request):
                         0 -> post successfully addes as bookmark
                         1 -> post successfully removed from bookmark
     """
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         data = {'message': '', 'status': 1}
         if request.user.is_authenticated:
             try:
@@ -634,9 +610,9 @@ class TaggedPostListView(ListView):
 
 @require_http_methods(['GET', 'POST'])
 def get_latest_posts(request, **kwargs):
-    if request.method == 'POST' and request.is_ajax():
+    @require_ajax()
+    def get_for_sidebar(request, **kwargs):
         template_name = 'post_title.html'
-        # print('reached here:',type(json.loads(request.POST.get('data'))['num']))
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
         except Exception:
@@ -645,15 +621,20 @@ def get_latest_posts(request, **kwargs):
         posts = Post.objects.get_published()[:top_n]
         return render(request, template_name, {'posts': posts})
 
-    elif request.method == 'GET':
+    def get_for_page(request, **kwargs):
         template_name = 'Blog/post_list_latest.html'
-        paginate_by = 10
+        global paginate_by
         posts = Post.objects.get_published()
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         kwargs['meta'] = Meta(title='Latest Articles| HackAdda',
                               description='Read latest articles on HackAdda',
                               keywords=meta_home.keywords + ['latest'])
         return render(request, template_name, kwargs)
+
+    if request.method == 'POST':
+        return get_for_sidebar(request, **kwargs)
+    if request.method == 'GET':
+        return get_for_page(request, **kwargs)
 
 
 @require_http_methods(['GET', 'POST'])
@@ -805,15 +786,12 @@ def get_trending_posts(request):
 
     if request.method == 'POST' and request.is_ajax():
         template_name = 'post_title.html'
-        # start_time = time.time()
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-            # top_n = int(request.GET.get('top_n'))
         except Exception:
             return HttpResponseBadRequest("Wrong Request Format")
+
         trending_posts = Post.objects.get_published().order_by('-trending_score')[:top_n]
-        # print('\nTotal time taken:', time.time() - start_time)
-        # print('Trending posts:', trending_posts)
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
 
 
@@ -821,9 +799,6 @@ class LatestPostRSSFeed(Feed):
     title = 'Latest posts from HackAdda'
     link = ''
     description = meta_home.description
-
-    # def feed_extra_kwargs(self, obj):
-    #     return {}
 
     def items(self, top_n=5):
         return Post.objects.get_published()[:top_n]
@@ -842,6 +817,3 @@ class LatestPostRSSFeed(Feed):
 
     def item_categories(self, item):
         return item.get_tags_list()
-
-    # def item_extra_kwargs(self, item):
-    #     return {'hashtags': item.get_tags_list()}

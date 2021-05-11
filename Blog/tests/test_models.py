@@ -1,4 +1,5 @@
 from django.shortcuts import reverse
+from hitcount.models import HitCount
 
 from Blog.tests.base import Post, TestPostBase
 
@@ -57,7 +58,7 @@ class TestPostModel(TestPostBase):
         post = self.post
         self.assertEqual(str(post), post.title)
 
-    def test_get_absolute_url(self):
+    def test_get_detail_url(self):
         """Test whether model returns correct url for detail view of an post"""
         post = self.post
         # We can't exactly test the exact url since there are random characters added to the slug
@@ -67,6 +68,9 @@ class TestPostModel(TestPostBase):
             'month': post.date_published.month,
             'day': post.date_published.day
         }))
+
+    def test_get_absolute_url_is_aliased_to_get_detail_url(self):
+        self.assertEqual(self.post.get_absolute_url(), self.post.get_detail_url())
 
     def test_meta_data_for_seo(self):
         """Test meta-information about the model that will be used for SEO functionalities"""
@@ -123,6 +127,26 @@ class TestPostModel(TestPostBase):
     def test_image_compression(self):
         """Test GIF images aren't compressed, image size saved is smaller than the one uploaded"""
         pass
+
+    def test_set_trending_score_for_unpublished_post(self):
+        post = self.draft_post
+
+        post.set_trending_score()
+        post.refresh_from_db()
+
+        self.assertEqual(post.trending_score, 0.0)
+
+    def test_set_trending_score_for_published_post(self):
+        post = self.post
+        # delete all hits for the post
+        HitCount.objects.get_for_object(post).hit_set.all().delete()
+
+        # create a view
+        self.client.get(post.get_absolute_url())
+        post.set_trending_score()
+        post.refresh_from_db()
+
+        self.assertEqual(post.trending_score, 1.0)
 
 
 class TestPostManager(TestPostBase):
