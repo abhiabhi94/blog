@@ -1,8 +1,8 @@
 import os
 import random
-from string import ascii_lowercase
 import sys
-from typing import Any, List
+from string import ascii_lowercase
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -39,6 +39,7 @@ class TestBase(TestCase):
 
     def setUp(self):
         """Set the environment variable to disable RECAPTCHA"""
+        super().setUp()
         os.environ['RECAPTCHA_DISABLE'] = 'True'
 
     @staticmethod

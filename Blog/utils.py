@@ -25,10 +25,7 @@ def get_font_cloud(obj, F=5.0, f=1.0):
     b = (f * V - F * v) / diff
     a = (F-f) / diff
 
-    # for key, val in obj:
-    # obj['key'] = (val, val*a + b)
     return {key: (val, f'{val*a + b:.3f}' + 'rem') for (key, val) in obj.items()}
-    # return {key: (val, f'{F*(val-v)/diff + 1:.3f}' + 'rem') for (key, val) in obj.items()}
 
 
 def trending(objects=None, start=datetime.today(), interval={'days': 30}, top_n=5):
@@ -57,10 +54,8 @@ def trending(objects=None, start=datetime.today(), interval={'days': 30}, top_n=
             continue
 
         prev_date = start.date()
-        # print('publish date:', obj.date_published)
 
         for day in range(1, interval['days']):
-            # print('Day:', prev_date.day)
             prev_date = prev_date - timedelta(days=1)
 
             # No point in finding views if the post wasn't published
@@ -69,10 +64,7 @@ def trending(objects=None, start=datetime.today(), interval={'days': 30}, top_n=
 
             views = Hit.objects.filter(
                 hitcount=obj.hit_count, created__contains=prev_date).count()
-            # print(f'Views on {prev_date}:', views)
             obj.score += views / (day + 1)
-
-        # print('\nScore for', obj, ':', obj.score)
 
     max_score = max(objects, key=lambda obj: obj.score).score
     # Check if max_score is 0 or not

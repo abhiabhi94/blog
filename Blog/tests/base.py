@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from tests.base import Post, TestBase
 
 
@@ -62,7 +60,6 @@ class TestPostBase(TestBase):
             cls.post = Post.objects.filter(
                 state=Post.Status.PUBLISH).first()
 
-    @abstractmethod
     def get_url(self):
         """A utility function that returns URL for the view"""
         raise NotImplementedError

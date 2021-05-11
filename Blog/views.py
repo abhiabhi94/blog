@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.syndication.views import Feed
-from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 from django.http import Http404, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,6 +20,7 @@ from meta.views import Meta
 from taggit.models import Tag
 
 from Blog.decorators.restrict_access import require_ajax, require_group
+from Blog.mixins import IsOwnerMixin
 from Blog.models import Category, Post
 from Blog.utils import email_verification, paginate_util
 from Subscribers.models import Subscriber
@@ -220,7 +220,6 @@ class AuthorPostListView(ListView):
                                og_author=f'{name}',
                                keywords=meta_home.keywords)
         context['profile'] = author.profile
-        # print("Full name:",(get_object_or_404(User, pk=context['profile'].user_id).get_full_name()))
         return context
 
 
@@ -372,7 +371,7 @@ class PostCreateView(CreateView):
 
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
-class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class DraftPostUpdateView(LoginRequiredMixin, IsOwnerMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
 
@@ -393,14 +392,6 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-    def test_func(self):
-        """ensuring the author themselves is updating the post"""
-        post = self.get_object()
-
-        if self.request.user == post.author:
-            return True
-        raise PermissionDenied('You are not allowed to update this request')
-
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
         slug = self.object.slug
@@ -415,7 +406,7 @@ class DraftPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(require_group(group_name='editor'), name='dispatch')
-class PostUpdateView(UserPassesTestMixin, UpdateView):
+class PostUpdateView(IsOwnerMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
 
@@ -455,13 +446,6 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-    def test_func(self):
-        """ensuring the author themselves is updating the post"""
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        raise PermissionDenied('You are not allowed to update this request')
-
     def get_success_url(self):
         """Since there's no absolute url in the model, this function provides a redirect on form success."""
         if 'publish' in self.request.POST:
@@ -474,7 +458,7 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
 
 @method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
 @method_decorator(require_group(group_name='editor'), name='dispatch')
-class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, IsOwnerMixin, DeleteView):
     model = Post
     fields = ['title', 'content', 'image', 'tags', 'category']
     success_url = reverse_lazy('Blog:home')
@@ -484,13 +468,6 @@ class PostDeleteView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixi
         form.instance.author = self.request.user
         messages.success(self.request, 'Post has been deleted successfully!!!')
         return super().form_valid(form)
-
-    def test_func(self):
-        """ensuring the author itself is deleting the post."""
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        raise PermissionDenied('You are not allowed to update this request')
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -566,12 +543,9 @@ def bookmark_post(request):
                 request.user.profile.bookmarked_posts.add(pk)
                 data['message'] = 'Post bookmarked'
                 data['status'] = 0
-                # messages.success(request, 'Post bookmarked')
             else:
                 request.user.profile.bookmarked_posts.remove(pk)
                 data['message'] = 'Post removed from bookmarks'
-                # messages.warning(request, 'Post already bookmarked')
-            # print (data)
             return JsonResponse(data)
 
         # redirect with a message
@@ -583,7 +557,6 @@ def bookmark_post(request):
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
 class TaggedPostListView(ListView):
-    # model = Post
     template_name = 'Blog/post_tagged.html'   # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
 
@@ -638,6 +611,7 @@ def get_latest_posts(request, **kwargs):
 
 
 @require_http_methods(['GET', 'POST'])
+@require_ajax()
 def get_tags(request):
     """
     1. Get request is used for top tags(mostly used)
@@ -646,7 +620,7 @@ def get_tags(request):
     context = {}
     template_name = 'all_tags.html'
     flag = 0
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         template_name = 'tags.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
@@ -743,6 +717,7 @@ def get_timewise_list(request, *args, **kwargs):
 
 
 @require_http_methods(['GET', 'POST'])
+@require_ajax()
 def get_category(request):
     """
     Get categories(foreign key) present in Blog
@@ -753,7 +728,7 @@ def get_category(request):
     flag = 0
     template_name = 'all_categories.html'
 
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         template_name = 'Blog/categories.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
@@ -781,10 +756,11 @@ def get_category(request):
 
 
 @require_http_methods(['POST'])
+@require_ajax()
 def get_trending_posts(request):
     """Returns top_n trending post for a given time period for POST requests in AJAX format."""
 
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
         template_name = 'post_title.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])

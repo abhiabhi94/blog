@@ -141,7 +141,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             MAX_IMG_WIDTH, MAX_IMG_HEIGHT = (7680, 7680)
 
             img = self.image
-            # print('width:', img.width, '\theight:', img.height)
             if img is None:
                 raise ValidationError(_('Image not present'), code='invalid')
             if img.width < MIN_IMG_WIDTH:

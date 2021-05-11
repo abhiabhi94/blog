@@ -1,5 +1,6 @@
 import json
 import unittest
+from http import HTTPStatus as status
 
 import feedparser
 from django.conf import settings
@@ -317,7 +318,7 @@ class TestPostDetailView(TestPostBase, TestBaseView):
             'day': post.date_published.day
         })
 
-    def test_detail_for_unauthenticated_users(self):
+    def test_for_unauthenticated_users(self):
         self.client.logout()
         post = self.post
         initial_views = post.views
@@ -328,7 +329,7 @@ class TestPostDetailView(TestPostBase, TestBaseView):
         self.assertEqual(result['post'].views, initial_views + 1)
         self.assertIsNotNone(result['meta'])
 
-    def test_detail_for_authenticated_users(self):
+    def test_for_authenticated_users(self):
         post = self.post
         initial_views = post.views
         response = self.client.get(self.get_url())
@@ -338,6 +339,36 @@ class TestPostDetailView(TestPostBase, TestBaseView):
         self.assertEqual(result['post'].views, initial_views + 1)
         self.assertIsNotNone(result['meta'])
         self.assertEqual(result['profile'], self.user.profile)
+
+
+class TestDraftPostUpdateView(TestPostBase, TestBaseView):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.post = Post.objects.get_draft().first()
+
+    def get_url(self, post=None):
+        if not post:
+            post = self.post
+
+        return reverse('Blog:draft-post-update', kwargs={'slug': post.slug})
+
+    def test_for_non_author_authenticated_users(self):
+        post = self.post
+        self.client.force_login(self.user_1)
+        assert post.author != self.user_1
+
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, status.NOT_FOUND)
+
+    def test_for_author(self):
+        post = self.post
+
+        response = self.client.get(self.get_url())
+
+        assert response.wsgi_request.user == post.author
+        self.assertEqual(response.status_code, status.OK)
 
 
 class TestLatestIdeaRSSFeed(TestPostBase):
