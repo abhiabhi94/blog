@@ -7,7 +7,7 @@ from django.urls import include, path
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import condition
 
-from Blog.decorators.restrict_access import group, require_superuser
+from Blog.decorators.restrict_access import require_group, require_superuser
 from Blog.models import Post
 from Blog.views import LatestPostRSSFeed as rss_feed
 from Users import views as user_views
@@ -28,7 +28,6 @@ url_patterns_admin = [
 ]
 
 urlpatterns = url_patterns_admin + [
-    # path('admin/', admin.site.urls),
     path('', include('Blog.urls')),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
@@ -69,11 +68,10 @@ urlpatterns = url_patterns_admin + [
 ]
 
 # Adds ckeditor urls
-# urlpatterns += [path('ckeditor/', include('ckeditor_uploader.urls'))]
 urlpatterns += [
-    path('ckeditor/upload/', group('editor')
+    path('ckeditor/upload/', require_group('editor')
          (ck_views.upload), name='ckeditor_upload'),
-    path('ckeditor/browse/', never_cache(group('editor')(ck_views.browse)),
+    path('ckeditor/browse/', never_cache(require_group('editor')(ck_views.browse)),
          name='ckeditor_browse'),
 ]
 

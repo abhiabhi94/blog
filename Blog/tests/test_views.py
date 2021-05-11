@@ -2,6 +2,7 @@ import json
 import unittest
 
 import feedparser
+from django.conf import settings
 from django.shortcuts import reverse
 
 from Blog.tests.base import Post, TestPostBase
@@ -37,6 +38,10 @@ class TestRecommendedArticles(TestPostBase, TestAJAXView):
     def get_url(self):
         return reverse('Blog:recommended-posts')
 
+    @unittest.skipIf(
+        settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3',
+        'The union of querysets with order raises issues on sqlite, although this works well in MySQL or PostgreSQL'
+    )
     def test_get_recommended_articles(self):
         """
         Test that
@@ -45,7 +50,6 @@ class TestRecommendedArticles(TestPostBase, TestAJAXView):
         - length of the article received when similar objects are lesser than the number requested\
             trending articles fill in the space
         """
-
         post = self.post
         num = 6
         data = {
@@ -81,6 +85,28 @@ class TestRecommendedArticles(TestPostBase, TestAJAXView):
 
     def test_get_trending_posts(self):
         pass
+
+
+class TestHomeView(TestPostBase, TestAJAXView):
+    @staticmethod
+    def get_url():
+        return reverse('Blog:home')
+
+    def test_correct_template_used(self):
+        response = self.client.get(self.get_url())
+
+        self.assertTemplateUsed(response, 'Blog/home.html')
+
+    def test_context(self):
+        response = self.client.get(self.get_url())
+
+        ctx = response.context_data
+        featured_posts = ctx['featured_posts']
+        latest_posts = ctx['latest_posts']
+
+        # test all posts are unique
+        self.assertIs(set(featured_posts).isdisjoint(set(latest_posts)), True)
+        # TODO: add test sufficient test data to test categories stuff here as well
 
 
 class TestLatestArticles(TestPostBase, TestAJAXView):

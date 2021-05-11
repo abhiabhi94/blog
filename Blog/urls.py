@@ -1,9 +1,6 @@
-from django.contrib import admin
-from django.urls import path, re_path, include
-from django.contrib.auth import views as auth_views
+from django.urls import path, re_path
 
 from Blog import views
-from Users import views as user_views
 
 app_name = 'Blog'
 
@@ -11,7 +8,6 @@ ymds_re = r'(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<slu
 ymd_re = r'(?P<year>[0-9]{4})/?(?P<month>[0-9]{1,2})?/?(?P<day>[0-9]{1,2})?/'
 
 urlpatterns = [
-    # path('', views.PostListView.as_view(), name='home'),
     path('', views.HomeView.as_view(), name='home'),
     path('subscribe/', views.subscribe, name='subscription'),
     path('author/<str:username>/',
@@ -22,11 +18,11 @@ urlpatterns = [
          views.UserPostListView.as_view(), name='my-posts'),
     path('about/', views.about, name='about'),
     path('post/new/', views.PostCreateView.as_view(), name='post-create'),
-    path('post/draft/<slug:slug>/', views.DraftPostUpdateView.as_view(),
-         name='draft-post-update'),
-    # path('post/<slug:slug>', hit_count(views.PostDetailView.as_view()), name='post-detail'),
-    # path('post/<slug:slug>/update', views.PostUpdateView.as_view(), name='post-update'),
-    # path('post/<slug:slug>/delete', views.PostDeleteView.as_view(), name='post-delete'),
+    path(
+        'post/draft/<slug:slug>/',
+        views.DraftPostUpdateView.as_view(),
+        name='draft-post-update'
+    ),
     path('post/preview/<slug:slug>/', views.preview, name='post-preview'),
     re_path(r'post/'+ymds_re+'$',
             views.PostDetailView.as_view(), name='post-detail'),

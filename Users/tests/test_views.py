@@ -1,9 +1,10 @@
-from django.test import TestCase, SimpleTestCase
-from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.models import User
-from Users.forms import UserRegisterForm
+from django.shortcuts import get_object_or_404, reverse
+from django.test import TestCase
+
 from Blog.models import Category
-from Blog.views import home_categories
+from Blog.views import HomeView
+from Users.forms import UserRegisterForm
 
 
 class UserDetailsTest(TestCase):
@@ -27,7 +28,7 @@ class UserDetailsTest(TestCase):
                                                    password='123'
                                                    )
         # Current home page requires these categories
-        for category in home_categories:
+        for category in HomeView.HOME_CATEGORIES:
             Category.objects.create(name=category,
                                     info='Testing category',
                                     author=super_user
@@ -87,7 +88,7 @@ class UserDetailsTest(TestCase):
 
     def test_redirect_authenticated_user_on_register(self):
         """Test whether a logged in user is redirected to home when trying to access register link"""
-        login = self.client.login(username='tester', password='user123#')
+        self.client.login(username='tester', password='user123#')
         response = self.client.get(reverse('register'))
         self.assertRedirects(response, expected_url=reverse('Blog:home'))
 
@@ -113,7 +114,7 @@ class UserDetailsTest(TestCase):
             'email': 'jachkarta+test1@gmail.com',
         }
         url_profile = reverse('profile')
-        login = self.client.login(username='tester', password='user123#')
+        self.client.login(username='tester', password='user123#')
         # Test GET request
         profile_get = self.client.get(url_profile)
         self.assertEqual(profile_get.status_code, 200)
@@ -142,8 +143,7 @@ class UserDetailsTest(TestCase):
             'new_password2': 'NewUser123#'
         }
         url = reverse('password-change')
-        login = self.client.login(
-            username=username, password=data['old_password'])
+        self.client.login(username=username, password=data['old_password'])
         password_change = self.client.post(url, data=data)
         self.assertRedirects(
             password_change, expected_url=reverse('Blog:home'))

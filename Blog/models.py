@@ -1,7 +1,7 @@
 import os
-from datetime import timedelta
 from enum import IntEnum, unique
 from io import BytesIO
+from typing import Dict, Optional
 
 from ckeditor_uploader.fields import RichTextUploadingField
 from comment.models import Comment
@@ -117,21 +117,22 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         'url': 'get_detail_url',
     }
 
-    def _get_meta_image(self):
+    def _get_meta_image(self) -> Optional[str]:
         """Returns url of the image for meta"""
         if self.thumbnail:
             return self.thumbnail.url
+        return None
 
-    def _get_meta_author(self):
+    def _get_meta_author(self) -> str:
         """Returns full name of author for meta"""
         return self.author.get_full_name()
 
-    def _get_meta_description(self):
+    def _get_meta_description(self) -> str:
         """Return a short description for meta by removing tags"""
         description = strip_tags(strip_spaces_between_tags(self.content[:200]))
         return description[:150]
 
-    def clean(self):
+    def clean(self) -> None:
         """provides custom validation for images before uploading"""
 
         if self.__original_img_path != self.image.path:
@@ -160,7 +161,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                     _(f'Image height should not be greater than {MAX_IMG_HEIGHT}, \
                         yours height was {img.height}'), code='invalid')
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """
         1. slugify the title
         2. Sets the date_publish when the publish flag is set for the first time.
@@ -206,7 +207,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
             super(Post, self).save(*args, **kwargs)
 
-    def _image_name(self, modifier):
+    def _image_name(self, modifier) -> str:
         """
         modifier - used for changing the name for image
         view - if true return url for template else return path for saving.
@@ -219,9 +220,6 @@ class Post(models.Model, ModelMeta, HitCountMixin):
 
     def get_preview_url(self) -> str:
         return reverse_lazy('Blog:post-preview', kwargs={
-            # 'year': self.date_published.year,
-            # 'month': self.date_published.month,
-            # 'day': self.date_published.day,
             'slug': self.slug
         })
 
@@ -236,14 +234,17 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             'slug': self.slug
         })
 
+    def get_absolute_url(self):
+        return self.get_detail_url()
+
     @property
-    def views(self):
+    def views(self) -> int:
         # return views only if the view is published
         if self.state == self.Status.PUBLISH.value:
             return self.hit_count.hits
         return 0
 
-    def _get_last_n_day_view_per_day(self, n=30):
+    def _get_last_n_day_view_per_day(self, last_n: int = 30) -> Dict[int, int]:
         """
         Returns a dictionary of views for the last n days.
         e.g {
@@ -253,19 +254,18 @@ class Post(models.Model, ModelMeta, HitCountMixin):
             31: 200
         }
         """
+        hits: Dict[int, int] = {}
         if self.date_published is not None:
             diff = 0
-            now = timezone.now()
+            dt_diff = timezone.now() - timezone.timedelta(days=diff)
             hitcount = HitCount.objects.get_for_object(self)
-            dt_diff = now - timedelta(days=diff)
-            hits = {}
-            while(self.date_published <= dt_diff and diff < n):
-                hits[dt_diff.day] = hitcount.hit_set.filter(created__date=dt_diff.date()).count()
+            while(self.date_published <= dt_diff and diff < last_n):
                 diff += 1
-                dt_diff -= timedelta(diff)
-            return hits
+                hits[diff] = hitcount.hit_set.filter(created__date=dt_diff.date()).count()
+                dt_diff -= timezone.timedelta(diff)
+        return hits
 
-    def set_trending_score(self):
+    def set_trending_score(self) -> None:
         last_month_hits = self._get_last_n_day_view_per_day()
         if last_month_hits:
             self.trending_score = sum([v/k for k, v in last_month_hits.items()])

@@ -1,12 +1,16 @@
-from django.http import Http404
-from django.contrib.auth.models import User, Group
-from django.shortcuts import redirect, reverse
-from django.contrib import messages
 from functools import wraps
-from django.contrib.auth.decorators import user_passes_test
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.http import Http404, HttpResponseBadRequest
+from django.shortcuts import redirect, reverse
+from django.utils.translation import gettext_lazy as _
+
+User = get_user_model()
 
 
-def group(group_name='editor'):
+def require_group(group_name=None):
     """
     Returns
         whether the current user belong to a group or not
@@ -16,6 +20,9 @@ def group(group_name='editor'):
     Params
         group_name: name of the group to be matched(default:editor)
     """
+    if group_name is None:
+        group_name = Group.objects.get(name='editor').name
+
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
@@ -23,7 +30,7 @@ def group(group_name='editor'):
                 return func(request, *args, **kwargs)
 
             messages.warning(
-                request, 'You are not allowed to enter into this part of the world of hackers')
+                request, _('You are not allowed to enter into this part of the world of hackers'))
 
             return redirect(reverse('login'))
 
@@ -39,6 +46,18 @@ def require_superuser(func):
             raise Http404
 
         return func(request, *args, **kwargs)
-        # return user_passes_test(func)
 
     return wrapper
+
+
+def require_ajax():
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request, *args, **kwargs):
+            if request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest':
+                return func(request, *args, **kwargs)
+
+            return HttpResponseBadRequest(_('Only AJAX requests are allowed'))
+
+        return wrapper
+    return decorator
