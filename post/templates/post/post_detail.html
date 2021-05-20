@@ -1,0 +1,83 @@
+{% extends "post/base.html" %}
+{% load static %}
+{% load cool_view %}
+{% load extra_auth %}
+{% load comment_tags %}
+{% comment %} {% include_bootstrap  %} {% endcomment %}
+{% block extrahead %}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/foundation.min.css">
+{% endblock extrahead %}
+{# makes the side go down #}
+{% comment %} {% block sidebar %}{% include "./post_detail_sidebar.html" %}{% endblock sidebar %} {% endcomment %}
+{% block sidebar %}{% endblock sidebar %}
+{% block cls_mainbar %}col-md-12{% endblock cls_mainbar %}
+{% block style_main %}padding: 5px 15%;{% endblock style_main %}
+{% block content %}
+<div id="article-share-container">
+    <div id="share">
+        {% include "share.html" %}
+    </div>
+    <div class="article-contents">
+        <article id="post-detail" class="content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="article-title">
+                        <h1>{{ post.title }}</h1>
+                    </div>
+                    <div class="article-info">
+                        <a class="mr-2" href="{% url 'post:author-posts' post.author.username %}" title="{{post.author.get_full_name}}">{{ post.author.get_full_name|title|truncatechars:'30' }}</a>
+                        <small class="text-muted mr-2" title={{ post.views }}>views: {{ post.views|cool_view }}</small>
+                        <small class="text-muted mr-2" title="{{ post.date_published }}">Published: {{ post.date_published|date:"j M Y" }}</small>
+                        {% if post.date_published != post.last_updated %}
+                        <small class="text-muted date-modified" title="{{ post.last_updated }}">Last modified: {{ post.last_updated|date:"j M Y" }}</small>
+                        {% endif %}
+                        {% block post_options %}
+                        {% if post.author == user and user|has_group:"editor" %}
+                            <div id="post-options">
+                                <a class="btn btn-secondary btn-sm mt-1 mb-1 ml-2" href="{% url 'post:post-update' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Update">Update</a>
+                                <a class="btn btn-danger btn-sm mt-1 mb-1 ml-2" href="{% url 'post:post-delete' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="Delete">Delete</a>
+                            </div>
+                        {% endif %}
+                        {% endblock post_options %}
+                    </div>
+                </div>
+                <div class="article-image m-auto">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                </div>
+                <div class="article-content mt-4">{{ post.content|safe }}</div>
+                {% include "tags.html" with tags=post.get_tags_list %}
+            </div>
+        </article>
+        {% comment %} {% include "post/advertisement.html" with type="horizontal" %} {% endcomment %}
+    </div>
+</div>
+{% block post_status_form %}{% endblock post_status_form %}
+{% block comments_and_recommended_posts %}
+{% block recommended_posts %}
+<div id="recommended-posts" class="article-contents content-section col-md-12">
+    <div id="ad-after-recommended-posts">
+    {% comment %} {% include "post/advertisement.html" with type="horizontal" %} {% endcomment %}
+    </div>
+</div>
+{% comment %} For requesting recommended posts {% endcomment %}
+<script>
+    const id ='#ad-after-recommended-posts';
+    const data = {slug:'{{ post.slug }}', top_n:6};
+    url = "{% url 'post:recommended-posts' %}";
+    jq.post(url, { 'data': JSON.stringify(data), 'csrfmiddlewaretoken': window.CSRF_TOKEN }, function(response) {
+        jq(id).before(response);
+    });
+</script>
+{% endblock recommended_posts %}
+{% block comments %}
+<div class="article-comments col-md-12 content-section">
+  {% render_comments post request %}
+</div>
+{% endblock comments %}
+{% endblock comments_and_recommended_posts %}
+{% endblock content %}
+{% block extrabottom %}
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+{% endblock extrabottom %}

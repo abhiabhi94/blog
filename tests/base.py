@@ -7,8 +7,8 @@ from typing import Any
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 
-from Blog.models import Category, Post
 from blog.settings import BASE_DIR
+from post.models import Category, Post
 
 User = get_user_model()
 TEST_DATABASE = {

@@ -1,0 +1,22 @@
+{% extends "post/base.html" %}
+{% block content %}
+{% load cool_view %}
+<legend class="heading"> All categories </legend>
+<div class="all-tags">
+    {% for category in categories %}
+    <div class="tag-details m-2">
+        <div class="article-tags tag-name truncate-string">
+            <a class="{{category.name}}" title="Articles under the category {{category.name}}" href="{% url 'post:categorised' category.slug %}">{{category.name|title}}</a>
+        </div>
+        <div class="tag-count">
+        {% if count == 1 %}
+            <h6>{{ category.count }} article<h6>
+        {% else %}
+            <h6>{{ category.count|cool_view }} articles<h6>
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock content %}

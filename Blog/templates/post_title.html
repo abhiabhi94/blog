@@ -1,8 +1,0 @@
-<ul class="list-unstyled">
-    {% for post in posts  %}
-    <li class="mt-2"><a href="{% url 'Blog:post-detail' post.date_published.year post.date_published.month post.date_published.day post.slug %}" title="{{post.title}}">{{ post.title }}</a></li>
-    {% if not forloop.last %}
-    <hr>
-    {% endif %}
-    {% endfor %}
-</ul>
