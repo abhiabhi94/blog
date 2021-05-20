@@ -1,0 +1,8 @@
+<span>
+{% for tag in tags %}
+    <a href="{% url 'post:tagged' tag.slug %}"  title="Posts with the tag {{tag.name}}"><p class="article-tags">{{ tag.name }}</p></a>
+{% endfor %}
+</span>
+{% if ajax %}
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'post:all-tags' %}" title="View all tags">View More</a>
+{% endif %}

@@ -18,9 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_webp',
-    'Blog.apps.BlogConfig',
-    'Users.apps.UsersConfig',
-    'Subscribers.apps.SubscribersConfig',
+    'post.apps.PostConfig',
+    'user_profile.apps.UserProfileConfig',
+    'subscriber.apps.SubscriberConfig',
     'crispy_forms',
     'markupfield',
     'meta',
@@ -101,7 +101,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-############# CKEditor specifications #####################
+# ############ CKEditor specifications #####################
 
 
 def get_plugin_meta(plugin, plugin_dir, plugin_file='plugin.js'):
@@ -109,7 +109,7 @@ def get_plugin_meta(plugin, plugin_dir, plugin_file='plugin.js'):
         (name of plugin,
         'specific path to directory containing plugin.js',
         'plugin.js')'"""
-    plugin_base_dir = '/static/Blog/ckeditor_plugins/'
+    plugin_base_dir = '/static/post/ckeditor_plugins/'
     return (plugin, os.path.join(plugin_base_dir, plugin_dir) + os.path.sep, plugin_file)
 
 
@@ -195,9 +195,9 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-##########################
+# ########################
 
-#### HITCOUNT APP ######
+# ## HITCOUNT APP ######
 
 # This is the number of days, weeks, months, hours, etc(using a timedelta keyword argument), that an Hit is kept active
 HITCOUNT_KEEP_HIT_ACTIVE = {'seconds': 1}
@@ -209,7 +209,7 @@ HITCOUNT_EXCLUDE_USER_GROUP = ('editor', )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = 'Blog:home'
+LOGIN_REDIRECT_URL = 'post:home'
 LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -217,20 +217,20 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-### Used by Django-Meta app for rendering meta tags ###
+# # Used by Django-Meta app for rendering meta tags ###
 META_USE_TITLE_TAG = True
 META_USE_TWITTER_PROPERTIES = True
 META_USE_OG_PROPERTIES = True
 META_SITE_DOMAIN = 'hackadda.com'
 META_SITE_PROTOCOL = 'https'
-##########################################
+# ########################################
 
 # Django-taggit
 TAGGIT_CASE_INSENSITIVE = True
 
 # django-comments-dab
 COMMENT_FLAGS_ALLOWED = 5
-PROFILE_APP_NAME = 'Users'
+PROFILE_APP_NAME = 'user_profile'
 PROFILE_MODEL_NAME = 'Profile'
 
 WEBP_CONVERT_MEDIA_FILES = True

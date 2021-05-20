@@ -1,0 +1,9 @@
+{% extends "post_list_generic.html" %}
+{% block topcontent %}
+{% if page_obj.paginator.count %}
+<legend>Total Bookmarked articles ({{ page_obj.paginator.count }})</legend>
+{% else %}
+<legend>No bookmarks here. You might want to get back to <a href="{% url 'post:home' %}" title="Home"> reading</a>. </legend>
+
+{% endif %}
+{% endblock topcontent %}

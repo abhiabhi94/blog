@@ -7,10 +7,10 @@ from django.urls import include, path
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import condition
 
-from Blog.decorators.restrict_access import require_group, require_superuser
-from Blog.models import Post
-from Blog.views import LatestPostRSSFeed as rss_feed
-from Users import views as user_views
+from post.decorators.restrict_access import require_group, require_superuser
+from post.models import Post
+from post.views import LatestPostRSSFeed as rss_feed
+from user_profile import views as user_views
 
 
 def dec_patterns(patterns):
@@ -28,35 +28,41 @@ url_patterns_admin = [
 ]
 
 urlpatterns = url_patterns_admin + [
-    path('', include('Blog.urls')),
+    path('', include('post.urls')),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
-    path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True, template_name='Users/login.html'),
-         name='login'
-         ),
-    path('logout/', auth_views.LogoutView.as_view(
-        template_name='Users/logout.html'),
-        name='logout'
+    path(
+        'login/',
+        auth_views.LoginView.as_view(
+            redirect_authenticated_user=True,
+            template_name='user_profile/login.html'
+        ),
+        name='login',
+    ),
+    path(
+        'logout/',
+        auth_views.LogoutView.as_view(template_name='user_profile/logout.html'),
+        name='logout',
     ),
     path('password-change/', user_views.password_change, name='password-change'),
     path('password-reset/',
          auth_views.PasswordResetView.as_view(
-             template_name='Users/password_reset.html'),
+             template_name='user_profile/password_reset.html'),
          name='password_reset'
          ),
     path('password-reset/done/',
          auth_views.PasswordResetDoneView.as_view(
-             template_name='Users/password_reset_done.html'),
+             template_name='user_profile/password_reset_done.html'),
          name='password_reset_done'
          ),
     path('password-reset-confirm/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(
-             template_name='Users/password_reset_confirm.html'),
+             template_name='user_profile/password_reset_confirm.html'),
          name='password_reset_confirm'
          ),
     path('password-reset-complete/',
          auth_views.PasswordResetCompleteView.as_view(
-             template_name='Users/password_reset_complete.html'),
+             template_name='user_profile/password_reset_complete.html'),
          name='password_reset_complete'
          ),
     path('latest/feed',

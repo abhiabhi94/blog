@@ -1,0 +1,71 @@
+{% extends 'post/base.html' %}
+{% load extra_auth %}
+{% block content %}
+<ul class="nav nav-pills nav-justified" id="postTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link" id="draft-tab" data-toggle="pill" data-url="{% url 'post:my-posts' user 'draft' %}" role="tab" aria-controls="draft" aria-selected="false" title="Posts under the draft section">Draft</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="queued-tab" data-toggle="pill" data-url="{% url 'post:my-posts' user 'queued' %}" role="tab" aria-controls="queued" aria-selected="false" title="Posts queued for publishing">Queued</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="published-tab" data-toggle="pill" data-url="{% url 'post:my-posts' user 'published' %}") role="tab" aria-controls="published" aria-selected="false" title="Posts published">Published</a>
+    </li>
+</ul>
+<div class="tab-content list-group-item list-group-item-light">
+    <li id="draft" class="tab-pane fade" role="tabpanel" aria-labelledby="draft-tab">
+        {% if page_obj.paginator.count and tab_type == "draft" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "post/draft_post_list.html" %}
+            {% include "paginate.html" %}
+        {% else %}
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'post:post-create' %}" title="Write an article">writing</a> some.</h5>
+        {% endif %}
+    </li>
+    <li id="queued" class="tab-pane fade" role="tabpanel" aria-labelledby="queued-tab">
+        {% if page_obj.paginator.count and tab_type == "queued" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "post/draft_post_list.html" %}
+            {% include "paginate.html" %}
+        {% else %}
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'post:post-create' %}" title="Write an article">writing</a> some.</h5>
+        {% endif %}
+    </li>
+    <li id="published" class="tab-pane fade" role="tabpanel" aria-labelledby="published-tab">
+        {% if page_obj.paginator.count and tab_type == "published" %}
+            <h3 class="mb-3">Total Posts ({{ page_obj.paginator.count }})</h3>
+            {% include "post_list_home.html" %}
+            {% include "paginate.html" %}
+        {% else %}
+            <h5 class="mt-5">There are no posts here. Try <a href="{% url 'post:post-create' %}" title="Write an article">writing</a> some.</h5>
+        {% endif %}
+    </li>
+</div>
+{% endblock content %}
+{% block extrabottom %}
+<script>
+jq(document).ready(function(){
+    const paths = window.location.pathname.split('/');
+    const lastPath = paths[paths.length-2];
+    if (lastPath === "queued"){
+        jq('#queued-tab').addClass('active');
+        jq('#queued').addClass('show active');
+    }else{
+        if(lastPath === "published"){
+            jq('#published-tab').addClass('active');
+            jq('#published').addClass('show active');
+        }
+        else{
+            jq('#draft-tab').addClass('active');
+            jq('#draft').addClass('show active');
+        }
+    }
+    jq('#postTab a').click(function(e) {
+    e.preventDefault();
+    const tab = jq(this).id;
+    const url = jq(this).data('url');
+    window.location.replace(url);
+    });
+});
+</script>
+{% endblock extrabottom %}
