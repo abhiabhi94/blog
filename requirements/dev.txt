@@ -1,11 +1,4 @@
 -r ./base.txt
 -r ./test.txt
 pre-commit==2.9.3
-autopep8==1.4.4
-Pygments==2.7.4
-pylint==2.3.1
-pylint-django==2.0.13
-pylint-plugin-utils==0.6
-pyparsing==2.4.5
-pdbpp==0.10.2
 pywatchman==1.4.1
