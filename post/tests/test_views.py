@@ -4,9 +4,12 @@ from http import HTTPStatus as status
 
 import feedparser
 from django.conf import settings
+from django.db.models import Count
 from django.shortcuts import reverse
+from taggit.models import Tag
 
-from post.tests.base import Post, TestPostBase
+from post.models import Category, Post
+from post.tests.base import TestPostBase
 from tests.base import TestAJAXView, TestBaseView
 
 
@@ -445,3 +448,83 @@ class TestLatestIdeaRSSFeed(TestPostBase):
         feed = feedparser.parse(response.content)
         tags = feed['items'][0].categories
         self.assertNotEqual(tags, '')
+
+
+class TestGetCategoryView(TestPostBase):
+    def get_url(self):
+        return reverse('post:all-categories')
+
+    def test_get_request(self):
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, status.OK)
+        self.assertTemplateUsed(response, 'all_categories.html')
+        self.assertQuerysetEqual(
+            response.context['categories'],
+            Category.objects.filter(
+                post__in=Post.objects.get_published())
+            .values('name', 'slug', count=Count('name'))
+            .order_by('-count')
+        )
+
+    def test_non_ajax_post_request(self):
+        response = self.client.post(self.get_url())
+
+        self.assertEqual(response.status_code, status.BAD_REQUEST)
+        self.assertEqual(response.content.decode(), 'Only AJAX requests are allowed')
+
+    def test_ajax_post_request(self):
+        top_n = 5
+        data = {'data': json.dumps({'top_n': top_n})}
+        response = self.client.post(self.get_url(), data=data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, status.OK)
+        self.assertTemplateUsed(response, 'post/categories.html')
+        self.assertIs(response.context['ajax'], True)
+        self.assertQuerysetEqual(
+            response.context['categories'],
+            Category.objects.filter(
+                post__in=Post.objects.get_published())
+            .values('name', 'slug', count=Count('name'))
+            .order_by('-count')[:top_n]
+        )
+
+
+class TestGetTagView(TestPostBase):
+    def get_url(self):
+        return reverse('post:all-tags')
+
+    def test_get_request(self):
+        response = self.client.get(self.get_url())
+
+        self.assertEqual(response.status_code, status.OK)
+        self.assertTemplateUsed(response, 'all_tags.html')
+        self.assertQuerysetEqual(
+            response.context['tags'],
+            Tag.objects.filter(
+                post__in=Post.objects.get_published())
+            .values('name', 'slug', count=Count('name'))
+            .order_by('-count')
+        )
+
+    def test_non_ajax_post_request(self):
+        response = self.client.post(self.get_url())
+
+        self.assertEqual(response.status_code, status.BAD_REQUEST)
+        self.assertEqual(response.content.decode(), 'Only AJAX requests are allowed')
+
+    def test_ajax_post_request(self):
+        top_n = 5
+        data = {'data': json.dumps({'top_n': top_n})}
+        response = self.client.post(self.get_url(), data=data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, status.OK)
+        self.assertTemplateUsed(response, 'tags.html')
+        self.assertIs(response.context['ajax'], True)
+        self.assertQuerysetEqual(
+            response.context['tags'],
+            Tag.objects.filter(
+                post__in=Post.objects.get_published())
+            .values('name', 'slug', count=Count('name'))
+            .order_by('-count')[:top_n]
+        )

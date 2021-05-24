@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
@@ -56,6 +57,13 @@ meta_home = Meta(title='HackAdda | Never stop hacking!',
                  )
 # conditional og property - og_author_url, published_time, modified_time, image,
 # consider adding other property in future. TODO
+
+
+BadAJAXRequestException = (
+    json.decoder.JSONDecodeError,
+    TypeError,
+    KeyError,
+)
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
@@ -316,9 +324,9 @@ def get_recommended_posts(request):
             slug = data.get('slug', None)
             num = int(data.get('top_n', None))
 
-        except Exception:
+        except (BadAJAXRequestException + (ValueError,)):
             return HttpResponseBadRequest(
-                'Wrong Request Format for post request')
+                _('Wrong Request Format for post request'))
 
         template_name = 'post_latest_home.html'
         order = '-trending_score'
@@ -533,9 +541,10 @@ def bookmark_post(request):
         if request.user.is_authenticated:
             try:
                 slug = json.loads(request.body.decode('utf-8'))['data']
-            except Exception:
+            except BadAJAXRequestException:
                 return HttpResponseBadRequest(
-                    'Wrong Request Format for post request')
+                    _('Wrong Request Format for post request'))
+
             pk = get_object_or_404(Post, slug=slug).id
             b_post = Profile.objects.filter(
                 user=request.user, bookmarked_posts=pk)
@@ -588,9 +597,10 @@ def get_latest_posts(request, **kwargs):
         template_name = 'post_title.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception:
+        except BadAJAXRequestException:
             return HttpResponseBadRequest(
-                'Wrong Request Format for post request')
+                _('Wrong Request Format for post request')
+                )
         posts = Post.objects.get_published()[:top_n]
         return render(request, template_name, {'posts': posts})
 
@@ -610,45 +620,51 @@ def get_latest_posts(request, **kwargs):
         return get_for_page(request, **kwargs)
 
 
-@require_http_methods(['GET', 'POST'])
-@require_ajax()
-def get_tags(request):
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
+class GetTags(View):
     """
     1. Get request is used for top tags(mostly used)
     2. Post request is used for displaying the top_n tags in the sidebar
     """
+
     context = {}
-    template_name = 'all_tags.html'
-    flag = 0
-    if request.method == 'POST':
+
+    @staticmethod
+    def _get_top_tags_qs():
+        # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+        return Tag.objects.filter(post__in=Post.objects.get_published()).values(
+            'name', 'slug', count=Count('name')).order_by('-count')
+
+    @method_decorator(require_ajax(), name='dispatch')
+    def post(self, request, *args, **kwargs):
         template_name = 'tags.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception:
-            return HttpResponseBadRequest("Wrong Request Format")
+        except (BadAJAXRequestException + (ValueError,)):
+            return HttpResponseBadRequest(_("Wrong Request Format"))
+
         finally:
-            flag = 1    # Tells whether post request was executed or get
             # For showing option of view more on sidebar
-            context['ajax'] = True
+            self.context['ajax'] = True
+        self.context['tags'] = self._get_top_tags_qs()[:top_n]
 
-    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
-    top_tags_count_list = Tag.objects.filter(post__in=Post.objects.get_published()).values(
-        'name', 'slug', count=Count('name')).order_by('-count')
+        return render(request, template_name, self.context)
 
-    if flag:    # for post request
-        top_tags = top_tags_count_list[:top_n]
-    else:   # for get request
-        top_tags = top_tags_count_list
+    def get(self, request, *args, **kwargs):
+        template_name = 'all_tags.html'
+        top_tags = self._get_top_tags_qs()
 
-    context['tags'] = top_tags
+        self.context['tags'] = top_tags
 
-    # Tag clouds will be probably implemented in a better way
-    # in a future release.
-    # context['tags'] = get_font_cloud(top_tags_list)
-    context['meta'] = Meta(title='Tags | HackAdda',
-                           description='List of all Tags on HackAdda',
-                           keywords=meta_home.keywords + list(top_tags.values_list('name', flat=True)))
-    return render(request, template_name, context)
+        # Tag clouds will be probably implemented in a better way
+        # in a future release.
+        # context['tags'] = get_font_cloud(top_tags_list)
+        self.context['meta'] = Meta(
+            title='Tags | HackAdda',
+            description='List of all Tags on HackAdda',
+            keywords=meta_home.keywords + list(top_tags.values_list('name', flat=True))
+        )
+        return render(request, template_name, self.context)
 
 
 @method_decorator(require_http_methods(['GET']), name='dispatch')
@@ -673,7 +689,7 @@ class CategoryPostListView(ListView):
         category = get_object_or_404(Category, slug=slug)
 
         context['meta'] = Meta(title=f'{str(category).title()} | HackAdda',
-                               description=f'Read articles of the category {category} from HackAdda',
+                               description=_(f'Read articles of the category {category} from HackAdda'),
                                keywords=meta_home.keywords + [category])
         context['category'] = category
         return context
@@ -686,9 +702,9 @@ def get_timewise_list(request, *args, **kwargs):
     paginate_by = 10
 
     if request.method == 'GET':
-        dummy = datetime.now()  # to use formatting on template layer.
+        placeholder = datetime.now()  # to use formatting on template layer.
         kwargs = {k: int(v) if v is not None else v for k, v in kwargs.items()}
-        dummy = dummy.replace(year=kwargs['year'])
+        placeholder = placeholder.replace(year=kwargs['year'])
         flag_day, flag_month = [1, 1]
         if kwargs['day'] is None:
             if kwargs['month'] is None:
@@ -697,9 +713,9 @@ def get_timewise_list(request, *args, **kwargs):
             else:
                 # month isn't dummy, day is dummy.
                 flag_day, flag_month = [0, 1]
-                dummy = dummy.replace(month=kwargs['month'])
+                placeholder = placeholder.replace(month=kwargs['month'])
         else:
-            dummy = datetime(**kwargs)
+            placeholder = datetime(**kwargs)
 
         args_dict = {}
         args_dict['date_published__year'] = kwargs['year']
@@ -710,49 +726,51 @@ def get_timewise_list(request, *args, **kwargs):
 
         posts = Post.objects.get_published().filter(**args_dict)
 
-        kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = dummy, flag_day, flag_month
+        kwargs['date'], kwargs['flag_day'], kwargs['flag_month'] = placeholder, flag_day, flag_month
         kwargs['posts'] = paginate_util(request, posts, paginate_by, kwargs)
         kwargs['meta'] = meta_home
         return render(request, template_name, kwargs)
 
 
-@require_http_methods(['GET', 'POST'])
-@require_ajax()
-def get_category(request):
+@method_decorator(require_http_methods(['GET', 'POST']), name='dispatch')
+class GetCategory(View):
     """
     Get categories(foreign key) present in post
     1. For get request, all categories are shown in a page.
     2. For post request, top_n categories are shown in the sidebar.
     """
     context = {}
-    flag = 0
-    template_name = 'all_categories.html'
 
-    if request.method == 'POST':
+    @staticmethod
+    def _get_top_categories_qs():
+        # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
+        return Category.objects.filter(post__in=Post.objects.get_published())\
+                .values('name', 'slug', count=Count('name'))\
+                .order_by('-count')
+
+    @method_decorator(require_ajax(), name='dispatch')
+    def post(self, request, *args, **kwargs):
         template_name = 'post/categories.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception:
-            return HttpResponseBadRequest("Wrong Request Format")
+        except (BadAJAXRequestException + (ValueError,)):
+            return HttpResponseBadRequest(_("Wrong Request Format"))
         finally:
-            flag = 1
-            context['ajax'] = True
+            self.context['ajax'] = True
 
-    # Filter published posts -> extract values from name and slug fields -> annotate by count -> Order
-    top_categories_list = Category.objects.filter(
-        post__in=Post.objects.get_published()).values('name', 'slug', count=Count('name')).order_by('-count')
+        self.context['categories'] = self._get_top_categories_qs()[:top_n]
+        return render(request, template_name, self.context)
 
-    if flag:  # POST request
-        top_categories = top_categories_list[:top_n]
-    else:
-        top_categories = top_categories_list
-
-    context['categories'] = top_categories
-    context['meta'] = Meta(title='Categories | HackAdda',
-                           description='List of all Categories on HackAdda',
-                           keywords=meta_home.keywords + list(top_categories.values_list('name', flat=True)))
-
-    return render(request, template_name, context)
+    def get(self, request, *args, **kwargs):
+        template_name = 'all_categories.html'
+        top_categories_qs = self._get_top_categories_qs()
+        self.context['categories'] = top_categories_qs
+        self.context['meta'] = Meta(
+            title='Categories | HackAdda',
+            description='List of all Categories on HackAdda',
+            keywords=meta_home.keywords + list(top_categories_qs.values_list('name', flat=True))
+        )
+        return render(request, template_name, self.context)
 
 
 @require_http_methods(['POST'])
@@ -764,8 +782,8 @@ def get_trending_posts(request):
         template_name = 'post_title.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except Exception:
-            return HttpResponseBadRequest("Wrong Request Format")
+        except (BadAJAXRequestException + (ValueError,)):
+            return HttpResponseBadRequest(_("Wrong Request Format"))
 
         trending_posts = Post.objects.get_published().order_by('-trending_score')[:top_n]
         return render(request, template_name, {'posts': trending_posts, 'meta': meta_home})
