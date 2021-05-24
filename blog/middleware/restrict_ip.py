@@ -1,7 +1,6 @@
 """
 This middleware checks whether the incoming ip is allowed or not
 """
-from django.conf import settings
 
 
 def get_private_ips():

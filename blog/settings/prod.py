@@ -1,13 +1,9 @@
-from subprocess import getoutput
-import sys
-
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import urllib.request
-from urllib.error import URLError
 
-from .base import *
-# This part should only be commented when testing
+from .base import *  # noqa: F401, F403
+
+# This part should only be uncommented when testing something bad in production.
 
 # global ALLOWED_HOSTS
 # DEBUG = True
@@ -28,6 +24,10 @@ from .base import *
 #         port which handles the request
 #     Add local IPv4 and public IP addresses to ALLOWED_HOST
 #     """
+#     import sys
+#     from subprocess import getoutput
+#     from urllib.error import URLError
+#     import urllib.request
 
 #     IP_PRIVATE = getoutput('hostname -I').strip()
 #     try:

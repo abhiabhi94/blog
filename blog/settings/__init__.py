@@ -7,9 +7,9 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
 if os.environ.get('PROD'):
-    from .prod import *
+    from .prod import *  # noqa: F403
 else:
-    from .dev import *
+    from .dev import *  # noqa: F403
 
 # used for testing environment(allows passing throughCI)
 if not os.environ.get('TEST'):
@@ -25,6 +25,6 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # noqa: F405
         }
     }
