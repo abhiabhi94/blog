@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from user_profile.forms import UserRegisterForm
+from user_profile.forms import UserRegistrationForm
 
 
 class UserRegistrationFormTest(TestCase):
@@ -9,7 +9,7 @@ class UserRegistrationFormTest(TestCase):
         """Test whether email field invalidates dummy emails and raises a validation error"""
         field = 'email'
 
-        form = UserRegisterForm(data={field: 'ab@ab.com'})
+        form = UserRegistrationForm(data={field: 'ab@ab.com'})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.has_error(field, code='invalid'), True)
 
@@ -17,30 +17,28 @@ class UserRegistrationFormTest(TestCase):
         """Test whether first name invalidates non alphabets and raises a validation error"""
         field = 'first_name'
 
-        form_1 = UserRegisterForm(data={field: 'Bulb2'})
+        form_1 = UserRegistrationForm(data={field: 'Bulb2'})
         self.assertFalse(form_1.is_valid())
         self.assertEqual(form_1.has_error(field, code='invalid'), True)
 
-        form_2 = UserRegisterForm(data={field: '$Bulb_'})
-        self.assertFalse(form_2.is_valid())
-        self.assertEqual(form_2.has_error(field, code='invalid'), True)
+    def test_first_name_successful(self):
+        field = 'first_name'
 
-    def test_last_name_alphabetic(self):
-        """
-        Test whether last name either accepts
-            - accepts blank value
-            - invalidates non alphabet values
-                raises a validation error if it fails
-        """
+        form = UserRegistrationForm(data={field: 'a b'})
+
+        self.assertIs(form.has_error(field), False)
+
+    def test_last_name_can_be_blank(self):
         field = 'last_name'
 
-        form_1 = UserRegisterForm(data={field: ''})
-        self.assertFalse(form_1.is_valid())
+        form = UserRegistrationForm(data={field: ''})
 
-        form_2 = UserRegisterForm(data={field: 'Bulb2'})
-        self.assertFalse(form_2.is_valid())
-        self.assertEqual(form_2.has_error(field, code='invalid'), True)
+        self.assertIs(form.is_valid(), False)
 
-        form_3 = UserRegisterForm(data={field: '$Bulb_'})
-        self.assertFalse(form_3.is_valid())
-        self.assertEqual(form_3.has_error(field, code='invalid'), True)
+    def test_last_name_does_not_allow_non_alphabetic_characters(self):
+        field = 'last_name'
+
+        form = UserRegistrationForm(data={field: 'Bulb2'})
+
+        self.assertIs(form.is_valid(), False)
+        self.assertIs(form.has_error(field, code='invalid'), True)

@@ -5,8 +5,8 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 from meta.views import Meta
 
-from user_profile.forms import (ProfileUpdateForm, UserRegisterForm,
-                                UserUpdateForm)
+from user_profile.forms import (ProfileUpdationForm, UserRegistrationForm,
+                                UserUpdationForm)
 from user_profile.manager import log_in_user
 
 # Create your views here.
@@ -42,7 +42,7 @@ def register(request):
     template_name = 'user_profile/register.html'
     context = {}
     if(request.method == 'POST'):
-        context['form'] = form = UserRegisterForm(request.POST)
+        context['form'] = form = UserRegistrationForm(request.POST)
         if(form.is_valid()):
             user = form.save()
             username = form.cleaned_data.get('username')
@@ -52,7 +52,7 @@ def register(request):
 
             return redirect('post:home')
     else:  # On GET request return a new form
-        context['form'] = UserRegisterForm()
+        context['form'] = UserRegistrationForm()
 
     context['meta'] = Meta(title='Register | HackAdda',
                            description='Register on HackAdda',
@@ -65,8 +65,8 @@ def register(request):
 def profile(request):
     template_name = 'user_profile/profile.html'
     if(request.method == 'POST'):
-        u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(
+        u_form = UserUpdationForm(request.POST, instance=request.user)
+        p_form = ProfileUpdationForm(
             request.POST, request.FILES, instance=request.user.profile)
         if(u_form.is_valid() and p_form.is_valid()):
             u_form.save()
@@ -74,8 +74,8 @@ def profile(request):
             messages.success(request, 'Your profile has been updated!')
 
     else:
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(instance=request.user.profile)
+        u_form = UserUpdationForm(instance=request.user)
+        p_form = ProfileUpdationForm(instance=request.user.profile)
 
     context = {
         'u_form': u_form,

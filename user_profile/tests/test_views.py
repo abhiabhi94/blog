@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from post.models import Category
 from post.views import HomeView
-from user_profile.forms import UserRegisterForm
+from user_profile.forms import UserRegistrationForm
 
 
 class UserDetailsTest(TestCase):
@@ -20,7 +20,7 @@ class UserDetailsTest(TestCase):
             'password2': 'user123#',
         }
         # create a user for testing purpose
-        form = UserRegisterForm(user_data)
+        form = UserRegistrationForm(user_data)
         form.save()
         # Create a superuser
         super_user = User.objects.create_superuser(username='superuser',
@@ -68,7 +68,7 @@ class UserDetailsTest(TestCase):
         """
         email = 'jachkarta@gmail.com'
 
-        form = UserRegisterForm(data={'email': email, 'username': 'test'})
+        form = UserRegistrationForm(data={'email': email, 'username': 'test'})
         # Test invalidation of form
         self.assertFalse(form.is_valid())
         # Test if validation error is raised
