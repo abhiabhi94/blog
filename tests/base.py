@@ -5,21 +5,13 @@ from string import ascii_lowercase
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
-from blog.settings import BASE_DIR
 from post.models import Category, Post
 
 User = get_user_model()
-TEST_DATABASE = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 
-@override_settings(DATABASES=TEST_DATABASE)
 class TestBase(TestCase):
     maxDiff = None
 

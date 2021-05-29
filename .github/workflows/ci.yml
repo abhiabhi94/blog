@@ -24,17 +24,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Ensure latest pip, and wheel
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+
     - name: Install Dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -r requirements/test.txt
+
     - name: Run Tests
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         EMAIL_USER: ${{ secrets.EMAIL_USER }}
         EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
-        TEST: ${{ secrets.TEST }}
       run: |
         pytest
         python manage.py validate_templates
