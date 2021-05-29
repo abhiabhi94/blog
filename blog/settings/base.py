@@ -7,20 +7,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 
 ALLOWED_HOSTS = []
 
+DB_CONFIG_FILE = '/etc/db.cnf'
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'NotASecret')
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'a@a.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS', 'abcd')
+
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_webp',
+    'django.contrib.admin',
+    # the above two are placed because they are required in user_profile's admin
     'post.apps.PostConfig',
     'user_profile.apps.UserProfileConfig',
     'subscriber.apps.SubscriberConfig',
+
     'crispy_forms',
     'markupfield',
     'meta',
@@ -31,6 +34,12 @@ INSTALLED_APPS = [
     'taggit_autosuggest',
     'django_extensions',
     'comment',
+    'django_webp',
+
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
