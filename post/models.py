@@ -256,9 +256,13 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         hits: Dict[int, int] = {}
         if self.date_published is not None:
             diff = 0
-            dt_diff = timezone.now() - timezone.timedelta(days=diff)
+            default_timezone = timezone.get_default_timezone()
+            # make naive is used to change the time to local timezone since val
+            # this is necessary here because values in HitCount models are saved as per local timezone.
+            dt_diff = timezone.make_naive(timezone.now(), default_timezone) - timezone.timedelta(days=diff)
             hitcount = HitCount.objects.get_for_object(self)
-            while(self.date_published <= dt_diff and diff < last_n):
+            date_published_in_local_timezone = timezone.make_naive(self.date_published, default_timezone)
+            while(date_published_in_local_timezone <= dt_diff and diff < last_n):
                 diff += 1
                 hits[diff] = hitcount.hit_set.filter(created__date=dt_diff.date()).count()
                 dt_diff -= timezone.timedelta(diff)
