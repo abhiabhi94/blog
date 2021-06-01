@@ -25,3 +25,5 @@ cd $PROJECT_DIR
 source $VIRTUAL_ENV_DIR/bin/activate
 
 python manage.py runjobs daily
+
+deactivate
