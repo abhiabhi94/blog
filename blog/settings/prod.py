@@ -77,7 +77,7 @@ SECURE_HSTS_SECONDS = 3600  # 1 hour. Refuses to connect over HTTP
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Integrating sentry sdk inside django
 sentry_sdk.init(
