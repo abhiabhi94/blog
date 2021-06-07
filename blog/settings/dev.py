@@ -45,4 +45,4 @@ try:
 except IndexError:
     pass
 
-DEBUG = True
+DEBUG = False

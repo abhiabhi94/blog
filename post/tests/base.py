@@ -59,6 +59,8 @@ class TestPostBase(TestBase):
 
             cls.post = Post.objects.filter(
                 state=Post.Status.PUBLISH).first()
+            cls.draft_post = Post.objects.filter(
+                state=Post.Status.DRAFT).first()
 
     def get_url(self):
         """A utility function that returns URL for the view"""

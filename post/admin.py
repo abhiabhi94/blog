@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
@@ -113,17 +112,14 @@ class PostAdmin(admin.ModelAdmin):
         'make_featured'
     ]
 
-    def view_on_site(self, obj):
+    @staticmethod
+    def view_on_site(obj):
         """
-        This function is overriden because we don't have a get_absolute_url method in the model
-        It will return the preview url
+        This function is overriden because we can't use the get_absolute_url method from the model.
+        post in draft states will not have a publish year.
         """
-        url = str(obj.get_preview_url())
-        if settings.DEBUG:
-            return 'http://localhost:8000' + url
-        return settings.META_SITE_PROTOCOL + '://' + settings.META_SITE_DOMAIN + url
+        return obj.get_preview_url()
 
-    # This function {make_published} is commented as:
     # -> This can be misused hence you want the admins to publish\
     #     articles after they have read
     # -> The implementation is tough. When an article is set to Publish\

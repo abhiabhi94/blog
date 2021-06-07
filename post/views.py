@@ -495,7 +495,6 @@ def about(request):
 
 @require_group(group_name='editor')
 @require_http_methods(['GET', 'POST'])
-@require_ajax()
 def preview(request, slug):
     post = get_object_or_404(Post, slug=slug)
     # ajax requests are coming here for some weird reason
