@@ -56,6 +56,7 @@ class Category(models.Model, ModelMeta):
 
 
 class Post(models.Model, ModelMeta, HitCountMixin):
+    THUMBNAIL_SIZE, FULL_VIEW_SIZE = (350, 350), (800, 800)
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -94,7 +95,7 @@ class Post(models.Model, ModelMeta, HitCountMixin):
     featured = models.BooleanField(default=False)
     image = models.ImageField(help_text=_('Do not forget to change this before publishing.'),
                               default=DEFAULT_IMG, upload_to=IMG_DIR, blank=True)
-    thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True)
+    thumbnail = models.ImageField(default=DEFAULT_IMG, blank=True, null=True, upload_to=IMG_DIR)
     # adding a generic relationship makes sorting by Hits possible:
     # MyModel.objects.order_by("hit_count_generic__hits")
     hit_count_generic = GenericRelation(
@@ -160,6 +161,34 @@ class Post(models.Model, ModelMeta, HitCountMixin):
                     _(f'Image height should not be greater than {MAX_IMG_HEIGHT}, \
                         yours height was {img.height}'), code='invalid')
 
+    def _set_thumbnail(self):
+        # remove '.' form the string(e.g '.gif')
+        ext = os.path.splitext(self.image.name)[-1][1:]
+        if ext.lower() == 'gif':  # do not compress GIF images
+            self.thumbnail.save(
+                self.image.name, File(self.image), save=False)
+        else:
+            # JPG isn't allowed in Pillow
+            extension = 'JPEG' if ext.lower() == 'jpg' else ext.upper()
+
+            with Image.open(self.image.path) as img:
+                img_thumbnail = img.copy()  # thumbnail changes in place
+
+                # for list and card view
+                img_thumbnail.thumbnail(self.THUMBNAIL_SIZE, Image.ANTIALIAS)
+                thumbnail_name = self._image_name('_thumbnail')
+                blob = BytesIO()
+                img_thumbnail.save(blob, format=extension,
+                                   quality=75, optimize=True)
+                # basename is used here to bypass the issue raised after upgrading to django 3.1.12
+                # File names with path elements weren't allowed.
+                self.thumbnail.save(os.path.basename(thumbnail_name), File(blob), save=False)
+
+    def _compress_image(self):
+        with Image.open(self.image.path) as img:
+            img.thumbnail(self.FULL_VIEW_SIZE, Image.ANTIALIAS)
+            img.save(self.image.path, quality=75, optimize=True)
+
     def save(self, *args, **kwargs) -> None:
         """
         1. slugify the title
@@ -176,35 +205,13 @@ class Post(models.Model, ModelMeta, HitCountMixin):
         if self.state == self.Status.PUBLISH and self.date_published is None:
             self.date_published = timezone.now()
 
-        super(Post, self).save(*args, **kwargs)
+        # this is called here because we need to open the original image in order to copy its contents to the thumbnail
+        super().save(*args, **kwargs)
 
         if self.__original_img_path != self.image.path:
-            # remove '.' form the string(e.g '.gif')
-            ext = os.path.splitext(self.image.name)[-1][1:]
-            if ext.lower() == 'gif':  # do not compress GIF images
-                self.thumbnail.save(
-                    self.image.name, File(self.image), save=False)
-            else:
-                # JPG isn't allowed in Pillow
-                extension = 'JPEG' if ext.lower() == 'jpg' else ext.upper()
-
-                with Image.open(self.image.path) as img:
-                    thumbnail_size, full_view_size = (350, 350), (800, 800)
-                    img_thumbnail = img.copy()  # thumbnail changes in place
-
-                    # for list and card view
-                    img_thumbnail.thumbnail(thumbnail_size, Image.ANTIALIAS)
-                    thumbnail_name = self._image_name('_thumbnail')
-                    blob = BytesIO()
-                    img_thumbnail.save(blob, format=extension,
-                                       quality=75, optimize=True)
-                    self.thumbnail.save(thumbnail_name, File(blob), save=False)
-
-                    # for detail view
-                    img.thumbnail(full_view_size, Image.ANTIALIAS)
-                    img.save(self.image.path, quality=75, optimize=True)
-
-            super(Post, self).save(*args, **kwargs)
+            self._compress_image()
+            self._set_thumbnail()
+            super().save(*args, **kwargs)
 
     def _image_name(self, modifier) -> str:
         """

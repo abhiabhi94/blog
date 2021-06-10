@@ -1,7 +1,16 @@
+import os
+import shutil
+import tempfile
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
+from django.test import override_settings
 from hitcount.models import HitCount
 
 from post.tests.base import Post, TestPostBase
+
+# this is used for overriding the settings when testing image field.
+MEDIA_ROOT = tempfile.mkdtemp()
 
 
 class TestPostModel(TestPostBase):
@@ -120,15 +129,46 @@ class TestPostModel(TestPostBase):
             'slug': post.slug
         }))
 
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class TestPostModelImageField(TestPostBase):
+    def setUp(self):
+        super().setUp()
+        self.SMALL_GIF = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def test_thumbnail_are_in_the_same_directory_as_original_image(self):
+        image = SimpleUploadedFile(name='test_image.jpg', content=self.SMALL_GIF, content_type='image/gif')
+
+        self.post.image = image
+        self.post.save()
+
+        self.assertEqual(os.path.dirname(self.post.image.path), os.path.dirname(self.post.thumbnail.path))
+
     def test_thumbnail_generation(self):
         """Test thumbnail is generated when image changes"""
         pass
 
-    def test_image_compression(self):
+    def test_image_compression_disabled_for_gifs(self):
         """Test GIF images aren't compressed, image size saved is smaller than the one uploaded"""
-        pass
+        image = SimpleUploadedFile(name='test_image.jpg', content=self.SMALL_GIF, content_type='image/gif')
 
-    def test_set_trending_score_for_unpublished_post(self):
+        self.post.image = image
+        self.post.save()
+
+        self.assertEqual(self.post.image.size, self.post.thumbnail.size)
+
+
+class TestSetTrendingScore(TestPostBase):
+    def test_unpublished_post(self):
         post = self.draft_post
 
         post.set_trending_score()
@@ -136,7 +176,7 @@ class TestPostModel(TestPostBase):
 
         self.assertEqual(post.trending_score, 0.0)
 
-    def test_set_trending_score_for_published_post(self):
+    def test_published_post(self):
         post = self.post
         # delete all hits for the post
         HitCount.objects.get_for_object(post).hit_set.all().delete()
