@@ -471,7 +471,7 @@ class TestGetCategoryView(TestPostBase):
         response = self.client.post(self.get_url())
 
         self.assertEqual(response.status_code, status.BAD_REQUEST)
-        self.assertEqual(response.content.decode(), 'Only AJAX requests are allowed')
+        self.assertTemplateUsed(response, 'django_cute_status/base.html')
 
     def test_ajax_post_request(self):
         top_n = 5
@@ -511,7 +511,7 @@ class TestGetTagView(TestPostBase):
         response = self.client.post(self.get_url())
 
         self.assertEqual(response.status_code, status.BAD_REQUEST)
-        self.assertEqual(response.content.decode(), 'Only AJAX requests are allowed')
+        self.assertTemplateUsed(response, 'django_cute_status/base.html')
 
     def test_ajax_post_request(self):
         top_n = 5

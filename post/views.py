@@ -752,7 +752,7 @@ class GetCategory(View):
         template_name = 'post/categories.html'
         try:
             top_n = int(json.loads(request.POST.get('data'))['top_n'])
-        except (BadAJAXRequestException + (ValueError,)):
+        except (BadAJAXRequestException + (ValueError,),):
             return HttpResponseBadRequest(_("Wrong Request Format"))
         finally:
             self.context['ajax'] = True

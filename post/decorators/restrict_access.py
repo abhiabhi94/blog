@@ -54,7 +54,7 @@ def require_ajax():
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
-            if request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest':
+            if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
                 return func(request, *args, **kwargs)
 
             return HttpResponseBadRequest(_('Only AJAX requests are allowed'))

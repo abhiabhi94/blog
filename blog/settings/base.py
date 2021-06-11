@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'comment',
     'django_webp',
+    'django_cute_status',
 
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_cute_status.middleware.CuteStatusMiddleware',
 ]
 
 ROOT_URLCONF = 'blog.urls'
