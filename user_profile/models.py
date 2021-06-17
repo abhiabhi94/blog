@@ -40,7 +40,7 @@ class Profile(models.Model):
         return reverse("post:author-posts", kwargs={"username": self.user.username})
 
     def get_bookmarked_posts(self):
-        return [post.id for post in self.bookmarked_posts.all()]
+        return self.bookmarked_posts.all().order_by('-date_published').values_list('id', flat=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
