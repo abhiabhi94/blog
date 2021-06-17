@@ -88,3 +88,11 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+# enable cute status codes only for production
+# since it prevents debug reports in browser for debug mode
+MIDDLEWARE.append(  # noqa: F405
+    'django_cute_status.middleware.CuteStatusMiddleware',
+)
+
+INSTALLED_APPS.append('django_cute_status')  # noqa: F405
