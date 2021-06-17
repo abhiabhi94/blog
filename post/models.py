@@ -15,7 +15,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_spaces_between_tags, strip_tags
 from django.utils.translation import gettext_lazy as _
-from hitcount.models import HitCount, HitCountMixin
+from hitcount.mixins import HitCountModelMixin
+from hitcount.models import HitCount
 from meta.models import ModelMeta
 from PIL import Image
 from taggit_autosuggest.managers import TaggableManager
@@ -55,7 +56,7 @@ class Category(models.Model, ModelMeta):
         return self.name
 
 
-class Post(models.Model, ModelMeta, HitCountMixin):
+class Post(models.Model, ModelMeta, HitCountModelMixin):
     THUMBNAIL_SIZE, FULL_VIEW_SIZE = (350, 350), (800, 800)
 
     def __init__(self, *args, **kwargs):
