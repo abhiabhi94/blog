@@ -8,3 +8,4 @@ pylint-django==2.0.13
 pylint-plugin-utils==0.6
 pyparsing==2.4.5
 pdbpp==0.10.2
+pywatchman==1.4.1
